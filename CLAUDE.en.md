@@ -6,8 +6,6 @@
 A text (JSON) driven WBS / Gantt + inazuma-line tool.
 `wbs.json` (data) is the single source of truth; the self-contained single HTML `wbs_viewer.html` renders it.
 
-> This file is the **single source of the spec (how/what)**. The **"why" of design decisions lives in [`docs/adr/`](docs/adr/)**, and the structure map in [`docs/design/system-overview.md`](docs/design/system-overview.md) (no duplication).
-
 ---
 
 ## Product vision & design principles (#67)
