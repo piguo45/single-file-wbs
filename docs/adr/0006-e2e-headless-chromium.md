@@ -1,5 +1,7 @@
 # ADR-0006: 回帰テストは headless Chromium（self-contained・uv）
 
+実ブラウザの描画が仕様なので、回帰テストは headless Chromium で実描画を検証する（uvで自己完結）。
+
 ## ステータス
 承認済み（#53 で公開・可搬化、後に uv で self-contained 化）
 

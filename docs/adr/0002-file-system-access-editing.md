@@ -1,5 +1,7 @@
 # ADR-0002: ブラウザ内編集に File System Access API を使う
 
+サーバーレスのまま `wbs.json` へ書き戻すため、ブラウザ内編集の保存に File System Access API を使う。
+
 ## ステータス
 承認済み（#17〜#19, #29, #60 で制約と回避を確定）
 

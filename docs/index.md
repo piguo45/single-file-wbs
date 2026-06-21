@@ -15,10 +15,10 @@ single-file-wbs (WBS Viewer) の設計ドキュメント。
 
 | ドキュメント | 概要 |
 |---|---|
-| [ADR-0001: 依存ゼロの単一HTML・`file://` で動かす](adr/0001-dependency-free-single-file.md) | 承認済み（基盤決定・v1.0 から） |
-| [ADR-0002: ブラウザ内編集に File System Access API を使う](adr/0002-file-system-access-editing.md) | 承認済み（#17〜#19, #29, #60 で制約と回避を確定） |
-| [ADR-0003: 派生値をデータに持たせない（描画時に算出）](adr/0003-no-derived-values-in-data.md) | 承認済み（基盤決定・v1.0 から） |
-| [ADR-0004: AIを第一級ユーザーにする（JSON＝AIのAPI仕様）](adr/0004-ai-first-json-as-api.md) | 承認済み（#67 でコンセプトを明文化） |
-| [ADR-0005: 配色はCUD配慮（色だけに意味を担わせない）](adr/0005-cud-color-design.md) | 承認済み（実装：#34 / #65）。CUDの検証・調整は **#35（OPEN・継続）** で追跡。 |
-| [ADR-0006: 回帰テストは headless Chromium（self-contained・uv）](adr/0006-e2e-headless-chromium.md) | 承認済み（#53 で公開・可搬化、後に uv で self-contained 化） |
-| [ADR-0007: ライセンスは MIT を継続（AGPL移行は却下）](adr/0007-license-mit.md) | 承認済み（#73 を MIT継続で決着） |
+| [ADR-0001: 依存ゼロの単一HTML・`file://` で動かす](adr/0001-dependency-free-single-file.md) | サーバー・ビルド・外部依存を持たず、単一HTMLを `file://` で開く形態を製品の前提にする。 |
+| [ADR-0002: ブラウザ内編集に File System Access API を使う](adr/0002-file-system-access-editing.md) | サーバーレスのまま `wbs.json` へ書き戻すため、ブラウザ内編集の保存に File System Access API を使う。 |
+| [ADR-0003: 派生値をデータに持たせない（描画時に算出）](adr/0003-no-derived-values-in-data.md) | データは事実（日付・数量）だけを持ち、工数・進捗・座標は描画時に決定論的に算出する。 |
+| [ADR-0004: AIを第一級ユーザーにする（JSON＝AIのAPI仕様）](adr/0004-ai-first-json-as-api.md) | 人間=GUI／AI=素のJSON＋`CLAUDE.md` の2経路を第一級にし、スキーマをほぼ固定する。 |
+| [ADR-0005: 配色はCUD配慮（色だけに意味を担わせない）](adr/0005-cud-color-design.md) | 色だけに意味を持たせず、形・位置・ラベルで冗長化する（色覚多様性への配慮）。 |
+| [ADR-0006: 回帰テストは headless Chromium（self-contained・uv）](adr/0006-e2e-headless-chromium.md) | 実ブラウザの描画が仕様なので、回帰テストは headless Chromium で実描画を検証する（uvで自己完結）。 |
+| [ADR-0007: ライセンスは MIT を継続（AGPL移行は却下）](adr/0007-license-mit.md) | クライアント完結でAGPLの前提と噛み合わないため、ライセンスは MIT を継続する。 |
