@@ -18,6 +18,7 @@ Humans edit via the GUI; AI edits via raw JSON and [`CLAUDE.md`](CLAUDE.md) — 
 
 - **Target**: not the enterprise PM of huge projects, but a **manager leading a small elite team that includes AI** (the author is this persona — dogfooding)
 - **Core differentiator = two first-class interfaces**: most PM tools assume a human (GUI). Here, **AI is also a first-class user** — it maintains the plan via raw JSON + the AI-readable `CLAUDE.md`
+- Architecture & decisions → [`docs/`](docs/index.md) ([overview](docs/design/system-overview.md) · [ADRs](docs/adr/))
 - Background essay (Japanese) → [WBSという至高ツールで、このAI時代をサバイブする](https://zenn.dev/piguolabo/articles/99b5b30a028f80)
 
 ## Start in 30 seconds

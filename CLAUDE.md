@@ -5,6 +5,8 @@
 テキスト（JSON）駆動の WBS／ガント＋イナズマ線ツール。
 `wbs.json`（データ）を single source of truth とし、JS内蔵の単一HTML `wbs_viewer.html` が描画する。
 
+> 本ファイルは**仕様の単一ソース（how/what）**。**設計判断の「なぜ」は [`docs/adr/`](docs/adr/)**、構成の地図は [`docs/design/system-overview.md`](docs/design/system-overview.md)（重複させない）。
+
 ---
 
 ## 製品ビジョン・設計指針（#67）
