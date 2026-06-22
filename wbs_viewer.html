@@ -440,7 +440,7 @@
     const TODAY=todayStr();
     const projects=normalizeProjects(data);
     curProjects=projects;                                                    // 編集ハンドラ用に保持
-    const cw=c=>editMode&&DATE_FIELDS[c.key]?84:editMode&&c.key==="name"?c.w+40:c.w;  // 編集時：日付列は短縮表示に合わせ84px(#59)・作業項目は広げる
+    const cw=c=>editMode&&DATE_FIELDS[c.key]?84:editMode&&c.key==="name"?c.w+40:editMode&&(c.key==="qty"||c.key==="hrs")?52:c.w;  // 編集時：日付列84px(#59)・作業項目+40・数量/時間は▲▼を残し3桁見える52px
     const ms=[], rows=[];
     projects.forEach((proj,pi)=>{
       (proj.tasks||[]).forEach(n=>computeNode(n,TODAY));
