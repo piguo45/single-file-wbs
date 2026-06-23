@@ -227,6 +227,7 @@
       colStart:"開始",colEnd:"終了",colNote:"備考",grpPlan:"予定",grpActual:"実績",
       wd:["日","月","火","水","木","金","土"],locale:"ja-JP",active:"進行中",newTask:"新規作業",
       addTask:"＋タスク",addTaskTip:"タスクを追加",up:"上へ",down:"下へ",addBelow:"下に作業を追加",del:"削除",
+      addChild:"子タスクを追加（入れ子にする）",addChildLabel:"＋子",
       unsaved:"未保存の変更あり…",savedAt:"",saveFail:"保存失敗",savePending:"未保存（外部変更のため保留）",
       calTip:"カレンダーから選択",
       startDelayTip:n=>`着手遅れ +${n}日`, endDelayTip:(n,act)=>`終了遅延 +${n}日${act?"・進行中":""}`,
@@ -261,6 +262,7 @@
       colStart:"Start",colEnd:"End",colNote:"Notes",grpPlan:"Plan",grpActual:"Actual",
       wd:["Su","Mo","Tu","We","Th","Fr","Sa"],locale:"en-US",active:"active",newTask:"New task",
       addTask:"+Task",addTaskTip:"Add a task",up:"Move up",down:"Move down",addBelow:"Add task below",del:"Delete",
+      addChild:"Add a child task (nest)",addChildLabel:"+sub",
       unsaved:"Unsaved changes…",savedAt:"",saveFail:"Save failed",savePending:"Not saved (external change)",
       calTip:"Pick a date",
       startDelayTip:n=>`Start delay +${n}d`, endDelayTip:(n,act)=>`Finish delay +${n}d${act?" (active)":""}`,
@@ -554,6 +556,7 @@
               const move=`<span class="movegrp"><button data-act="up" data-path="${P}" title="${esc(t("up"))}">⬆︎</button>`  // ⬆⬇=兄弟内移動（caretの三角と区別）・チェックの前。FE0E=絵文字でなくテキスト字形を強制
                 +`<button data-act="down" data-path="${P}" title="${esc(t("down"))}">⬇︎</button></span>`;
               const acts=`<span class="acts"><button data-act="add" data-path="${P}" title="${esc(t("addBelow"))}">＋</button>`
+                +(r.depth<2?`<button data-act="addchild" data-path="${P}" title="${esc(t("addChild"))}">${esc(t("addChildLabel"))}</button>`:"")  // ＋子=入れ子追加。3L(深さ2)は4L禁止のため出さない(#70)
                 +`<button data-act="del" data-path="${P}" title="${esc(t("del"))}">✕</button></span>`;
               const doneCtl=leaf                                              // リーフ=押せる完了チェック／集計ノード=読み取り✓のまま
                 ?`<button class="donechk${done?" on":""}" data-act="done" data-path="${P}" title="${esc(t("doneTip"))}">${done?"✓":""}</button>`
@@ -897,10 +900,31 @@
     if(!arr||!r.node)return;
     if(act==="up"){if(i<=0)return; const t=arr[i-1];arr[i-1]=arr[i];arr[i]=t;}
     else if(act==="down"){if(i>=arr.length-1)return; const t=arr[i+1];arr[i+1]=arr[i];arr[i]=t;}
-    else if(act==="del"){if(!confirm(t("confirmDel")(r.node.name||"")))return; arr.splice(i,1);}
+    else if(act==="del"){
+      if(!confirm(t("confirmDel")(r.node.name||"")))return;
+      const removed=arr[i]; arr.splice(i,1);
+      if(arr.length===0){                                                    // 案Y降格(#70)：親集計の子が全部消えたら、最後の子の値を親へ戻しリーフ化（工数を消さない）
+        const pp=b.getAttribute("data-path").split("/");
+        if(pp.length>=3){const pr=resolvePath(pp.slice(0,-1).join("/"));
+          if(pr.node){delete pr.node.children;
+            for(const k in removed)if(k!=="id"&&k!=="children"&&k!=="_calc"&&k!=="_leaf")pr.node[k]=removed[k];}}
+      }
+    }
     else if(act==="add"){
       const base=String(r.node.id||""), dot=base.lastIndexOf("."), prefix=dot>=0?base.slice(0,dot+1):"";
       arr.splice(i+1,0,newLeaf(mintId(arr,prefix)));
+    }
+    else if(act==="addchild"){                                               // ＋子=入れ子追加(#70)
+      const node=r.node;
+      if(node.children&&node.children.length){                               // 既存集計→末尾に空の子（総工数は増える）
+        node.children.push(newLeaf(mintId(node.children,String(node.id)+".")));
+      }else{                                                                  // リーフ→集計化：自分の値を子1へ移す（案A）。総工数・進捗は不変
+        const child={id:String(node.id)+".1",name:node.name};
+        for(const k in node)if(k!=="id"&&k!=="name"&&k!=="children"&&k!=="_calc"&&k!=="_leaf")child[k]=node[k];
+        Object.keys(node).forEach(k=>{if(k!=="id"&&k!=="name")delete node[k];});
+        node.children=[child];
+      }
+      collapsed.delete("T|"+r.proj.name+"|"+node.id);                         // 折りたたみ中でも追加が見えるよう展開
     }
     else if(act==="done"){                                                   // 完了トグル：チェックで実績終了=今日（未着手なら着手も今日）・解除でnull
       const a=r.node.actual=r.node.actual&&typeof r.node.actual==="object"?r.node.actual:{};

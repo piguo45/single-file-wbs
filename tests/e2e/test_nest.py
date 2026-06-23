@@ -98,7 +98,7 @@ with sync_playwright() as p:
     if btn:
         btn.click(); pg.wait_for_timeout(250)
         d = saved()
-        ph = node_at(d, 0, 0)                         # フェーズ
+        ph = node_at(d, 0)                            # フェーズ（tasks[0]）
         kids = ph.get("children") or []
         check(len(kids) == 3, "T2 集計に空の子が1件追加(計3件) [B1]")
         if len(kids) == 3:

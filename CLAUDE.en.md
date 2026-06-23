@@ -61,7 +61,8 @@ In addition to text / AI editing, `wbs.json` can be **edited directly on screen*
 - Supported: **inline editing of every field** (No.=id / task name / qty / hours / assignee / plan & actual dates / notes),
   **progress input** (the leaf's `◀ N% ▶` stepper changes `_progress` by ±10%; setting ≥10% auto-sets `actual.start` to today / returning to 0% keeps the start date),
   **adding leaves** (row `＋` = sibling below; project row `+Task`; ids are minted collision-free; adding to a collapsed project auto-expands it),
-  **deletion** (`✕`, with confirmation, including children), **reordering among siblings** (`▲▼`).
+  **nesting (add a child task)** (row `＋子`/`+sub`: on a leaf it **becomes a summary node** carrying its values into child 1 = effort/progress unchanged; on a summary it appends a blank child; child id = parent id + suffix; **not shown on the 3rd level** = no 4th level),
+  **deletion** (`✕`, with confirmation, including children; **deleting the last child of a summary returns that child's values to the parent and demotes it to a leaf** = effort is never lost), **reordering among siblings** (`▲▼`).
 - **Autosave**: changes are written back to `wbs.json` after a ~0.4 s debounce (File System Access API).
   Writes are serialized through a single queue. Only the internal derived values `_calc`/`_leaf` are stripped (**user keys starting with `_` are preserved**).
   Save status (Unsaved changes… / Saved HH:MM:SS / Save failed) is **always visible at the top right**.
@@ -83,7 +84,8 @@ In addition to text / AI editing, `wbs.json` can be **edited directly on screen*
   (The display format of `input type=date` follows the browser UI language and cannot be controlled, so the display is fixed to ISO — #33.)
 - Input guards: dates are **valid only within 1900–2099** (out-of-range / partial input is ignored, not saved). Qty / hours accept decimals (`step="any"`).
   Mouse-wheel changes on number inputs are disabled (prevents accidental edits). Closing the tab with unsaved changes prompts for confirmation.
-- Out of scope (by design): drag-and-drop reordering / moving across parents / automatic renumbering / leaf↔summary conversion / adding projects. Use JSON or AI editing for those.
+- Out of scope (by design): drag-and-drop reordering / moving across parents / automatic renumbering / adding projects. Use JSON or AI editing for those.
+  (leaf↔summary conversion is now handled in the GUI via `＋子`/deleting the last child = #70)
 - Effort / progress / inazuma line recompute automatically as before (re-rendering is deferred while an input has focus).
 
 ## Data (wbs.json)
