@@ -21,9 +21,10 @@
        color:var(--text);background:#f7f8fa;display:flex;flex-direction:column;font-size:12px}
   #topbar{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:4px 12px;
           background:#fff;flex-wrap:wrap}
-  #topbar .title{font-weight:700;font-size:14px;display:flex;align-items:center;gap:5px;line-height:1.15}
+  #topbar .title{font-weight:700;font-size:14px;display:flex;align-items:center;gap:5px;line-height:1.15;cursor:pointer}  /* クリックで簡素表示トグル(#79) */
   #topbar .tdiv{width:1px;align-self:stretch;margin:5px 2px;background:var(--border)} /* 呼称｜操作の区切り。上下を少し空けて柔らかく */
   #topbar .title .ver{font-size:9px;color:var(--muted);font-weight:400}
+  body.plain #brandTitle .logo,body.plain #brandTitle .brand-x,body.plain #brandTitle .ver{display:none}  /* 簡素モード=ロゴ/版/“Viewer”を隠し「WBS」だけ。現場で“自作”と言える逃げ道(#79) */
   #topbar button{font:inherit;padding:5px 10px;border:1px solid var(--btn-border);background:#fff;border-radius:6px;cursor:pointer;
                  align-self:center} /* 指標ブロックが高くてもボタンは伸びない。操作3ボタンの高さは下の規則で統一 */
   #topbar button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -196,7 +197,7 @@
 </head>
 <body>
   <div id="topbar">
-    <span class="title"><svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9.6" fill="#1e2f63"/><rect x="4.2" y="4.8" width="7.5" height="2.7" rx="1" fill="#7da4f7"/><rect x="6" y="8.6" width="9.3" height="2.7" rx="1" fill="#cdd9f5"/><rect x="4.8" y="12.4" width="5.8" height="2.7" rx="1" fill="#7da4f7"/><polyline points="12.8,3.2 9.8,9.6 13.8,11.2 10.8,16.8" stroke="#e11d48" stroke-width="1.8" fill="none"/></svg><span style="display:flex;flex-direction:column">WBS Viewer<span class="ver">v1.2.0</span></span></span>
+    <span class="title" id="brandTitle"><svg class="logo" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9.6" fill="#1e2f63"/><rect x="4.2" y="4.8" width="7.5" height="2.7" rx="1" fill="#7da4f7"/><rect x="6" y="8.6" width="9.3" height="2.7" rx="1" fill="#cdd9f5"/><rect x="4.8" y="12.4" width="5.8" height="2.7" rx="1" fill="#7da4f7"/><polyline points="12.8,3.2 9.8,9.6 13.8,11.2 10.8,16.8" stroke="#e11d48" stroke-width="1.8" fill="none"/></svg><span style="display:flex;flex-direction:column"><span class="brand">WBS<span class="brand-x"> Viewer</span></span><span class="ver">v1.2.0</span></span></span>
     <span class="tdiv"></span>
     <button id="openBtn" class="primary">ファイルを開く<span class="sub">（ドラッグ&amp;ドロップ）</span></button>
     <button id="refreshBtn">更新</button>
@@ -1070,6 +1071,15 @@
     applyLang(); if(lastData)render(lastData);
   });
   applyLang();
+  // 簡素表示トグル(#79)：ロゴ/版/“Viewer”/タブ名を隠し「WBS」だけに。現場で“自作”と言える逃げ道。クリックで切替・localStorage記憶
+  function applyPlain(){const on=(()=>{try{return localStorage.getItem("wbsPlain")==="1";}catch(_){return false;}})();
+    document.body.classList.toggle("plain",on); document.title=on?"WBS":"WBS Viewer";}
+  document.getElementById("brandTitle").addEventListener("click",()=>{
+    const on=!document.body.classList.contains("plain");
+    try{localStorage.setItem("wbsPlain",on?"1":"0");}catch(_){}
+    applyPlain();
+  });
+  applyPlain();
 })();
 </script>
 </body>

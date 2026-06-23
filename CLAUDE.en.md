@@ -185,6 +185,7 @@ Hand the fuzzy "roughly what %" to an AI. The steps are deterministic:
 
 ## Display
 - **UI is Japanese/English switchable** (the "EN / 日本語" toolbar button). Default Japanese; the choice is stored in localStorage.
+- **Plain-branding toggle (#79)**: clicking the **title (logo / "WBS Viewer") at the top-left** hides the logo, version, "Viewer" and the tab title, leaving just **"WBS"** (click again to restore; remembered in localStorage). It strips the product look so the tool can pass as "self-made" on locked-down client sites. No tooltip is added (to keep it undiscoverable).
   All UI strings live in the `I18N` table inside the HTML (data = the contents of wbs.json is never translated). **When adding a UI string, add it to both ja and en.**
 - Column headers are centered. The left info table (No.–Notes) is fixed; **only the Gantt scrolls horizontally**.
 - **Column collapse (outline-style, #64)**: a thin row above the column headers holds **+/−** toggles per **collapsible unit** —
