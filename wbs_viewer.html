@@ -7,7 +7,7 @@
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMCIgY3k9IjEwIiByPSI5LjYiIGZpbGw9IiMxZTJmNjMiLz48cmVjdCB4PSI0LjIiIHk9IjQuOCIgd2lkdGg9IjcuNSIgaGVpZ2h0PSIyLjciIHJ4PSIxIiBmaWxsPSIjN2RhNGY3Ii8+PHJlY3QgeD0iNiIgeT0iOC42IiB3aWR0aD0iOS4zIiBoZWlnaHQ9IjIuNyIgcng9IjEiIGZpbGw9IiNjZGQ5ZjUiLz48cmVjdCB4PSI0LjgiIHk9IjEyLjQiIHdpZHRoPSI1LjgiIGhlaWdodD0iMi43IiByeD0iMSIgZmlsbD0iIzdkYTRmNyIvPjxwb2x5bGluZSBwb2ludHM9IjEyLjgsMy4yIDkuOCw5LjYgMTMuOCwxMS4yIDEwLjgsMTYuOCIgc3Ryb2tlPSIjZTExZDQ4IiBzdHJva2Utd2lkdGg9IjEuOCIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==">
 <style>
   :root{
-    --day-w:22px; --row-h:30px; --header-h:48px; --tab-h:26px; --pv-pad:14px;
+    --day-w:22px; --row-h:30px; --header-h:48px; --tab-h:22px; --pv-pad:14px;
     --border:#d7dbe0; --btn-border:#9aa2ad; --grid:#eceef1; --line:#c5cad3; --weekend:#f4f5f7;  /* line=表の区切り（縦横共通・青帯と色相で区別できるグレー）。--grid はガント日グリッド用 */  /* btn-border=操作物の輪郭（罫線より濃く・WCAG非テキスト3:1寄り） */
     --text:#1f2430; --muted:#6b7280; --ym-fg:#11161f;  /* 年月ラベル: 日付の数字(--text)より一段濃い=月>日の階層 */
     --actual:#2f6fed;  /* 実績は全階層で同色（親もリーフも同じ＝何のバーか一目で分かる・#65）。階層は行背景＋左表で表現 */
@@ -19,7 +19,7 @@
   html,body{margin:0;height:100%}
   body{font-family:-apple-system,"Segoe UI","Hiragino Sans","Noto Sans JP",Meiryo,sans-serif;
        color:var(--text);background:#f7f8fa;display:flex;flex-direction:column;font-size:12px}
-  #topbar{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 12px;
+  #topbar{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:4px 12px;
           background:#fff;flex-wrap:wrap}
   #topbar .title{font-weight:700;font-size:14px;display:flex;align-items:center;gap:5px;line-height:1.15}
   #topbar .tdiv{width:1px;align-self:stretch;margin:5px 2px;background:var(--border)} /* 呼称｜操作の区切り。上下を少し空けて柔らかく */
@@ -33,7 +33,7 @@
   #openBtn.over{background:#eef4ff!important;border:1px dashed var(--accent)!important;color:var(--accent)!important} /* ドラッグ中だけ「落とせる」点線合図 */
   #topbar #langBtn{border-color:transparent;background:transparent;color:var(--muted)} /* 表示設定＝データ操作より弱く・右端 */
   #topbar #langBtn:hover{border-color:var(--btn-border);background:#fff}
-  #stat{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;color:var(--muted);line-height:1.35}
+  #stat{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;color:var(--muted);line-height:1.18}
   #stat b{color:var(--text)}
   #stat .mrows{display:inline-block;text-align:left;font-variant-numeric:tabular-nums}
   #stat .mrow{font-size:12px;color:var(--text);cursor:help}
@@ -242,6 +242,7 @@
       colStart:"開始",colEnd:"終了",colNote:"備考",grpPlan:"予定",grpActual:"実績",
       wd:["日","月","火","水","木","金","土"],locale:"ja-JP",active:"進行中",newTask:"新規作業",
       addTask:"＋タスク",addTaskTip:"タスクを追加",up:"上へ",down:"下へ",addBelow:"下に作業を追加",del:"削除",
+      addChild:"子タスクを追加（入れ子にする）",addChildLabel:"＋子",
       unsaved:"未保存の変更あり…",savedAt:"",saveFail:"保存失敗",savePending:"未保存（外部変更のため保留）",
       calTip:"カレンダーから選択",
       startDelayTip:n=>`着手遅れ +${n}日`, endDelayTip:(n,act)=>`終了遅延 +${n}日${act?"・進行中":""}`,
@@ -276,6 +277,7 @@
       colStart:"Start",colEnd:"End",colNote:"Notes",grpPlan:"Plan",grpActual:"Actual",
       wd:["Su","Mo","Tu","We","Th","Fr","Sa"],locale:"en-US",active:"active",newTask:"New task",
       addTask:"+Task",addTaskTip:"Add a task",up:"Move up",down:"Move down",addBelow:"Add task below",del:"Delete",
+      addChild:"Add a child task (nest)",addChildLabel:"+sub",
       unsaved:"Unsaved changes…",savedAt:"",saveFail:"Save failed",savePending:"Not saved (external change)",
       calTip:"Pick a date",
       startDelayTip:n=>`Start delay +${n}d`, endDelayTip:(n,act)=>`Finish delay +${n}d${act?" (active)":""}`,
@@ -566,9 +568,10 @@
           if(col.key==="no")v=editMode?inp("id",n.id,"text"):esc(n.id);
           else if(col.key==="name"){
             if(editMode){
-              const move=`<span class="movegrp"><button data-act="up" data-path="${P}" title="${esc(t("up"))}">${ICN.up}</button>`  // ⬆⬇=兄弟内移動（caretの三角と区別）・チェックの前。FE0E=絵文字でなくテキスト字形を強制
+              const move=`<span class="movegrp"><button data-act="up" data-path="${P}" title="${esc(t("up"))}">${ICN.up}</button>`  // ⬆⬇=兄弟内移動（caretの三角と区別）・チェックの前
                 +`<button data-act="down" data-path="${P}" title="${esc(t("down"))}">${ICN.down}</button></span>`;
               const acts=`<span class="acts"><button data-act="add" data-path="${P}" title="${esc(t("addBelow"))}">${ICN.add}</button>`
+                +(r.depth<2?`<button data-act="addchild" data-path="${P}" title="${esc(t("addChild"))}">${ICN.leaf}</button>`:"")  // ＋子=入れ子追加（葉アイコン・#49/#70）。3L(深さ2)は4L禁止のため出さない
                 +`<button data-act="del" data-path="${P}" title="${esc(t("del"))}">${ICN.del}</button></span>`;
               const doneCtl=leaf                                              // リーフ=押せる完了チェック／集計ノード=読み取り✓のまま
                 ?`<button class="donechk${done?" on":""}" data-act="done" data-path="${P}" title="${esc(t("doneTip"))}">${done?"✓":""}</button>`
@@ -912,10 +915,31 @@
     if(!arr||!r.node)return;
     if(act==="up"){if(i<=0)return; const t=arr[i-1];arr[i-1]=arr[i];arr[i]=t;}
     else if(act==="down"){if(i>=arr.length-1)return; const t=arr[i+1];arr[i+1]=arr[i];arr[i]=t;}
-    else if(act==="del"){if(!confirm(t("confirmDel")(r.node.name||"")))return; arr.splice(i,1);}
+    else if(act==="del"){
+      if(!confirm(t("confirmDel")(r.node.name||"")))return;
+      const removed=arr[i]; arr.splice(i,1);
+      if(arr.length===0){                                                    // 案Y降格(#70)：親集計の子が全部消えたら、最後の子の値を親へ戻しリーフ化（工数を消さない）
+        const pp=b.getAttribute("data-path").split("/");
+        if(pp.length>=3){const pr=resolvePath(pp.slice(0,-1).join("/"));
+          if(pr.node){delete pr.node.children;
+            for(const k in removed)if(k!=="id"&&k!=="children"&&k!=="_calc"&&k!=="_leaf")pr.node[k]=removed[k];}}
+      }
+    }
     else if(act==="add"){
       const base=String(r.node.id||""), dot=base.lastIndexOf("."), prefix=dot>=0?base.slice(0,dot+1):"";
       arr.splice(i+1,0,newLeaf(mintId(arr,prefix)));
+    }
+    else if(act==="addchild"){                                               // ＋子=入れ子追加(#70)
+      const node=r.node;
+      if(node.children&&node.children.length){                               // 既存集計→末尾に空の子（総工数は増える）
+        node.children.push(newLeaf(mintId(node.children,String(node.id)+".")));
+      }else{                                                                  // リーフ→集計化：自分の値を子1へ移す（案A）。総工数・進捗は不変
+        const child={id:String(node.id)+".1",name:node.name};
+        for(const k in node)if(k!=="id"&&k!=="name"&&k!=="children"&&k!=="_calc"&&k!=="_leaf")child[k]=node[k];
+        Object.keys(node).forEach(k=>{if(k!=="id"&&k!=="name")delete node[k];});
+        node.children=[child];
+      }
+      collapsed.delete("T|"+r.proj.name+"|"+node.id);                         // 折りたたみ中でも追加が見えるよう展開
     }
     else if(act==="done"){                                                   // 完了トグル：チェックで実績終了=今日（未着手なら着手も今日）・解除でnull
       const a=r.node.actual=r.node.actual&&typeof r.node.actual==="object"?r.node.actual:{};

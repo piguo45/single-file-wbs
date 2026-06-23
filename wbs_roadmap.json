@@ -561,6 +561,54 @@
                 "end": null
               },
               "note": "#76：https://github.com/piguo45/single-file-wbs/issues/76 ドキュメント整備で判明した『how有り/why未記録』4件（3階層上限・進捗10%刻み・工数の固定除数・保存0.4s）の確認チェックリスト"
+            },
+            {
+              "id": "M.6",
+              "name": "子タスク追加（編集）",
+              "qty": 1,
+              "hours": 8,
+              "assignee": "ぴぐお",
+              "plan": {
+                "start": null,
+                "end": null
+              },
+              "actual": {
+                "start": "2026-06-23",
+                "end": null
+              },
+              "note": "#70：https://github.com/piguo45/single-file-wbs/issues/70 ★外部要望(X・初)。テスト先行→実装→PR #82（案Y対称モデル）。実機スモーク＋マージ待ち。リーフ↔集計の変換・＋子・3階層ガード・降格は保存パス聖域"
+            },
+            {
+              "id": "M.7",
+              "name": "ヘッダ〜表の余白を詰める",
+              "qty": 1,
+              "hours": 2,
+              "assignee": "ぴぐお",
+              "plan": {
+                "start": null,
+                "end": null
+              },
+              "actual": {
+                "start": "2026-06-23",
+                "end": null
+              },
+              "note": "#80：https://github.com/piguo45/single-file-wbs/issues/80 ヘッダ(操作バー/列見出し)と表の縦余白を詰める。表示層・着手済み"
+            },
+            {
+              "id": "M.8",
+              "name": "ロゴ/バージョン非表示",
+              "qty": 1,
+              "hours": 4,
+              "assignee": "ぴぐお",
+              "plan": {
+                "start": null,
+                "end": null
+              },
+              "actual": {
+                "start": null,
+                "end": null
+              },
+              "note": "#79：https://github.com/piguo45/single-file-wbs/issues/79 ★外部要望(X)。セキュリティ厳格環境で製品感を消す＝ロゴ+verをトグル非表示・localStorage記憶。#70と同テーマ"
             }
           ]
         },
@@ -863,22 +911,6 @@
               "note": "#62：https://github.com/piguo45/single-file-wbs/issues/62 縦スクロールの左右同期ズレを根本解消。レイアウト核＋スクロール保持(過去バグ箇所)に触る・聖域寄り"
             },
             {
-              "id": "4.17",
-              "name": "子タスク追加（編集）",
-              "qty": 1,
-              "hours": 8,
-              "assignee": "ぴぐお",
-              "plan": {
-                "start": null,
-                "end": null
-              },
-              "actual": {
-                "start": "2026-06-23",
-                "end": null
-              },
-              "note": "#70：https://github.com/piguo45/single-file-wbs/issues/70 ★外部要望(X・初)。テスト先行→実装→PR #82（案Y対称モデル）。実機スモーク＋マージ待ち。リーフ↔集計の変換・＋子・3階層ガード・降格は保存パス聖域"
-            },
-            {
               "id": "4.18",
               "name": "課題管理表（別の単一HTML）",
               "qty": 1,
@@ -941,38 +973,6 @@
                 "end": null
               },
               "note": "#72：https://github.com/piguo45/single-file-wbs/issues/72 wbs.jsonを高度(個人→チーム→部署)ごとに分け、AIで抽象/具象を往復。_sources カスタムキーでファイル間リンク。実装は遠い北極星"
-            },
-            {
-              "id": "4.22",
-              "name": "ロゴ/バージョン非表示",
-              "qty": 1,
-              "hours": 4,
-              "assignee": "ぴぐお",
-              "plan": {
-                "start": null,
-                "end": null
-              },
-              "actual": {
-                "start": null,
-                "end": null
-              },
-              "note": "#79：https://github.com/piguo45/single-file-wbs/issues/79 ★外部要望(X)。セキュリティ厳格環境で製品感を消す＝ロゴ+verをトグル非表示・localStorage記憶。#70と同テーマ"
-            },
-            {
-              "id": "4.23",
-              "name": "ヘッダ〜表の余白を詰める",
-              "qty": 1,
-              "hours": 2,
-              "assignee": "ぴぐお",
-              "plan": {
-                "start": null,
-                "end": null
-              },
-              "actual": {
-                "start": "2026-06-23",
-                "end": null
-              },
-              "note": "#80：https://github.com/piguo45/single-file-wbs/issues/80 ヘッダ(操作バー/列見出し)と表の縦余白を詰める。表示層・着手済み"
             }
           ]
         }
