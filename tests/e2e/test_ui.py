@@ -28,10 +28,10 @@ with sync_playwright() as p:
     pg.dispatch_event('input[data-field="assignee"]', "change")
     check("未保存" in pg.inner_text("#saveMsg"), "change直後は『未保存の変更あり』")
     pg.wait_for_timeout(800)
-    check("💾" in pg.inner_text("#saveMsg"), "書込後は『保存済 HH:MM:SS』")
+    check(":" in pg.inner_text("#saveMsg"), "書込後は『保存済 HH:MM:SS』")
     pg.evaluate("()=>document.activeElement.blur()")
     pg.wait_for_timeout(900)
     pg.click("#allCaret"); pg.wait_for_timeout(100)   # 再描画を挟む
-    check("💾" in pg.inner_text("#saveMsg"), "再描画後も保存状態が維持")
+    check(":" in pg.inner_text("#saveMsg"), "再描画後も保存状態が維持")
     b.close()
 finish(errors)

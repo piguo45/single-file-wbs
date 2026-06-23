@@ -103,15 +103,18 @@
   .acts,.movegrp{display:inline-flex;gap:3px;flex:0 0 auto}
   .movegrp{margin-right:3px}   /* 移動⬆⬇はチェックの前・横並び独立（穂先が大きく視認しやすい・＋✕と同サイズ） */
   .acts button,.movegrp button{font:inherit;font-size:12px;line-height:1.3;padding:2px 6px;border:1px solid var(--btn-border);
-               background:#fff;border-radius:3px;cursor:pointer;color:#445}
+               background:#fff;border-radius:3px;cursor:pointer;color:#445;display:inline-flex;align-items:center;justify-content:center}
+  .ic{width:13px;height:13px;flex:0 0 auto}                 /* インラインSVGアイコン（currentColor）・#49 */
+  #stat .mstat .ic{width:12px;height:12px;vertical-align:-2px;margin-right:1px}  /* メタ行は文字に揃える */
   .acts button:hover,.movegrp button:hover{background:#eef2ff;border-color:#9db4f0}
   .acts button[data-act="del"]{margin-left:5px}   /* 破壊的操作の✕は少し離して誤クリック防止 */
   .date-wrap{display:flex;align-items:center;gap:2px;width:100%;min-width:0}
   #leftRows .date-wrap input[type="text"]{flex:1 1 auto;width:auto}  /* #leftRows input{width:100%} に勝つ詳細度（.nm-in と同じ理由） */
   .cal-proxy{position:absolute;width:0;height:0;opacity:0;border:0;padding:0;margin:0;pointer-events:none}
   .cal-btn{flex:0 0 auto;font-size:11px;line-height:1.2;padding:2px 3px;border:1px solid var(--btn-border);
-           background:#fff;border-radius:3px;cursor:pointer}
+           background:#fff;border-radius:3px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:#445}
   .clk{cursor:pointer}
+  #leftHead .h[title]{cursor:help}   /* 押せない説明ツールチップは ?（押せるボタンは pointer のまま）・#46 */
   #rightHead{position:sticky;top:0;z-index:4;background:var(--head-bg);border-bottom:2px solid var(--border)}
   #ym{display:flex;height:18px;border-bottom:1px solid var(--border)}
   #ym .seg{border-right:1px solid #c8ccd2;font-size:11px;white-space:nowrap;
@@ -214,6 +217,18 @@
   const DAY_W=22, ROW_H=30, DAY_MS=86400000;
   const SAVE_DEBOUNCE_MS=400, RENDER_DEFER_MS=350, FOCUS_POLL_MS=400;  // 自動保存と遅延再描画の間隔
   const SAVE_RETRY_DELAY_MS=250;  // InvalidStateError（同期/AVの横入り）時に1拍おいて1回だけ再試行する間隔
+  // アイコン＝単色インラインSVG（currentColorで文字色に追従・ロゴと同トーン・依存ゼロ・#49）。葉だけベタ塗り(案A)・他はライン基調
+  const ICN={
+    file:'<svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg>',
+    cal:'<svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2.2" y="3.2" width="11.6" height="10.6" rx="1.6"/><path d="M2.2 6.3h11.6" stroke-width="1.2"/><path d="M5 1.6v2.4M11 1.6v2.4" stroke-linecap="round"/></svg>',
+    refresh:'<svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M12.5 8a4.5 4.5 0 1 1-1.3-3.2"/><path d="M12.7 2.6V5.1H10.2" stroke-linejoin="round"/></svg>',
+    save:'<svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M3 2.5h7.5L13.5 5.5V13.5H3z"/><path d="M5.2 2.5v3.3h4.6V2.5" stroke-width="1.1"/><rect x="5.2" y="9" width="5.6" height="4.3" stroke-width="1.1"/></svg>',
+    up:'<svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12.5V4M4.5 7.5 8 4l3.5 3.5"/></svg>',
+    down:'<svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5V12M4.5 8.5 8 12l3.5-3.5"/></svg>',
+    add:'<svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 3.3v9.4M3.3 8h9.4"/></svg>',
+    del:'<svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4.2 4.2 11.8 11.8M11.8 4.2 4.2 11.8"/></svg>',
+    leaf:'<svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.34 1.5.34C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/></svg>'
+  };
   // ===== i18n（UI文言の単一ソース。データ(wbs.json)は翻訳しない） =====
   const I18N={
     ja:{
@@ -232,7 +247,7 @@
       startDelayTip:n=>`着手遅れ +${n}日`, endDelayTip:(n,act)=>`終了遅延 +${n}日${act?"・進行中":""}`,
       doneTip:"完了/未完了を切替（チェックで実績終了＝今日。未着手なら着手も今日）",
       ym:(y,m)=>`${y}年${m}月`,
-      stat:(d)=>`<div class="mrows">`+`<div class="mrow" title="最早開始 - 最遅終了 ／ 残り＝本日→終了の平日数（土日除外・祝日は除外していません #75）"><span class="mk">期間：</span><span class="mv">${esc(mdSlash(d.ps))} - ${esc(mdSlash(d.pe))}</span><span class="msub">（残り：${d.biz}日）</span></div>`+`<div class="mrow" title="予定合計(人月)＝Σ(数量×時間÷8)÷20 ／ 残り＝予定−実績(EV)"><span class="mk">工数：</span><span class="mv">${d.planPM}人月</span><span class="msub">（残り：${d.restPM}人月）</span></div>`+`<div class="mrow" title="実際%（出来高EV/総） ／ 予定%（あるべきPV/総）｜ 遅れ%（予定−実際）"><span class="mk">進捗：</span><span class="mv"><b class="mev">${d.prog}%</b></span><span class="msub">（予定：${d.plan}% ｜ 遅れ：<span class="mdl">${d.delay}%</span>）</span></div>`+`${(d.due||d.slip)?`<div class="mrow mdrow" title="遅れているタスク数。全体の遅れ%は前倒し分で相殺され0%でも、個別に遅れている件数（状況列の赤で詳細）"><span class="mk">遅延：</span><span class="mv2">${d.due?`<span class="dbadge" title="締切超過＝本日>予定終了かつ未完了">⚠ 期限${d.due}件</span>`:""}${d.slip?`<span class="dbadge" title="出来高遅れ＝予定(PV)>実績(EV)">⚠ 進捗${d.slip}件</span>`:""}</span></div>`:""}`+`</div>`+`<div class="mstat"><span title="開いているファイル">📄 ${esc(d.fname)}</span> ・ <span title="プロジェクト数">${d.pc}P</span> ・ <span title="本日（進捗・イナズマ線の基準日）">📅 ${esc(mdSlash(d.today))}</span> ・ <span title="最後に更新（読込）した時刻">🔄 ${esc(d.upd)}</span><span id="saveMsg" title="最後に保存した時刻（自動保存）">${d.save}</span></div>`,
+      stat:(d)=>`<div class="mrows">`+`<div class="mrow" title="最早開始 - 最遅終了 ／ 残り＝本日→終了の平日数（土日除外・祝日は除外していません #75）"><span class="mk">期間：</span><span class="mv">${esc(mdSlash(d.ps))} - ${esc(mdSlash(d.pe))}</span><span class="msub">（残り：${d.biz}日）</span></div>`+`<div class="mrow" title="予定合計(人月)＝Σ(数量×時間÷8)÷20 ／ 残り＝予定−実績(EV)"><span class="mk">工数：</span><span class="mv">${d.planPM}人月</span><span class="msub">（残り：${d.restPM}人月）</span></div>`+`<div class="mrow" title="実際%（出来高EV/総） ／ 予定%（あるべきPV/総）｜ 遅れ%（予定−実際）"><span class="mk">進捗：</span><span class="mv"><b class="mev">${d.prog}%</b></span><span class="msub">（予定：${d.plan}% ｜ 遅れ：<span class="mdl">${d.delay}%</span>）</span></div>`+`${(d.due||d.slip)?`<div class="mrow mdrow" title="遅れているタスク数。全体の遅れ%は前倒し分で相殺され0%でも、個別に遅れている件数（状況列の赤で詳細）"><span class="mk">遅延：</span><span class="mv2">${d.due?`<span class="dbadge" title="締切超過＝本日>予定終了かつ未完了">⚠ 期限${d.due}件</span>`:""}${d.slip?`<span class="dbadge" title="出来高遅れ＝予定(PV)>実績(EV)">⚠ 進捗${d.slip}件</span>`:""}</span></div>`:""}`+`</div>`+`<div class="mstat"><span title="開いているファイル">${ICN.file} ${esc(d.fname)}</span> ・ <span title="プロジェクト数">${d.pc}P</span> ・ <span title="本日（進捗・イナズマ線の基準日）">${ICN.cal} ${esc(mdSlash(d.today))}</span> ・ <span title="最後に更新（読込）した時刻">${ICN.refresh} ${esc(d.upd)}</span><span id="saveMsg" title="最後に保存した時刻（自動保存）">${d.save}</span></div>`,
       confirmDel:name=>`「${name}」を削除します。よろしいですか？（配下も削除）`,
       fileLabel:(name,size)=>`${name}・${size} byte`,
       jsonFail:(label,msg)=>`JSON読み込み失敗${label?`（${label}）`:""}: ${msg}`,
@@ -266,7 +281,7 @@
       startDelayTip:n=>`Start delay +${n}d`, endDelayTip:(n,act)=>`Finish delay +${n}d${act?" (active)":""}`,
       doneTip:"Toggle done (check = actual end today; also start if not yet started)",
       ym:(y,m)=>`${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m-1]} ${y}`,
-      stat:(d)=>`<div class="mrows">`+`<div class="mrow" title="Earliest start - latest end / Remaining = weekdays from today to end (excl. weekends; holidays not excluded #75)"><span class="mk">Period: </span><span class="mv">${esc(mdSlash(d.ps))} - ${esc(mdSlash(d.pe))}</span><span class="msub"> (left: ${d.biz}d)</span></div>`+`<div class="mrow" title="Planned total (person-months) / Remaining = planned - actual(EV)"><span class="mk">Effort: </span><span class="mv">${d.planPM}pm</span><span class="msub"> (left: ${d.restPM}pm)</span></div>`+`<div class="mrow" title="Actual% (EV/total) / Planned% (PV/total) | Behind% (plan-actual)"><span class="mk">Progress: </span><span class="mv"><b class="mev">${d.prog}%</b></span><span class="msub"> (plan: ${d.plan}% | behind: <span class="mdl">${d.delay}%</span>)</span></div>`+`${(d.due||d.slip)?`<div class="mrow mdrow" title="Tasks behind schedule. Even when the overall behind% is 0% (ahead-work offsets it), this many items are individually behind (see the red Status column)"><span class="mk">Behind: </span><span class="mv2">${d.due?`<span class="dbadge" title="Overdue = past planned end & not done">⚠ ${d.due} late</span>`:""}${d.slip?`<span class="dbadge" title="Behind on value = plan(PV) > actual(EV)">⚠ ${d.slip} EV</span>`:""}</span></div>`:""}`+`</div>`+`<div class="mstat"><span title="Open file">📄 ${esc(d.fname)}</span> ・ <span title="Projects">${d.pc}P</span> ・ <span title="Today (reference date)">📅 ${esc(mdSlash(d.today))}</span> ・ <span title="Last refreshed">🔄 ${esc(d.upd)}</span><span id="saveMsg" title="Last saved (autosave)">${d.save}</span></div>`,
+      stat:(d)=>`<div class="mrows">`+`<div class="mrow" title="Earliest start - latest end / Remaining = weekdays from today to end (excl. weekends; holidays not excluded #75)"><span class="mk">Period: </span><span class="mv">${esc(mdSlash(d.ps))} - ${esc(mdSlash(d.pe))}</span><span class="msub"> (left: ${d.biz}d)</span></div>`+`<div class="mrow" title="Planned total (person-months) / Remaining = planned - actual(EV)"><span class="mk">Effort: </span><span class="mv">${d.planPM}pm</span><span class="msub"> (left: ${d.restPM}pm)</span></div>`+`<div class="mrow" title="Actual% (EV/total) / Planned% (PV/total) | Behind% (plan-actual)"><span class="mk">Progress: </span><span class="mv"><b class="mev">${d.prog}%</b></span><span class="msub"> (plan: ${d.plan}% | behind: <span class="mdl">${d.delay}%</span>)</span></div>`+`${(d.due||d.slip)?`<div class="mrow mdrow" title="Tasks behind schedule. Even when the overall behind% is 0% (ahead-work offsets it), this many items are individually behind (see the red Status column)"><span class="mk">Behind: </span><span class="mv2">${d.due?`<span class="dbadge" title="Overdue = past planned end & not done">⚠ ${d.due} late</span>`:""}${d.slip?`<span class="dbadge" title="Behind on value = plan(PV) > actual(EV)">⚠ ${d.slip} EV</span>`:""}</span></div>`:""}`+`</div>`+`<div class="mstat"><span title="Open file">${ICN.file} ${esc(d.fname)}</span> ・ <span title="Projects">${d.pc}P</span> ・ <span title="Today (reference date)">${ICN.cal} ${esc(mdSlash(d.today))}</span> ・ <span title="Last refreshed">${ICN.refresh} ${esc(d.upd)}</span><span id="saveMsg" title="Last saved (autosave)">${d.save}</span></div>`,
       confirmDel:name=>`Delete "${name}"? (children will also be deleted)`,
       fileLabel:(name,size)=>`${name}, ${size} bytes`,
       jsonFail:(label,msg)=>`Failed to load JSON${label?` (${label})`:""}: ${msg}`,
@@ -544,17 +559,17 @@
         const inp=(f,val,type)=>type==="date"                                // 編集入力欄（型でテンプレ分岐）
           ?`<span class="date-wrap"><input data-path="${P}" data-field="${f}" type="text" placeholder="MM-DD" value="${esc(val)}">`
             +`<input type="date" class="cal-proxy" tabindex="-1" aria-hidden="true">`
-            +`<button type="button" class="cal-btn" data-cal title="${esc(t("calTip"))}">📅</button></span>`
+            +`<button type="button" class="cal-btn" data-cal title="${esc(t("calTip"))}">${ICN.cal}</button></span>`
           :`<input data-path="${P}" data-field="${f}" type="${type}"${type==="number"?' step="any"':""} value="${esc(val)}">`;
         let info="";
         eCols.forEach(col=>{let v="";
           if(col.key==="no")v=editMode?inp("id",n.id,"text"):esc(n.id);
           else if(col.key==="name"){
             if(editMode){
-              const move=`<span class="movegrp"><button data-act="up" data-path="${P}" title="${esc(t("up"))}">⬆︎</button>`  // ⬆⬇=兄弟内移動（caretの三角と区別）・チェックの前。FE0E=絵文字でなくテキスト字形を強制
-                +`<button data-act="down" data-path="${P}" title="${esc(t("down"))}">⬇︎</button></span>`;
-              const acts=`<span class="acts"><button data-act="add" data-path="${P}" title="${esc(t("addBelow"))}">＋</button>`
-                +`<button data-act="del" data-path="${P}" title="${esc(t("del"))}">✕</button></span>`;
+              const move=`<span class="movegrp"><button data-act="up" data-path="${P}" title="${esc(t("up"))}">${ICN.up}</button>`  // ⬆⬇=兄弟内移動（caretの三角と区別）・チェックの前。FE0E=絵文字でなくテキスト字形を強制
+                +`<button data-act="down" data-path="${P}" title="${esc(t("down"))}">${ICN.down}</button></span>`;
+              const acts=`<span class="acts"><button data-act="add" data-path="${P}" title="${esc(t("addBelow"))}">${ICN.add}</button>`
+                +`<button data-act="del" data-path="${P}" title="${esc(t("del"))}">${ICN.del}</button></span>`;
               const doneCtl=leaf                                              // リーフ=押せる完了チェック／集計ノード=読み取り✓のまま
                 ?`<button class="donechk${done?" on":""}" data-act="done" data-path="${P}" title="${esc(t("doneTip"))}">${done?"✓":""}</button>`
                 :(done?'<span class="done-mark">✓</span>':"");
@@ -678,7 +693,7 @@
       delay:Math.round(totalLoad?Math.max((_pv-_ev)/totalLoad*100,0):0),
       fname:(fileHandle&&fileHandle.name)||curFileName||"\u2014",today:TODAY,
       upd:new Date().toLocaleTimeString(t("locale"),{hour:"2-digit",minute:"2-digit"}),
-      save:saveMsg?"・ 💾 "+esc(saveMsg):""});
+      save:saveMsg?"・ "+ICN.save+" "+esc(saveMsg):""});
     const rEl=document.getElementById("right"), lEl=document.getElementById("left");
     const maxLeft=Math.max(0,ganttW-rEl.clientWidth);
     // 初回/新規読込のみ本日へセンタリング。折りたたみ・更新ではスクロール位置を保持。進捗ビューは横スクロール無し（0固定）
@@ -810,7 +825,7 @@
     }
   }
   // 保存キュー：dirty → デバウンス → 単一チェーンで書込（並走書込・古いスナップショット後勝ちを防ぐ）
-  function setSaveMsg(m){saveMsg=m;const el=document.getElementById("saveMsg");if(el)el.textContent=m?"・ 💾 "+m:"";}
+  function setSaveMsg(m){saveMsg=m;const el=document.getElementById("saveMsg");if(el)el.innerHTML=m?"・ "+ICN.save+" "+esc(m):"";}
   function notice(m){const el=document.getElementById("notice");el.textContent=m;el.classList.toggle("show",!!m);}  // ページ内の案内バー（alertと違いジェスチャーを消費しない）
   function queueSave(){dirty=true;setSaveMsg(t("unsaved"));clearTimeout(saveTimer);saveTimer=setTimeout(flushSaves,SAVE_DEBOUNCE_MS);}
   function flushSaves(){clearTimeout(saveTimer);if(dirty){dirty=false;saveChain=saveChain.then(()=>writeNow());}return saveChain;}
