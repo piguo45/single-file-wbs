@@ -7,7 +7,7 @@
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMCIgY3k9IjEwIiByPSI5LjYiIGZpbGw9IiMxZTJmNjMiLz48cmVjdCB4PSI0LjIiIHk9IjQuOCIgd2lkdGg9IjcuNSIgaGVpZ2h0PSIyLjciIHJ4PSIxIiBmaWxsPSIjN2RhNGY3Ii8+PHJlY3QgeD0iNiIgeT0iOC42IiB3aWR0aD0iOS4zIiBoZWlnaHQ9IjIuNyIgcng9IjEiIGZpbGw9IiNjZGQ5ZjUiLz48cmVjdCB4PSI0LjgiIHk9IjEyLjQiIHdpZHRoPSI1LjgiIGhlaWdodD0iMi43IiByeD0iMSIgZmlsbD0iIzdkYTRmNyIvPjxwb2x5bGluZSBwb2ludHM9IjEyLjgsMy4yIDkuOCw5LjYgMTMuOCwxMS4yIDEwLjgsMTYuOCIgc3Ryb2tlPSIjZTExZDQ4IiBzdHJva2Utd2lkdGg9IjEuOCIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==">
 <style>
   :root{
-    --day-w:22px; --row-h:30px; --header-h:48px; --tab-h:26px; --pv-pad:14px;
+    --day-w:22px; --row-h:30px; --header-h:48px; --tab-h:22px; --pv-pad:14px;
     --border:#d7dbe0; --btn-border:#9aa2ad; --grid:#eceef1; --line:#c5cad3; --weekend:#f4f5f7;  /* line=表の区切り（縦横共通・青帯と色相で区別できるグレー）。--grid はガント日グリッド用 */  /* btn-border=操作物の輪郭（罫線より濃く・WCAG非テキスト3:1寄り） */
     --text:#1f2430; --muted:#6b7280; --ym-fg:#11161f;  /* 年月ラベル: 日付の数字(--text)より一段濃い=月>日の階層 */
     --actual:#2f6fed;  /* 実績は全階層で同色（親もリーフも同じ＝何のバーか一目で分かる・#65）。階層は行背景＋左表で表現 */
@@ -19,7 +19,7 @@
   html,body{margin:0;height:100%}
   body{font-family:-apple-system,"Segoe UI","Hiragino Sans","Noto Sans JP",Meiryo,sans-serif;
        color:var(--text);background:#f7f8fa;display:flex;flex-direction:column;font-size:12px}
-  #topbar{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:8px 12px;
+  #topbar{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:4px 12px;
           background:#fff;flex-wrap:wrap}
   #topbar .title{font-weight:700;font-size:14px;display:flex;align-items:center;gap:5px;line-height:1.15}
   #topbar .tdiv{width:1px;align-self:stretch;margin:5px 2px;background:var(--border)} /* 呼称｜操作の区切り。上下を少し空けて柔らかく */
@@ -33,7 +33,7 @@
   #openBtn.over{background:#eef4ff!important;border:1px dashed var(--accent)!important;color:var(--accent)!important} /* ドラッグ中だけ「落とせる」点線合図 */
   #topbar #langBtn{border-color:transparent;background:transparent;color:var(--muted)} /* 表示設定＝データ操作より弱く・右端 */
   #topbar #langBtn:hover{border-color:var(--btn-border);background:#fff}
-  #stat{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;color:var(--muted);line-height:1.35}
+  #stat{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;color:var(--muted);line-height:1.18}
   #stat b{color:var(--text)}
   #stat .mrows{display:inline-block;text-align:left;font-variant-numeric:tabular-nums}
   #stat .mrow{font-size:12px;color:var(--text);cursor:help}
