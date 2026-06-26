@@ -499,11 +499,11 @@
           ]
         },
         {
-          "id": "M",
+          "id": "3",
           "name": "v1.3 リリース（v1.2 保守期間の機能追加）",
           "children": [
             {
-              "id": "M.3",
+              "id": "3.1",
               "name": "ドキュメント整備（docs/ADR/index）",
               "qty": 1,
               "hours": 8,
@@ -519,7 +519,7 @@
               "note": "PR #77（マージ済 https://github.com/piguo45/single-file-wbs/pull/77 ）documentation-guideの必要最低限に整備：docs/design/system-overview・ADR0001-0007・index自動生成。why未記録は #76 へ集約"
             },
             {
-              "id": "M.4",
+              "id": "3.2",
               "name": "数量/時間の3桁表示（編集）",
               "qty": 1,
               "hours": 2,
@@ -535,7 +535,7 @@
               "note": "PR #78（マージ済 https://github.com/piguo45/single-file-wbs/pull/78 ）編集モードで数量/時間が1桁しか見えない→列を52pxに（スピナー据え置き・編集時のみ）"
             },
             {
-              "id": "M.6",
+              "id": "3.3",
               "name": "子タスク追加（編集）",
               "qty": 1,
               "hours": 8,
@@ -551,7 +551,7 @@
               "note": "#70：https://github.com/piguo45/single-file-wbs/issues/70 ★外部要望(X・初)。完了 PR #82（テスト先行・案Y対称モデル）。リーフ↔集計の変換・＋子・3階層ガード・降格＝保存パス聖域"
             },
             {
-              "id": "M.7",
+              "id": "3.4",
               "name": "ヘッダ〜表の余白を詰める",
               "qty": 1,
               "hours": 2,
@@ -567,7 +567,7 @@
               "note": "#80：https://github.com/piguo45/single-file-wbs/issues/80 完了 PR #81。ヘッダ(操作バー/列見出し)と表の縦余白を詰める。表示層"
             },
             {
-              "id": "M.8",
+              "id": "3.5",
               "name": "ロゴ/バージョン非表示",
               "qty": 1,
               "hours": 4,
@@ -583,7 +583,7 @@
               "note": "#79：https://github.com/piguo45/single-file-wbs/issues/79 ★外部要望(X)。完了 PR #86。タイトルクリックで簡素表示（ロゴ/版/Viewer/タブ名を隠し「WBS」だけ）・localStorage記憶・ツールチップ無し。現場で自作と言える逃げ道"
             },
             {
-              "id": "M.9",
+              "id": "3.6",
               "name": "マイルストーンGUI編集",
               "qty": 1,
               "hours": 6,
@@ -599,7 +599,7 @@
               "note": "#87：https://github.com/piguo45/single-file-wbs/issues/87 完了 PR #88。Zenn外部要望。＋MS/インライン編集（日付・名前・色5プリセット・削除）。ライブ検証で 現在色表示/見切れ/ラベル重なり段組み/右端寄せ も対応"
             },
             {
-              "id": "M.10",
+              "id": "3.7",
               "name": "ツールチップ整備",
               "qty": 1,
               "hours": 3,
@@ -615,7 +615,7 @@
               "note": "#46：https://github.com/piguo45/single-file-wbs/issues/46 完了クローズ。全ボタンtitle・バーの予定/実績ホバー・カーソル統一(#83)で核は達成。残りの些末(MS線ホバー/…慣習)は追わない"
             },
             {
-              "id": "M.11",
+              "id": "3.8",
               "name": "祝日表示＋残り営業日の祝日除外",
               "qty": 1,
               "hours": 6,
@@ -631,7 +631,7 @@
               "note": "#75：https://github.com/piguo45/single-file-wbs/issues/75 トップレベル holidays（文字列/{date,name}）を日付ヘッダ赤字＋土日/祝日列を全高薄ピンク（半透明オーバーレイ）。残り営業日も祝日除外。同梱データ(roadmap/sample)に2026年の日本の祝日18件"
             },
             {
-              "id": "M.12",
+              "id": "3.9",
               "name": "v1.3リリース作業",
               "qty": 1,
               "hours": 4,
@@ -649,11 +649,11 @@
           ]
         },
         {
-          "id": "M2",
+          "id": "4",
           "name": "v1.3 保守期間（〜2026-08-01）",
           "children": [
             {
-              "id": "M2.1",
+              "id": "4.1",
               "name": "ドッグフーディング＋バグ潰し",
               "qty": 1,
               "hours": 40,
@@ -669,7 +669,7 @@
               "note": "実運用でバグを枯らす。潰したバグはイシュー化→WBS項目に紐付け。8/1にv1.3着手を判断。聖域(保存パス/スキーマ)は据え置き"
             },
             {
-              "id": "M2.2",
+              "id": "4.2",
               "name": "読書: The Goal / クリティカルチェーン",
               "qty": 1,
               "hours": 20,
@@ -685,7 +685,7 @@
               "note": "ゴールドラットのTOC2冊。『The Goal』=制約理論／『クリティカルチェーン』=TOCのプロジェクト管理(クリティカルチェーン法・バッファ管理)。#66(依存/クリティカルパス・ビュー)の設計の下地として読む"
             },
             {
-              "id": "M2.3",
+              "id": "4.3",
               "name": "設計理由(why)の要確認",
               "qty": 1,
               "hours": 4,
@@ -703,11 +703,11 @@
           ]
         },
         {
-          "id": "3",
+          "id": "5",
           "name": "v1.4: 依存追加",
           "children": [
             {
-              "id": "3.1",
+              "id": "5.1",
               "name": "依存/CPビュー（最小版）",
               "qty": 1,
               "hours": 12,
@@ -723,7 +723,7 @@
               "note": "#66：https://github.com/piguo45/single-file-wbs/issues/66 _deps カスタムキー＋トポロジカルソート＋CP赤ハイライト(最小版)。新データ前提で重い＝v3に後送（優先度低）"
             },
             {
-              "id": "3.2",
+              "id": "5.2",
               "name": "v1.4リリース作業",
               "qty": 1,
               "hours": 3,
@@ -741,11 +741,11 @@
           ]
         },
         {
-          "id": "4",
+          "id": "6",
           "name": "v1.4以降: 未着手バックログ（予定=未定）",
           "children": [
             {
-              "id": "4.1",
+              "id": "6.1",
               "name": "エラー文言に回復手順",
               "qty": 1,
               "hours": 2,
@@ -761,7 +761,7 @@
               "note": "#45：https://github.com/piguo45/single-file-wbs/issues/45"
             },
             {
-              "id": "4.3",
+              "id": "6.2",
               "name": "描画中フィードバック",
               "qty": 1,
               "hours": 2,
@@ -777,7 +777,7 @@
               "note": "#50：https://github.com/piguo45/single-file-wbs/issues/50"
             },
             {
-              "id": "4.4",
+              "id": "6.3",
               "name": "標準機能ガイド追記",
               "qty": 1,
               "hours": 1,
@@ -793,7 +793,7 @@
               "note": "#51：https://github.com/piguo45/single-file-wbs/issues/51 Ctrl+F/ズーム/印刷をREADMEへ"
             },
             {
-              "id": "4.5",
+              "id": "6.4",
               "name": "無効入力の可視化",
               "qty": 1,
               "hours": 3,
@@ -809,7 +809,7 @@
               "note": "#41：https://github.com/piguo45/single-file-wbs/issues/41"
             },
             {
-              "id": "4.6",
+              "id": "6.5",
               "name": "保存失敗の警告強化",
               "qty": 1,
               "hours": 3,
@@ -825,7 +825,7 @@
               "note": "#42：https://github.com/piguo45/single-file-wbs/issues/42"
             },
             {
-              "id": "4.7",
+              "id": "6.6",
               "name": "凡例＋遅延サマリ",
               "qty": 1,
               "hours": 6,
@@ -841,7 +841,7 @@
               "note": "#40：https://github.com/piguo45/single-file-wbs/issues/40 ヘッダに「遅延N件」"
             },
             {
-              "id": "4.8",
+              "id": "6.7",
               "name": "キーボード基本操作",
               "qty": 1,
               "hours": 4,
@@ -857,7 +857,7 @@
               "note": "#43：https://github.com/piguo45/single-file-wbs/issues/43"
             },
             {
-              "id": "4.9",
+              "id": "6.8",
               "name": "自動更新＋衝突警告",
               "qty": 1,
               "hours": 6,
@@ -873,7 +873,7 @@
               "note": "#58：https://github.com/piguo45/single-file-wbs/issues/58 mtimeポーリング・閲覧自動再読込/編集中警告"
             },
             {
-              "id": "4.10",
+              "id": "6.9",
               "name": "起動時に前回ファイル復帰",
               "qty": 1,
               "hours": 6,
@@ -889,7 +889,7 @@
               "note": "#61：https://github.com/piguo45/single-file-wbs/issues/61 IndexedDBにハンドル保存・ワンクリック復帰・聖域"
             },
             {
-              "id": "4.11",
+              "id": "6.10",
               "name": "Undo/Redo (Ctrl+Z)",
               "qty": 1,
               "hours": 12,
@@ -905,7 +905,7 @@
               "note": "#36：https://github.com/piguo45/single-file-wbs/issues/36"
             },
             {
-              "id": "4.12",
+              "id": "6.11",
               "name": "検索・ジャンプ",
               "qty": 1,
               "hours": 6,
@@ -921,7 +921,7 @@
               "note": "#38：https://github.com/piguo45/single-file-wbs/issues/38 Phase1"
             },
             {
-              "id": "4.13",
+              "id": "6.12",
               "name": "文字サイズ追従(rem)",
               "qty": 1,
               "hours": 8,
@@ -937,7 +937,7 @@
               "note": "#44：https://github.com/piguo45/single-file-wbs/issues/44"
             },
             {
-              "id": "4.14",
+              "id": "6.13",
               "name": "ダークモード",
               "qty": 1,
               "hours": 12,
@@ -953,7 +953,7 @@
               "note": "#39：https://github.com/piguo45/single-file-wbs/issues/39 OS設定に追従"
             },
             {
-              "id": "4.15",
+              "id": "6.14",
               "name": "ガント直接編集",
               "qty": 1,
               "hours": 24,
@@ -969,7 +969,7 @@
               "note": "#57：https://github.com/piguo45/single-file-wbs/issues/57 クリック=実績/ドラッグ=予定・大物・差別化目玉"
             },
             {
-              "id": "4.16",
+              "id": "6.15",
               "name": "単一スクロール化",
               "qty": 1,
               "hours": 24,
@@ -985,7 +985,7 @@
               "note": "#62：https://github.com/piguo45/single-file-wbs/issues/62 縦スクロールの左右同期ズレを根本解消。レイアウト核＋スクロール保持(過去バグ箇所)に触る・聖域寄り"
             },
             {
-              "id": "4.18",
+              "id": "6.16",
               "name": "課題管理表（別の単一HTML）",
               "qty": 1,
               "hours": 8,
@@ -1001,7 +1001,7 @@
               "note": "WBSとは別の単一HTMLツール（WBS Viewerには足さない）。依存ゼロ・file://・JA/EN・編集モード/FSA保存などWBSの資産を流用。列例: 課題ID/件名/起票/担当/優先度/ステータス/期限/対応/備考。置き場所(同リポ併置 or 新リポ)は要決定"
             },
             {
-              "id": "4.20",
+              "id": "6.17",
               "name": "AI実績を _ai キーで記録",
               "qty": 1,
               "hours": 6,
@@ -1017,7 +1017,7 @@
               "note": "#55：https://github.com/piguo45/single-file-wbs/issues/55 AI担当タスクの実績(トークン・実時間・モデル)を _ai カスタムキーで記録する運用実験。担当別の負荷=人間 vs AI の内訳の素地"
             },
             {
-              "id": "4.21",
+              "id": "6.18",
               "name": "組織ズーム（北極星）",
               "qty": 1,
               "hours": 8,
