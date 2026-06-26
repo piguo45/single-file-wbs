@@ -44,11 +44,13 @@ with sync_playwright() as p:
     d = saved()
     check(d["projects"][0]["milestones"][0]["label"] == "中間レビュー", "ラベル編集が保存される")
 
-    # 色＝5プリセットから選択（自由hexでなくスウォッチ）
-    check(pg.eval_on_selector_all('.ms-sw[data-mpath="0/0"]', "e=>e.length") == 5, "色スウォッチが5つ")
+    # 色＝5プリセット＋「現在色」インジケータ（プリセット外の既存色も選択中として先頭に表示）
+    check(pg.eval_on_selector_all('.ms-sw[data-mpath="0/0"]', "e=>e.length") == 6, "現在色(プリセット外#ef4444)＋5プリセット=6スウォッチ")
+    check(pg.eval_on_selector('.ms-sw[data-mpath="0/0"].on', "e=>e.getAttribute('data-color')") == "#ef4444", "現在色が選択中(.on)で表示される")
     pg.click('button.ms-sw[data-mpath="0/0"][data-color="#e69f00"]'); pg.wait_for_timeout(250)
     d = saved()
-    check(d["projects"][0]["milestones"][0]["color"] == "#e69f00", "色プリセット選択が保存される")
+    check(d["projects"][0]["milestones"][0]["color"] == "#e69f00", "プリセット選択が保存される")
+    check(pg.eval_on_selector_all('.ms-sw[data-mpath="0/0"]', "e=>e.length") == 5, "プリセット選択後は5スウォッチ(現在色がプリセット内)")
 
     # 削除（追加した index1 を消す）
     pg.click('button[data-act="delms"][data-mpath="0/1"]'); pg.wait_for_timeout(250)

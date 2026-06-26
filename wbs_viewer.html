@@ -545,8 +545,9 @@
       ?`<span class="${tg?"clk ":""}caret"${tg?` data-collapse="${esc(r.key)}"`:""}>${r.collapsed?"▶":"▼"}</span>`
       :`<span class="caret-sp"></span>`;
 
-    let lrows="",grows="",progRows="",pts=[[xToday,0]];
+    let lrows="",grows="",progRows="",pts=[[xToday,0]],yTop=0;
     rows.forEach((r,idx)=>{
+      let extra=0;   // 編集モードでこの行の下に挿入されるMS編集行の高さ（オーバーレイ高さ/イナズマyに織り込む）
       if(r.kind==="proj"){
         let info="";
         eCols.forEach(col=>{let v="";
@@ -570,9 +571,12 @@
         grows+=`<div class="grow prow">${span}</div>`;
         progRows+=progBarRow(r,true,r.allDone,"prow");
         if(editMode&&!r.collapsed){                                          // 編集モード:プロジェクト直下にMS編集行（GUIでMS追加/編集/削除）
-          (((curProjects[r.pi]||{}).milestones)||[]).forEach((m,mi)=>{const MP=r.pi+"/"+mi;
-            const cur=(m.color||"#cc79a7").toLowerCase();
-            const sw=MS_COLORS.map(c=>`<button class="ms-sw${cur===c?" on":""}" data-act="setmscolor" data-mpath="${MP}" data-color="${c}" style="background:${c}" title="${c}"></button>`).join("");
+          const msArr=((curProjects[r.pi]||{}).milestones)||[]; extra=msArr.length*ROW_H;
+          msArr.forEach((m,mi)=>{const MP=r.pi+"/"+mi;
+            const cur=(isColor(m.color)?String(m.color):"#cc79a7").toLowerCase();
+            const inSet=MS_COLORS.includes(cur);
+            let sw=inSet?"":`<button class="ms-sw on" data-act="setmscolor" data-mpath="${MP}" data-color="${cur}" style="background:${cur}" title="${cur}"></button>`;  // 現在色がプリセット外でも先頭に「選択中」で表示
+            sw+=MS_COLORS.map(c=>`<button class="ms-sw${cur===c?" on":""}" data-act="setmscolor" data-mpath="${MP}" data-color="${c}" style="background:${c}" title="${c}"></button>`).join("");
             lrows+=`<div class="lrow msrow"><span class="ms-edit"><span class="ms-tag">${esc(t("milestone"))}</span>`
               +`<span class="date-wrap"><input data-mpath="${MP}" data-mfield="date" type="text" placeholder="MM-DD" value="${esc(m.date||"")}"><input type="date" class="cal-proxy" tabindex="-1" aria-hidden="true"><button type="button" class="cal-btn" data-cal title="${esc(t("calTip"))}">${ICN.cal}</button></span>`
               +`<input class="ms-label" data-mpath="${MP}" data-mfield="label" type="text" placeholder="${esc(t("msLabelPh"))}" value="${esc(m.label||"")}">`
@@ -656,20 +660,27 @@
           else if(!c.actualStart&&c.planStart&&TODAY>c.planStart)px=centerOf(c.planStart);  // 着手遅延：未着手で予定開始超過
           // 進行中（期限内）は本日線（着手ズレは表示しない）
         }
-        pts.push([clamp(px,0,ganttW),idx*ROW_H+ROW_H/2]);
+        pts.push([clamp(px,0,ganttW),yTop+ROW_H/2]);
       }
+      yTop+=ROW_H+extra;                                                     // この行＋（編集モードなら）MS編集行ぶんを進める
     });
-    const rowsH=rows.length*ROW_H;
+    const rowsH=yTop;
     pts.push([xToday,rowsH]);
 
     let svg="";
     // CSS変数(var(--x))はSVGのプレゼンテーション属性では解決されない → stroke/fill はリテラル色を書く
-    ms.forEach(m=>{if(!isDate(m.date)||m.date<rangeStart||m.date>rangeEnd)return;
-      const x=centerOf(m.date),col=isColor(m.color)?m.color:"#cc79a7";   // 色は#hexのみ許可（注入防止）。既定=Okabe-Ito赤紫(青と安全に分離・#35）
-      const lbl=String(m.label??"");                                     // label欠損でも落とさない
+    // 線は全高で重なってOK。ラベルだけ近接時に重ならないようレーン（縦段）に割り当てる
+    const mvis=ms.filter(m=>isDate(m.date)&&m.date>=rangeStart&&m.date<=rangeEnd)
+      .map(m=>({m,x:centerOf(m.date)})).sort((a,b)=>a.x-b.x);
+    const laneEnd=[];                                                    // 各レーンの直近ラベル右端x
+    mvis.forEach(({m,x})=>{
+      const col=isColor(m.color)?m.color:"#cc79a7";                     // 色は#hexのみ許可（注入防止）。既定=Okabe-Ito赤紫(青と安全に分離・#35）
+      const lbl=String(m.label??""), w=Math.max(28,lbl.length*11);      // label欠損でも落とさない
+      let lane=0; while(lane<laneEnd.length&&laneEnd[lane]>x+2)lane++;   // 直近ラベルが終わってる最初のレーンへ
+      laneEnd[lane]=x+2+w+3;
       svg+=`<line x1="${x}" y1="0" x2="${x}" y2="${rowsH}" stroke="${col}" stroke-width="1.5" stroke-dasharray="4 3"></line>`
-         +`<rect x="${x+2}" y="1" width="${Math.max(28,lbl.length*11)}" height="14" rx="2" fill="${col}"></rect>`
-         +`<text x="${x+5}" y="12" font-size="10" fill="#fff">${esc(lbl)}</text>`;});
+         +`<rect x="${x+2}" y="${1+lane*16}" width="${w}" height="14" rx="2" fill="${col}"></rect>`
+         +`<text x="${x+5}" y="${12+lane*16}" font-size="10" fill="#fff">${esc(lbl)}</text>`;});
     svg+=`<polyline points="${pts.map(p=>p[0].toFixed(1)+","+p[1]).join(" ")}" fill="none" stroke="#e11d48" stroke-width="1.8" stroke-linejoin="round"></polyline>`;
     pts.slice(1,-1).forEach(p=>svg+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1]}" r="2.5" fill="#e11d48"></circle>`);
 
