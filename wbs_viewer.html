@@ -118,6 +118,16 @@
            background:#fff;border-radius:3px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:#445}
   .clk{cursor:pointer}
   #leftHead .h[title]{cursor:help}   /* 押せない説明ツールチップは ?（押せるボタンは pointer のまま）・#46 */
+  .msrow{height:var(--row-h);background:#fbfcfe}                              /* 編集モードのマイルストーン編集行 */
+  .ms-edit{display:flex;align-items:center;gap:3px;width:100%;padding:0 6px;min-width:0}
+  .ms-edit .ms-tag{color:#8a5a78;font-size:11px;font-weight:600;flex:0 0 auto;white-space:nowrap}  /* 行の種別＝マイルストーン */
+  .ms-edit .date-wrap{flex:0 0 auto;width:92px}
+  .ms-edit .ms-label{flex:0 0 auto;width:150px}
+  .ms-edit input{font:inherit;font-size:12px;border:1px solid var(--btn-border);border-radius:3px;padding:2px 4px;min-width:0;color:#445}
+  .ms-edit .ms-sws{display:inline-flex;gap:4px;align-items:center;flex:0 0 auto}  /* 色は5プリセットから選択（CUD安全） */
+  .ms-sw{width:15px;height:15px;border-radius:50%;border:1px solid rgba(0,0,0,.25);cursor:pointer;padding:0;flex:0 0 auto}
+  .ms-sw.on{outline:2px solid #333;outline-offset:1px}
+  .ms-edit button[data-act="delms"]{flex:0 0 auto;border:1px solid var(--btn-border);background:#fff;border-radius:3px;cursor:pointer;color:#445;display:inline-flex;align-items:center;justify-content:center;padding:2px 3px}
   #rightHead{position:sticky;top:0;z-index:4;background:var(--head-bg);border-bottom:2px solid var(--border)}
   #ym{display:flex;height:18px;border-bottom:1px solid var(--border)}
   #ym .seg{border-right:1px solid #c8ccd2;font-size:11px;white-space:nowrap;
@@ -232,6 +242,8 @@
     del:'<svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4.2 4.2 11.8 11.8M11.8 4.2 4.2 11.8"/></svg>',
     leaf:'<svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.34 1.5.34C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/></svg>'
   };
+  // マイルストーンの選べる色（GUIプリセット）。Okabe-Ito由来でCUD安全・実績(青)/遅延(赤)と被らない5色。JSON/AIは引き続き任意#hex可
+  const MS_COLORS=["#cc79a7","#e69f00","#009e73","#d55e00","#56b4e9"];
   // ===== i18n（UI文言の単一ソース。データ(wbs.json)は翻訳しない） =====
   const I18N={
     ja:{
@@ -247,7 +259,7 @@
       addTask:"＋タスク",addTaskTip:"タスクを追加",up:"上へ",down:"下へ",addBelow:"下に作業を追加",del:"削除",
       addChild:"子タスクを追加（入れ子にする）",addChildLabel:"＋子",
       unsaved:"未保存の変更あり…",savedAt:"",saveFail:"保存失敗",savePending:"未保存（外部変更のため保留）",
-      calTip:"カレンダーから選択",
+      calTip:"カレンダーから選択",addMs:"＋MS",addMsTip:"マイルストーンを追加",msLabelPh:"マイルストーン名",milestone:"マイルストーン",
       startDelayTip:n=>`着手遅れ +${n}日`, endDelayTip:(n,act)=>`終了遅延 +${n}日${act?"・進行中":""}`,
       doneTip:"完了/未完了を切替（チェックで実績終了＝今日。未着手なら着手も今日）",
       ym:(y,m)=>`${y}年${m}月`,
@@ -282,7 +294,7 @@
       addTask:"+Task",addTaskTip:"Add a task",up:"Move up",down:"Move down",addBelow:"Add task below",del:"Delete",
       addChild:"Add a child task (nest)",addChildLabel:"+sub",
       unsaved:"Unsaved changes…",savedAt:"",saveFail:"Save failed",savePending:"Not saved (external change)",
-      calTip:"Pick a date",
+      calTip:"Pick a date",addMs:"+MS",addMsTip:"Add a milestone",msLabelPh:"name",milestone:"Milestone",
       startDelayTip:n=>`Start delay +${n}d`, endDelayTip:(n,act)=>`Finish delay +${n}d${act?" (active)":""}`,
       doneTip:"Toggle done (check = actual end today; also start if not yet started)",
       ym:(y,m)=>`${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m-1]} ${y}`,
@@ -542,7 +554,8 @@
           else if(col.key==="name"){
             if(editMode)v=`<span class="nm-wrap">${sym(r,true)}`
               +`<input class="nm-in" data-pname="${r.pi}" type="text" value="${esc(r.name)}" title="${esc(r.name)}">`
-              +`<span class="acts"><button data-act="addtask" data-proj="${r.pi}" title="${esc(t("addTaskTip"))}">${esc(t("addTask"))}</button></span></span>`;
+              +`<span class="acts"><button data-act="addtask" data-proj="${r.pi}" title="${esc(t("addTaskTip"))}">${esc(t("addTask"))}</button>`
+              +`<button data-act="addms" data-proj="${r.pi}" title="${esc(t("addMsTip"))}">${esc(t("addMs"))}</button></span></span>`;
             else v=`<span class="clk" data-collapse="${esc(r.key)}">${sym(r)}<b>${esc(r.name)}</b></span>`;
           }
           else if(col.key==="work")v=esc(fmtLoad(r.load));
@@ -556,6 +569,17 @@
         const span=r.planStart&&r.planEnd?`<div class="pspan" style="left:${xOf(r.planStart)}px;width:${barW(r.planStart,r.planEnd)}px"></div>`:"";
         grows+=`<div class="grow prow">${span}</div>`;
         progRows+=progBarRow(r,true,r.allDone,"prow");
+        if(editMode&&!r.collapsed){                                          // 編集モード:プロジェクト直下にMS編集行（GUIでMS追加/編集/削除）
+          (((curProjects[r.pi]||{}).milestones)||[]).forEach((m,mi)=>{const MP=r.pi+"/"+mi;
+            const cur=(m.color||"#cc79a7").toLowerCase();
+            const sw=MS_COLORS.map(c=>`<button class="ms-sw${cur===c?" on":""}" data-act="setmscolor" data-mpath="${MP}" data-color="${c}" style="background:${c}" title="${c}"></button>`).join("");
+            lrows+=`<div class="lrow msrow"><span class="ms-edit"><span class="ms-tag">${esc(t("milestone"))}</span>`
+              +`<span class="date-wrap"><input data-mpath="${MP}" data-mfield="date" type="text" placeholder="MM-DD" value="${esc(m.date||"")}"><input type="date" class="cal-proxy" tabindex="-1" aria-hidden="true"><button type="button" class="cal-btn" data-cal title="${esc(t("calTip"))}">${ICN.cal}</button></span>`
+              +`<input class="ms-label" data-mpath="${MP}" data-mfield="label" type="text" placeholder="${esc(t("msLabelPh"))}" value="${esc(m.label||"")}">`
+              +`<span class="ms-sws">${sw}</span>`
+              +`<button data-act="delms" data-mpath="${MP}" title="${esc(t("del"))}">${ICN.del}</button></span></div>`;
+            grows+=`<div class="grow msrow"></div>`; progRows+=`<div class="prw msrow"></div>`;});
+        }
       }else{
         const n=r.node,c=n._calc,leaf=n._leaf;
         const inProg=leaf&&c.actualStart&&!c.actualEnd, done=c.allDone;  // 完了=実績終了あり（集計は全子完了）
@@ -884,7 +908,7 @@
   document.getElementById("leftRows").addEventListener("change",e=>{
     const t=e.target; if(t.tagName!=="INPUT")return;
     if(t.classList.contains("cal-proxy")){                                   // 📅の選択/クリアをテキスト入力へ反映（#33/#56）
-      const txt=t.closest(".date-wrap").querySelector("input[data-field]");
+      const txt=t.closest(".date-wrap").querySelector("input[data-field],input[data-mfield]");
       txt.value=t.value;                                                     // 空＝カレンダーの「クリア」もそのまま反映（→null保存）
       txt.dispatchEvent(new Event("change",{bubbles:true}));
       return;
@@ -895,13 +919,19 @@
     }else if(t.hasAttribute("data-pname")){
       const pi=+t.getAttribute("data-pname"); if(!curProjects||!curProjects[pi])return;
       curProjects[pi].name=t.value;
+    }else if(t.hasAttribute("data-mfield")){                                  // マイルストーン編集（GUI経路・#70補足）
+      const[pi,mi]=t.getAttribute("data-mpath").split("/").map(Number);
+      const m=curProjects&&curProjects[pi]&&curProjects[pi].milestones&&curProjects[pi].milestones[mi]; if(!m)return;
+      const f=t.getAttribute("data-mfield");
+      if(f==="date"){const iso=expandDate(t.value,m.date); if(iso===null)return; m.date=iso;}
+      else if(f==="label")m.label=t.value;
     }else return;
     queueSave(); deferRender();
   });
   document.getElementById("leftRows").addEventListener("click",e=>{
     const cb=e.target.closest("button[data-cal]");                           // 📅 → ネイティブカレンダー（表示形式の制御不能を回避し、入力はISO固定 #33）
     if(cb){
-      const w=cb.closest(".date-wrap"), txt=w.querySelector("input[data-field]"), px=w.querySelector(".cal-proxy");
+      const w=cb.closest(".date-wrap"), txt=w.querySelector("input[data-field],input[data-mfield]"), px=w.querySelector(".cal-proxy");
       px.value=isDate(txt.value)?txt.value:(expandDate(txt.value)||"");        // 短縮形"06-01"はfull ISOに展開してからnativeへ（空でないと現在日付/クリアが効かない・#59）
       try{px.showPicker();}catch(_){}
       return;
@@ -913,6 +943,23 @@
       proj.tasks=proj.tasks||[]; proj.tasks.push(newLeaf(mintId(proj.tasks,"")));
       collapsed.delete("P|"+proj.name);                                      // 折りたたみ中でも追加が見えるように展開（#11）
       queueSave(); render(lastData); return;
+    }
+    if(act==="addms"){                                                       // マイルストーン追加（既定:本日/空ラベル/既定色）
+      const pi=+b.getAttribute("data-proj"), proj=curProjects&&curProjects[pi]; if(!proj)return;
+      proj.milestones=proj.milestones||[]; proj.milestones.push({date:todayStr(),label:"",color:"#cc79a7"});
+      collapsed.delete("P|"+proj.name);
+      queueSave(); render(lastData); return;
+    }
+    if(act==="delms"){                                                       // マイルストーン削除
+      const[pi,mi]=b.getAttribute("data-mpath").split("/").map(Number);
+      const proj=curProjects&&curProjects[pi]; if(!proj||!proj.milestones)return;
+      proj.milestones.splice(mi,1);
+      queueSave(); render(lastData); return;
+    }
+    if(act==="setmscolor"){                                                  // 色プリセット選択（5色）
+      const[pi,mi]=b.getAttribute("data-mpath").split("/").map(Number);
+      const m=curProjects&&curProjects[pi]&&curProjects[pi].milestones&&curProjects[pi].milestones[mi]; if(!m)return;
+      m.color=b.getAttribute("data-color"); queueSave(); render(lastData); return;
     }
     const r=resolvePath(b.getAttribute("data-path")), arr=r.parentArray, i=r.index;
     if(!arr||!r.node)return;

@@ -62,7 +62,8 @@ In addition to text / AI editing, `wbs.json` can be **edited directly on screen*
   **progress input** (the leaf's `◀ N% ▶` stepper changes `_progress` by ±10%; setting ≥10% auto-sets `actual.start` to today / returning to 0% keeps the start date),
   **adding leaves** (row `＋` = sibling below; project row `+Task`; ids are minted collision-free; adding to a collapsed project auto-expands it),
   **nesting (add a child task)** (row `＋子`/`+sub`: on a leaf it **becomes a summary node** carrying its values into child 1 = effort/progress unchanged; on a summary it appends a blank child; child id = parent id + suffix; **not shown on the 3rd level** = no 4th level),
-  **deletion** (`✕`, with confirmation, including children; **deleting the last child of a summary returns that child's values to the parent and demotes it to a leaf** = effort is never lost), **reordering among siblings** (`▲▼`).
+  **deletion** (`✕`, with confirmation, including children; **deleting the last child of a summary returns that child's values to the parent and demotes it to a leaf** = effort is never lost), **reordering among siblings** (`▲▼`),
+  **milestone editing** (`＋MS` on the project row / an edit row below it with **date (📅) · name · color · ✕ delete**. Color is **chosen from 5 CUD-safe Okabe-Ito presets** — the GUI uses a picker, not free hex; JSON/AI can still set any `#hex`).
 - **Autosave**: changes are written back to `wbs.json` after a ~0.4 s debounce (File System Access API).
   Writes are serialized through a single queue. Only the internal derived values `_calc`/`_leaf` are stripped (**user keys starting with `_` are preserved**).
   Save status (Unsaved changes… / Saved HH:MM:SS / Save failed) is **always visible at the top right**.
