@@ -676,11 +676,12 @@
     mvis.forEach(({m,x})=>{
       const col=isColor(m.color)?m.color:"#cc79a7";                     // 色は#hexのみ許可（注入防止）。既定=Okabe-Ito赤紫(青と安全に分離・#35）
       const lbl=String(m.label??""), w=Math.max(28,lbl.length*11);      // label欠損でも落とさない
-      let lane=0; while(lane<laneEnd.length&&laneEnd[lane]>x+2)lane++;   // 直近ラベルが終わってる最初のレーンへ
-      laneEnd[lane]=x+2+w+3;
+      const lx=(x+2+w>ganttW)?Math.max(0,x-2-w):x+2;                    // 右端はみ出しならラベルを線の左側へ寄せる（見切れ防止・クランプ）
+      let lane=0; while(lane<laneEnd.length&&laneEnd[lane]>lx-3)lane++;  // 直近ラベルが終わってる最初のレーンへ
+      laneEnd[lane]=lx+w+3;
       svg+=`<line x1="${x}" y1="0" x2="${x}" y2="${rowsH}" stroke="${col}" stroke-width="1.5" stroke-dasharray="4 3"></line>`
-         +`<rect x="${x+2}" y="${1+lane*16}" width="${w}" height="14" rx="2" fill="${col}"></rect>`
-         +`<text x="${x+5}" y="${12+lane*16}" font-size="10" fill="#fff">${esc(lbl)}</text>`;});
+         +`<rect x="${lx}" y="${1+lane*16}" width="${w}" height="14" rx="2" fill="${col}"></rect>`
+         +`<text x="${lx+3}" y="${12+lane*16}" font-size="10" fill="#fff">${esc(lbl)}</text>`;});
     svg+=`<polyline points="${pts.map(p=>p[0].toFixed(1)+","+p[1]).join(" ")}" fill="none" stroke="#e11d48" stroke-width="1.8" stroke-linejoin="round"></polyline>`;
     pts.slice(1,-1).forEach(p=>svg+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1]}" r="2.5" fill="#e11d48"></circle>`);
 
