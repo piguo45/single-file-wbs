@@ -1031,6 +1031,22 @@
                 "end": null
               },
               "note": "#72：https://github.com/piguo45/single-file-wbs/issues/72 wbs.jsonを高度(個人→チーム→部署)ごとに分け、AIで抽象/具象を往復。_sources カスタムキーでファイル間リンク。実装は遠い北極星"
+            },
+            {
+              "id": "6.19",
+              "name": "Zennフィードバック: GUI構造編集",
+              "qty": 1,
+              "hours": 8,
+              "assignee": "ぴぐお",
+              "plan": {
+                "start": null,
+                "end": null
+              },
+              "actual": {
+                "start": null,
+                "end": null
+              },
+              "note": "#90：https://github.com/piguo45/single-file-wbs/issues/90 oyatdsさんのZenn提案の未実装分（タスク追加ボタン集約・上下/親またぎ移動・インデント・No.自動採番）。CLAUDE.md『やらないこと』該当でGUI代替あり＝保留。マイルストーン編集(#87)/入れ子(#70)は実装済"
             }
           ]
         }
