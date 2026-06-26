@@ -127,6 +127,36 @@ with sync_playwright() as p:
     else:
         check(False, "T3 ＋子ボタンが無い＝未実装(RED) [C2]")
 
+    # ===== T4: 複数子のうち1件削除は降格しない（arr.length===0 分岐の誤発火防止） =====
+    setup()
+    delb = pg.query_selector('button[data-act="del"][data-path="0/0/1"]')   # 実装（2子のうち1件）
+    check(delb is not None, "T4 実装(2L子)の削除✕がある")
+    if delb:
+        delb.click(); pg.wait_for_timeout(300)
+        d = saved()
+        ph = node_at(d, 0)                            # フェーズ
+        check(bool(ph.get("children")), "T4 子が残る間はフェーズが集計のまま（降格しない）")
+        kids = ph.get("children") or []
+        check(len(kids) == 1 and kids[0].get("name") == "設計", "T4 残った子は設計のみ")
+        check(round(effort(ph), 3) == 5.0, "T4 実装(4人日)削除で工数=5 [G3]")
+
+    # ===== T5: 元から複数子の集計を最後まで削って降格＝値が親へ戻る・工数/日付不変（案Y対称） =====
+    setup()
+    d1 = pg.query_selector('button[data-act="del"][data-path="0/0/1"]')     # 実装を削除（残=設計1件）
+    if d1:
+        d1.click(); pg.wait_for_timeout(300)
+        d2 = pg.query_selector('button[data-act="del"][data-path="0/0/0"]') # 最後の子=設計を削除→降格
+        check(d2 is not None, "T5 最後の子(設計)の削除✕がある")
+        if d2:
+            d2.click(); pg.wait_for_timeout(300)
+            d = saved()
+            ph = node_at(d, 0)                        # フェーズ
+            check(not ph.get("children"), "T5 最後の子削除でフェーズがリーフに降格 [C2]")
+            check(ph.get("qty") == 1 and ph.get("hours") == 40, "T5 設計の数量/時間が親へ戻る [C2]")
+            check(ph.get("actual", {}).get("start") == "2026-06-02", "T5 実績日付も親へ戻る（日付値の往復）")
+            check(ph.get("_progress") == 40 and ph.get("_memo") == "keep-me", "T5 _progress/_キーも親へ戻る")
+            check(round(effort(ph), 3) == 5.0, "T5 降格後も総工数=5で不変 [G3]")
+
     b.close()
 
 finish(errors)

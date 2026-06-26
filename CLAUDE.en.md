@@ -92,6 +92,9 @@ In addition to text / AI editing, `wbs.json` can be **edited directly on screen*
 ## Data (wbs.json)
 - **Multi-project**. Top level is `projects: [{ name, milestones, tasks }]`.
   - The legacy format (single `{ project, milestones, tasks }`) is **still readable** (backward compatible).
+- **Holidays (optional, top-level)**: `holidays: ["YYYY-MM-DD", { date, name }]` (string form = no name / object form = `name` as tooltip).
+  Shared across all projects. Holiday dates render **red in the date header**, and **weekend + holiday columns are shaded faint pink full-height** in the Gantt. If omitted, only weekends are pink (backward compatible).
+  e.g. `"holidays": [{ "date": "2026-07-20", "name": "Marine Day" }]` (2026 Japanese holidays ship in `wbs_roadmap.json`/`wbs_sample.json`).
 - Each project's `tasks` nest parent-child (max 3 levels). With `children` = summary node; without = leaf (carries effort).
 - Leaf fields:
   ```
@@ -169,7 +172,7 @@ Hand the fuzzy "roughly what %" to an AI. The steps are deterministic:
   - Parent = effort-weighted average of descendant leaves' (progress × effort) (continuous; not snapped).
 - **EVM values**: EV = actual progress / **PV = planned** = what should be done by today `clamp((today−plan.start)/(plan.end−plan.start)×100,0,100)` (linear; parents weighted) /
   **slip = behind = max(PV−EV,0)** (≈ EVM SV). S-curve, non-linear PV, and a cost axis are out of scope (not done).
-- **Header summary (right, #71)**: **Period** (earliest start–latest end / weekdays left, excl. weekends) / **Effort**
+- **Header summary (right, #71)**: **Period** (earliest start–latest end / business days left, **excl. weekends & holidays (`holidays`)** #75) / **Effort**
   (person-months = person-days ÷ 20 working days / remaining) / **Progress** (actual EV% / planned PV% / behind = max(PV−EV,0)%),
   in three rows plus a meta line (📄 filename · N projects · 📅 today · 🔄 refreshed · 💾 saved). Each row has a hover tooltip.
 - **Delay badges (4th summary line "Behind:")**: the overall behind% is textbook EVM (ahead-work offsets it, so it can read 0%);
@@ -195,7 +198,8 @@ Hand the fuzzy "roughly what %" to an AI. The steps are deterministic:
   saved in localStorage; scroll/tree-collapse are preserved; collapsing widens the Gantt. Implemented via the `COL_CG` map + `effCols()` filter (draw cost = column count, not row-dependent).
 - **Plan/Actual date columns have a two-level header**: "Plan" / "Actual" on top, "Start / End" beneath (adjacent columns grouped by the `group` property in `COLS`).
 - Row layer colors: **◆project (with separators) > L1 > L2 > L3**.
-- Gantt: date + weekday (year-month header), weekends shaded; active tasks extend the actual bar to today.
+- Gantt: date + weekday (year-month header), **weekend + holiday (`holidays`) columns shaded faint pink full-height** (`--weekend` / a translucent overlay drawn above the rows; bars/inazuma/today-line stay in front for legibility); active tasks extend the actual bar to today.
+  **Holidays render red in the date header** (Sat = blue / Sun = red convention kept). The holiday name shows as the date cell's tooltip.
   **Plan = unfilled outline (front, 4 sides) / actual = filled bar (behind), overlaid in the same lane** (#65):
   the actual sticking past the outline's right = **finish delay = red bar + "+N"** (number only; always placed at the bar tip; exact value in the tooltip "Finish delay +N d"),
   empty space at the outline's left = **start delay** (actual start is right of the outline's left) — shown by the gap, no dedicated color.
@@ -225,7 +229,8 @@ Avoid the following when entering data (nothing crashes, but display degrades).
 
 | Input (anomaly) | Viewer behavior |
 |---|---|
-| Invalid date (not `"YYYY-MM-DD"`, or **outside 1900–2099**) | **Ignored** (plan/actual/milestones alike). Date cell shows `—` |
+| Invalid date (not `"YYYY-MM-DD"`, or **outside 1900–2099**) | **Ignored** (plan/actual/milestones/holidays alike). Date cell shows `—` |
+| `holidays` not an array, or an element with an invalid date | **Ignored** (no red text / no pink column; no crash) |
 | Milestone without `label` | **Rendered with an empty label** (no crash) |
 | Active but `plan.end` missing | Progress **0%** (avoids NaN) |
 | End < start (inverted period) | Bar not drawn / looks odd |

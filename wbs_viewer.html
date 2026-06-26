@@ -8,7 +8,7 @@
 <style>
   :root{
     --day-w:22px; --row-h:30px; --header-h:48px; --tab-h:22px; --pv-pad:14px;
-    --border:#d7dbe0; --btn-border:#9aa2ad; --grid:#eceef1; --line:#c5cad3; --weekend:#f4f5f7;  /* line=表の区切り（縦横共通・青帯と色相で区別できるグレー）。--grid はガント日グリッド用 */  /* btn-border=操作物の輪郭（罫線より濃く・WCAG非テキスト3:1寄り） */
+    --border:#d7dbe0; --btn-border:#9aa2ad; --grid:#eceef1; --line:#c5cad3; --weekend:#fbeef1;  /* line=表の区切り（縦横共通・青帯と色相で区別できるグレー）。--grid はガント日グリッド用 */  /* btn-border=操作物の輪郭（罫線より濃く・WCAG非テキスト3:1寄り） */
     --text:#1f2430; --muted:#6b7280; --ym-fg:#11161f;  /* 年月ラベル: 日付の数字(--text)より一段濃い=月>日の階層 */
     --actual:#2f6fed;  /* 実績は全階層で同色（親もリーフも同じ＝何のバーか一目で分かる・#65）。階層は行背景＋左表で表現 */
     --proj:#93acdf; --proj-line:#3a5694; --lvl0:#b9cdf2; --lvl1:#e3ebfb;
@@ -134,9 +134,10 @@
            display:flex;align-items:center;justify-content:center;background:#e9ebef;overflow:hidden;color:var(--ym-fg)}
   #dates{display:flex;height:30px}
   #dates .d{width:var(--day-w);border-right:1px solid var(--grid);text-align:center;line-height:1.05;padding-top:3px;font-size:10px}
-  #dates .d.sat{background:#eef3fb}#dates .d.sun{background:#fbeef0}
+  #dates .d.sat,#dates .d.sun,#dates .d.hol{background:var(--weekend)}   /* 土日/祝日のヘッダ＝列(.we)と同じ薄ピンク＝列まるごと統一 */
   #dates .d .dow{font-size:9px;color:var(--muted)}
   #dates .d.sat .dow{color:var(--accent)}#dates .d.sun .dow{color:#dc2626}
+  #dates .d.hol{color:#dc2626}#dates .d.hol .dow{color:#dc2626}   /* 祝日=赤字（日付/曜日）。土=青字・日=赤字の慣習は維持 */
   #dates .d.hl{background:#dbe7ff;font-weight:700}
   #colHl{position:absolute;top:0;bottom:0;width:var(--day-w);pointer-events:none;display:none;z-index:3;
          background:rgba(37,99,235,.08);border-left:1px solid rgba(37,99,235,.35);border-right:1px solid rgba(37,99,235,.35)}
@@ -179,8 +180,7 @@
   .pbar.short{background:#e11d48}
   .prw.done .pbar.act{background:#8c98a6}                                        /* 完了=グレー（ガント実績バーと統一） */
   .prw.thin .pbar{top:11px;height:8px}                                           /* 親=集計=細く（時間ビューの親サマリーバーと同寸） */
-  #ganttBg{position:absolute;top:0;left:0;z-index:0}
-  #ganttBg .we{position:absolute;top:0;bottom:0;background:var(--weekend)}
+  #ganttBg{position:absolute;top:0;left:0;z-index:0}   /* 月の区切り線(.mline)用。土日/祝日の列塗りは行背景に隠れるためオーバーレイ(#overlay rect)で全高に出す */
   #ganttBg .mline{position:absolute;top:0;bottom:0;width:1px;background:#dfe2e6}
   #grows{position:relative;z-index:1}
   .grow{height:var(--row-h);border-bottom:1px solid var(--line);position:relative}
@@ -207,7 +207,7 @@
 </head>
 <body>
   <div id="topbar">
-    <span class="title" id="brandTitle"><svg class="logo" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9.6" fill="#1e2f63"/><rect x="4.2" y="4.8" width="7.5" height="2.7" rx="1" fill="#7da4f7"/><rect x="6" y="8.6" width="9.3" height="2.7" rx="1" fill="#cdd9f5"/><rect x="4.8" y="12.4" width="5.8" height="2.7" rx="1" fill="#7da4f7"/><polyline points="12.8,3.2 9.8,9.6 13.8,11.2 10.8,16.8" stroke="#e11d48" stroke-width="1.8" fill="none"/></svg><span style="display:flex;flex-direction:column"><span class="brand">WBS<span class="brand-x"> Viewer</span></span><span class="ver">v1.2.0</span></span></span>
+    <span class="title" id="brandTitle"><svg class="logo" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9.6" fill="#1e2f63"/><rect x="4.2" y="4.8" width="7.5" height="2.7" rx="1" fill="#7da4f7"/><rect x="6" y="8.6" width="9.3" height="2.7" rx="1" fill="#cdd9f5"/><rect x="4.8" y="12.4" width="5.8" height="2.7" rx="1" fill="#7da4f7"/><polyline points="12.8,3.2 9.8,9.6 13.8,11.2 10.8,16.8" stroke="#e11d48" stroke-width="1.8" fill="none"/></svg><span style="display:flex;flex-direction:column"><span class="brand">WBS<span class="brand-x"> Viewer</span></span><span class="ver">v1.3.0</span></span></span>
     <span class="tdiv"></span>
     <button id="openBtn" class="primary">ファイルを開く<span class="sub">（ドラッグ&amp;ドロップ）</span></button>
     <button id="refreshBtn">更新</button>
@@ -263,7 +263,7 @@
       startDelayTip:n=>`着手遅れ +${n}日`, endDelayTip:(n,act)=>`終了遅延 +${n}日${act?"・進行中":""}`,
       doneTip:"完了/未完了を切替（チェックで実績終了＝今日。未着手なら着手も今日）",
       ym:(y,m)=>`${y}年${m}月`,
-      stat:(d)=>`<div class="mrows">`+`<div class="mrow" title="最早開始 - 最遅終了 ／ 残り＝本日→終了の平日数（土日除外・祝日は除外していません #75）"><span class="mk">期間：</span><span class="mv">${esc(mdSlash(d.ps))} - ${esc(mdSlash(d.pe))}</span><span class="msub">（残り：${d.biz}日）</span></div>`+`<div class="mrow" title="予定合計(人月)＝Σ(数量×時間÷8)÷20 ／ 残り＝予定−実績(EV)"><span class="mk">工数：</span><span class="mv">${d.planPM}人月</span><span class="msub">（残り：${d.restPM}人月）</span></div>`+`<div class="mrow" title="実際%（出来高EV/総） ／ 予定%（あるべきPV/総）｜ 遅れ%（予定−実際）"><span class="mk">進捗：</span><span class="mv"><b class="mev">${d.prog}%</b></span><span class="msub">（予定：${d.plan}% ｜ 遅れ：<span class="mdl">${d.delay}%</span>）</span></div>`+`${(d.due||d.slip)?`<div class="mrow mdrow" title="遅れているタスク数。全体の遅れ%は前倒し分で相殺され0%でも、個別に遅れている件数（状況列の赤で詳細）"><span class="mk">遅延：</span><span class="mv2">${d.due?`<span class="dbadge" title="締切超過＝本日>予定終了かつ未完了">⚠ 期限${d.due}件</span>`:""}${d.slip?`<span class="dbadge" title="出来高遅れ＝予定(PV)>実績(EV)">⚠ 進捗${d.slip}件</span>`:""}</span></div>`:""}`+`</div>`+`<div class="mstat"><span title="開いているファイル">${ICN.file} ${esc(d.fname)}</span> ・ <span title="プロジェクト数">${d.pc}P</span> ・ <span title="本日（進捗・イナズマ線の基準日）">${ICN.cal} ${esc(mdSlash(d.today))}</span> ・ <span title="最後に更新（読込）した時刻">${ICN.refresh} ${esc(d.upd)}</span><span id="saveMsg" title="最後に保存した時刻（自動保存）">${d.save}</span></div>`,
+      stat:(d)=>`<div class="mrows">`+`<div class="mrow" title="最早開始 - 最遅終了 ／ 残り＝本日→終了の営業日数（土日・祝日(holidays)を除外 #75）"><span class="mk">期間：</span><span class="mv">${esc(mdSlash(d.ps))} - ${esc(mdSlash(d.pe))}</span><span class="msub">（残り：${d.biz}日）</span></div>`+`<div class="mrow" title="予定合計(人月)＝Σ(数量×時間÷8)÷20 ／ 残り＝予定−実績(EV)"><span class="mk">工数：</span><span class="mv">${d.planPM}人月</span><span class="msub">（残り：${d.restPM}人月）</span></div>`+`<div class="mrow" title="実際%（出来高EV/総） ／ 予定%（あるべきPV/総）｜ 遅れ%（予定−実際）"><span class="mk">進捗：</span><span class="mv"><b class="mev">${d.prog}%</b></span><span class="msub">（予定：${d.plan}% ｜ 遅れ：<span class="mdl">${d.delay}%</span>）</span></div>`+`${(d.due||d.slip)?`<div class="mrow mdrow" title="遅れているタスク数。全体の遅れ%は前倒し分で相殺され0%でも、個別に遅れている件数（状況列の赤で詳細）"><span class="mk">遅延：</span><span class="mv2">${d.due?`<span class="dbadge" title="締切超過＝本日>予定終了かつ未完了">⚠ 期限${d.due}件</span>`:""}${d.slip?`<span class="dbadge" title="出来高遅れ＝予定(PV)>実績(EV)">⚠ 進捗${d.slip}件</span>`:""}</span></div>`:""}`+`</div>`+`<div class="mstat"><span title="開いているファイル">${ICN.file} ${esc(d.fname)}</span> ・ <span title="プロジェクト数">${d.pc}P</span> ・ <span title="本日（進捗・イナズマ線の基準日）">${ICN.cal} ${esc(mdSlash(d.today))}</span> ・ <span title="最後に更新（読込）した時刻">${ICN.refresh} ${esc(d.upd)}</span><span id="saveMsg" title="最後に保存した時刻（自動保存）">${d.save}</span></div>`,
       confirmDel:name=>`「${name}」を削除します。よろしいですか？（配下も削除）`,
       fileLabel:(name,size)=>`${name}・${size} byte`,
       jsonFail:(label,msg)=>`JSON読み込み失敗${label?`（${label}）`:""}: ${msg}`,
@@ -298,7 +298,7 @@
       startDelayTip:n=>`Start delay +${n}d`, endDelayTip:(n,act)=>`Finish delay +${n}d${act?" (active)":""}`,
       doneTip:"Toggle done (check = actual end today; also start if not yet started)",
       ym:(y,m)=>`${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m-1]} ${y}`,
-      stat:(d)=>`<div class="mrows">`+`<div class="mrow" title="Earliest start - latest end / Remaining = weekdays from today to end (excl. weekends; holidays not excluded #75)"><span class="mk">Period: </span><span class="mv">${esc(mdSlash(d.ps))} - ${esc(mdSlash(d.pe))}</span><span class="msub"> (left: ${d.biz}d)</span></div>`+`<div class="mrow" title="Planned total (person-months) / Remaining = planned - actual(EV)"><span class="mk">Effort: </span><span class="mv">${d.planPM}pm</span><span class="msub"> (left: ${d.restPM}pm)</span></div>`+`<div class="mrow" title="Actual% (EV/total) / Planned% (PV/total) | Behind% (plan-actual)"><span class="mk">Progress: </span><span class="mv"><b class="mev">${d.prog}%</b></span><span class="msub"> (plan: ${d.plan}% | behind: <span class="mdl">${d.delay}%</span>)</span></div>`+`${(d.due||d.slip)?`<div class="mrow mdrow" title="Tasks behind schedule. Even when the overall behind% is 0% (ahead-work offsets it), this many items are individually behind (see the red Status column)"><span class="mk">Behind: </span><span class="mv2">${d.due?`<span class="dbadge" title="Overdue = past planned end & not done">⚠ ${d.due} late</span>`:""}${d.slip?`<span class="dbadge" title="Behind on value = plan(PV) > actual(EV)">⚠ ${d.slip} EV</span>`:""}</span></div>`:""}`+`</div>`+`<div class="mstat"><span title="Open file">${ICN.file} ${esc(d.fname)}</span> ・ <span title="Projects">${d.pc}P</span> ・ <span title="Today (reference date)">${ICN.cal} ${esc(mdSlash(d.today))}</span> ・ <span title="Last refreshed">${ICN.refresh} ${esc(d.upd)}</span><span id="saveMsg" title="Last saved (autosave)">${d.save}</span></div>`,
+      stat:(d)=>`<div class="mrows">`+`<div class="mrow" title="Earliest start - latest end / Remaining = business days from today to end (excl. weekends & holidays #75)"><span class="mk">Period: </span><span class="mv">${esc(mdSlash(d.ps))} - ${esc(mdSlash(d.pe))}</span><span class="msub"> (left: ${d.biz}d)</span></div>`+`<div class="mrow" title="Planned total (person-months) / Remaining = planned - actual(EV)"><span class="mk">Effort: </span><span class="mv">${d.planPM}pm</span><span class="msub"> (left: ${d.restPM}pm)</span></div>`+`<div class="mrow" title="Actual% (EV/total) / Planned% (PV/total) | Behind% (plan-actual)"><span class="mk">Progress: </span><span class="mv"><b class="mev">${d.prog}%</b></span><span class="msub"> (plan: ${d.plan}% | behind: <span class="mdl">${d.delay}%</span>)</span></div>`+`${(d.due||d.slip)?`<div class="mrow mdrow" title="Tasks behind schedule. Even when the overall behind% is 0% (ahead-work offsets it), this many items are individually behind (see the red Status column)"><span class="mk">Behind: </span><span class="mv2">${d.due?`<span class="dbadge" title="Overdue = past planned end & not done">⚠ ${d.due} late</span>`:""}${d.slip?`<span class="dbadge" title="Behind on value = plan(PV) > actual(EV)">⚠ ${d.slip} EV</span>`:""}</span></div>`:""}`+`</div>`+`<div class="mstat"><span title="Open file">${ICN.file} ${esc(d.fname)}</span> ・ <span title="Projects">${d.pc}P</span> ・ <span title="Today (reference date)">${ICN.cal} ${esc(mdSlash(d.today))}</span> ・ <span title="Last refreshed">${ICN.refresh} ${esc(d.upd)}</span><span id="saveMsg" title="Last saved (autosave)">${d.save}</span></div>`,
       confirmDel:name=>`Delete "${name}"? (children will also be deleted)`,
       fileLabel:(name,size)=>`${name}, ${size} bytes`,
       jsonFail:(label,msg)=>`Failed to load JSON${label?` (${label})`:""}: ${msg}`,
@@ -412,7 +412,7 @@
   }
   function leavesOf(tasks){const out=[];(function c(ns){for(const n of ns){if(n._leaf)out.push(n);else c(n.children);}})(tasks||[]);return out;}
   const quantProg=v=>{const n=Number(v);return Number.isFinite(n)?clamp(Math.round(n/10)*10,0,100):null;};
-  function bizDays(from,to){if(!from||!to||to<from)return 0;let n=0;const tot=diff(from,to);for(let i=0;i<=tot;i++){const w=parse(addStr(from,i)).getUTCDay();if(w!==0&&w!==6)n++;}return n;}  // _progress→0/10/…/100に量子化。未設定はnull
+  function bizDays(from,to,hol){if(!from||!to||to<from)return 0;let n=0;const tot=diff(from,to);for(let i=0;i<=tot;i++){const ds=addStr(from,i),w=parse(ds).getUTCDay();if(w!==0&&w!==6&&!(hol&&hol.has(ds)))n++;}return n;}  // 残り営業日＝土日＋祝日(hol)を除外(#75)  // _progress→0/10/…/100に量子化。未設定はnull
   function progStep(pct,editable,path){   // 進捗の ◀ N% ▶ ステッパー。editable=編集モードのリーフ（±10%）／親は読み取り（連続値pct）
     const v=`<span class="v">${Math.round(pct)}%</span>`;
     return editable
@@ -532,13 +532,15 @@
     while(i<totalDays){const key=addStr(rangeStart,i).slice(0,7);let j=i;
       while(j<totalDays&&addStr(rangeStart,j).slice(0,7)===key)j++;
       ym+=`<div class="seg" style="width:${(j-i)*DAY_W}px">${t("ym")(key.slice(0,4),parseInt(key.slice(5,7),10))}</div>`;i=j;}
+    // 祝日（top-level の holidays）。文字列"YYYY-MM-DD" or {date,name} を許容。日付ヘッダ=赤字／列=ピンク（土日と同じ.we）
+    const holMap=new Map();((data&&Array.isArray(data.holidays))?data.holidays:[]).forEach(h=>{const hd=typeof h==="string"?h:(h&&h.date);if(isDate(hd))holMap.set(hd,(h&&h.name)||"");});
     let dc="";
+    for(let k=0;k<totalDays;k++){const dsx=addStr(rangeStart,k),dow=parse(dsx).getUTCDay(),hn=holMap.get(dsx);
+      const cls=(dow===0?"sun":dow===6?"sat":"")+(hn!==undefined?" hol":"");
+      dc+=`<div class="d ${cls}"${hn?` title="${esc(hn)}"`:""}><div>${parse(dsx).getUTCDate()}</div><div class="dow">${t("wd")[dow]}</div></div>`;}
+    let bg="",weX=[];
     for(let k=0;k<totalDays;k++){const dsx=addStr(rangeStart,k),dow=parse(dsx).getUTCDay();
-      const cls=dow===0?"sun":dow===6?"sat":"";
-      dc+=`<div class="d ${cls}"><div>${parse(dsx).getUTCDate()}</div><div class="dow">${t("wd")[dow]}</div></div>`;}
-    let bg="";
-    for(let k=0;k<totalDays;k++){const dsx=addStr(rangeStart,k),dow=parse(dsx).getUTCDay();
-      if(dow===0||dow===6)bg+=`<div class="we" style="left:${k*DAY_W}px;width:${DAY_W}px"></div>`;
+      if(dow===0||dow===6||holMap.has(dsx))weX.push(k*DAY_W);   // 土日/祝日の列x。行背景に隠れるので #ganttBg ではなくオーバーレイ(行の上)で全高に塗る
       if(dsx.slice(8,10)==="01"&&k>0)bg+=`<div class="mline" style="left:${k*DAY_W}px"></div>`;}
 
     const sym=(r,tg)=>r.collapsible                                          // tg=true: caret自体をクリック可能に
@@ -667,7 +669,9 @@
     const rowsH=yTop;
     pts.push([xToday,rowsH]);
 
-    let svg="";
+    // 土日/祝日の列を行の上に薄ピンクで重ねる（#ganttBg背景は不透明な行背景に隠れるため、オーバーレイで全高に効かせる）
+    // 半透明なのでバー/イナズマ/本日線は後段で上書きされ視認性を損なわない
+    let svg=weX.map(x=>`<rect class="we" x="${x}" y="0" width="${DAY_W}" height="${rowsH}" fill="#d94f72" opacity="0.10"></rect>`).join("");
     // CSS変数(var(--x))はSVGのプレゼンテーション属性では解決されない → stroke/fill はリテラル色を書く
     // 線は全高で重なってOK。ラベルだけ近接時に重ならないようレーン（縦段）に割り当てる
     const mvis=ms.filter(m=>isDate(m.date)&&m.date>=rangeStart&&m.date<=rangeEnd)
@@ -729,7 +733,7 @@
     const _pend=maxStr(_pe);
     document.getElementById("stat").innerHTML=t("stat")({
       pc:projects.length,ps:minStr(_ps),pe:_pend,due:_overdue,slip:_behind,
-      biz:(_pend&&_pend>=TODAY)?bizDays(TODAY,_pend):0,
+      biz:(_pend&&_pend>=TODAY)?bizDays(TODAY,_pend,holMap):0,
       planPM:(totalLoad/20).toFixed(1),restPM:(Math.max(totalLoad-_ev,0)/20).toFixed(1),
       prog:Math.round(totalLoad?_ev/totalLoad*100:0),plan:Math.round(totalLoad?_pv/totalLoad*100:0),
       delay:Math.round(totalLoad?Math.max((_pv-_ev)/totalLoad*100,0):0),

@@ -24,6 +24,16 @@ with sync_playwright() as p:
     bw, bh = pg.evaluate("()=>{const r=document.querySelector('.acts button').getBoundingClientRect();return [Math.round(r.width),Math.round(r.height)];}")
     check(bw >= 20 and bh >= 20, f"操作ボタンの寸法 ({bw}x{bh}px)")
 
+    # #78: 編集モードで数量/時間の列を3桁見える幅(52px)に拡幅
+    qw = pg.evaluate("()=>{const i=document.querySelector('input[data-field=\"qty\"]');return i?i.closest('.c').style.width:null;}")
+    hw = pg.evaluate("()=>{const i=document.querySelector('input[data-field=\"hours\"]');return i?i.closest('.c').style.width:null;}")
+    check(qw == "52px" and hw == "52px", f"編集時は数量/時間が52px ({qw}/{hw})")
+
+    # #49: アイコンは単色インラインSVG（emoji/テキスト回帰の検知）。操作ボタンとヘッダ指標の両方
+    nsvg = pg.eval_on_selector_all(".acts button svg", "e=>e.length")
+    check(nsvg > 0, f"操作ボタンにSVGアイコンがある ({nsvg}個)")
+    check(pg.eval_on_selector_all("#stat svg", "e=>e.length") > 0, "ヘッダ指標(ファイル/本日/更新)にSVGアイコンがある")
+
     pg.fill('input[data-field="assignee"]', "X")
     pg.dispatch_event('input[data-field="assignee"]', "change")
     check("未保存" in pg.inner_text("#saveMsg"), "change直後は『未保存の変更あり』")

@@ -5,7 +5,7 @@ from common import VIEWER, granted_handle_init, check, finish
 
 DATA = {"projects": [{
     "name": "P",
-    "milestones": [{"date": "2026-06-20", "label": "レビュー", "color": "#ef4444"}],
+    "milestones": [{"date": "2026-06-20", "label": "レビュー", "color": "#ef4444", "_keep": "meta"}],
     "tasks": [{"id": "1", "name": "作業", "qty": 1, "hours": 8, "assignee": "佐藤",
                "plan": {"start": "2026-06-01", "end": "2026-06-10"},
                "actual": {"start": None, "end": None}, "note": ""}]
@@ -57,6 +57,32 @@ with sync_playwright() as p:
     d = saved()
     check(len(d["projects"][0]["milestones"]) == 1, "delmsで1件に戻る")
     check(d["projects"][0]["milestones"][0]["label"] == "中間レビュー", "残ったMSの内容は保持")
+
+    # カスタム_キー保持（保存replacerが _calc/_leaf のみ除外＝MSのメタは残る）
+    check(d["projects"][0]["milestones"][0].get("_keep") == "meta", "MS上の _キー(_keep)が編集後も保持される")
+
+    # 日付編集の round-trip（data-mfield="date"）。不正日付は保存拒否・正規化(2026/07/01→-)
+    dinp = pg.query_selector('input[data-mpath="0/0"][data-mfield="date"]')
+    dinp.fill("2026/07/01"); dinp.dispatch_event("change"); pg.wait_for_timeout(50)
+    d = saved()
+    check(d["projects"][0]["milestones"][0]["date"] == "2026-07-01", "MS日付が編集・正規化されて保存")
+    dinp = pg.query_selector('input[data-mpath="0/0"][data-mfield="date"]')
+    dinp.fill("2026-13-99"); dinp.dispatch_event("change"); pg.wait_for_timeout(50)
+    d = saved()
+    check(d["projects"][0]["milestones"][0]["date"] == "2026-07-01", "不正日付は無視＝直前の値を保持(保存拒否)")
+
+    # 3件で中間(index1)削除→後続の data-mpath 再採番で残存データが正しく対応
+    pg.click('button[data-act="addms"][data-proj="0"]'); pg.wait_for_timeout(200)
+    pg.query_selector('input[data-mpath="0/1"][data-mfield="label"]').fill("中"); \
+        pg.query_selector('input[data-mpath="0/1"][data-mfield="label"]').dispatch_event("change"); pg.wait_for_timeout(50)
+    pg.click('button[data-act="addms"][data-proj="0"]'); pg.wait_for_timeout(200)
+    pg.query_selector('input[data-mpath="0/2"][data-mfield="label"]').fill("後"); \
+        pg.query_selector('input[data-mpath="0/2"][data-mfield="label"]').dispatch_event("change"); pg.wait_for_timeout(50)
+    d = saved(); check(len(d["projects"][0]["milestones"]) == 3, "MSが3件")
+    pg.click('button[data-act="delms"][data-mpath="0/1"]'); pg.wait_for_timeout(250)   # 中間を削除
+    d = saved()
+    labels = [m["label"] for m in d["projects"][0]["milestones"]]
+    check(labels == ["中間レビュー", "後"], f"中間削除で index がずれず正しく残る 実={labels}")
     b.close()
 
 finish(errors)

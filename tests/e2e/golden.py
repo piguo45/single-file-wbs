@@ -38,10 +38,11 @@ CAPTURE = r"""()=>{
   }));
   const ov = document.querySelector('#overlay');
   const poly = ov ? (ov.querySelector('polyline')||{}).getAttribute?.('points') : null;
-  const ms = ov ? [...ov.querySelectorAll('rect')].map(r=>r.getAttribute('fill')) : [];
+  const ms = ov ? [...ov.querySelectorAll('rect:not(.we)')].map(r=>r.getAttribute('fill')) : [];   // ラベル背景rect=マイルストーン色（列シェード.weは除外）
+  const shade = ov ? [...ov.querySelectorAll('rect.we')].map(r=>+r.getAttribute('x')) : [];          // 土日/祝日の列シェードx（祝日設定で増減）
   const header = [...document.querySelectorAll('#leftHead .h, #leftHead .hgt, #leftHead .hsub')].map(h=>h.innerText);
   // stat(読込時刻)は実行ごとに変わる時計なので撮らない。本日依存(poly/進行中バー)は CLOCK_PIN で固定済み
-  return {rows, bars, delays, poly, ms, header};
+  return {rows, bars, delays, poly, ms, shade, header};
 }"""
 
 # edit モード：入力欄(field→value)と行操作ボタンを凍結（4分割入力など足す前の編集UIを保護）

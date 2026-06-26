@@ -42,7 +42,10 @@ Updating the tool = overwriting `wbs_viewer.html`; your `wbs.json` data is never
 - **Column collapse (outline-style)** — **+/−** above the headers collapse/expand column groups (qty+hours, progress, status, owner, plan, actual, notes) to widen the Gantt
 - **Data is one JSON of facts only** — it holds nothing but plan and actual dates. Effort (qty × hours ÷ 8, person-days), progress, and the inazuma line are all **computed automatically** — no numbers to maintain by hand
 - **Three ways to edit** — in-browser editing (autosave) / any text editor / **AI chat** (ships with `CLAUDE.md` so Claude Code already understands the data format)
+- **Holidays & weekends at a glance** — a top-level `holidays` list renders **holidays in red** in the date header and shades **weekend + holiday columns faint pink full-height**. Remaining-business-days also excludes weekends & holidays (2026 Japanese holidays ship with the sample data)
 - Plus: multiple projects, collapsible tree, milestone lines, completed-task graying with ✓, auto-linked URLs in notes, Japanese/English UI
+
+> **Main additions in v1.3** (the fruits of the v1.2 maintenance period): (1) **add nested child tasks** in edit mode; (2) **edit milestones in the GUI** (date, name, 5-color presets); (3) **plain display that hides the logo/version** (toggle by clicking the title); (4) **holiday settings + pink weekend/holiday columns** (remaining business days exclude holidays too); (5) icon cleanup, tooltips, and edit-column-width polish.
 
 ## Working the screen
 
@@ -55,7 +58,7 @@ Updating the tool = overwriting `wbs_viewer.html`; your `wbs.json` data is never
 
 Turn the **Edit** button ON to edit directly on screen. Changes are **autosaved to `wbs.json` ~0.4 s later** (save status always visible at the top right).
 
-- Available: in-place editing of each field (No./name/qty/hours/owner/dates/notes — **effort is auto-computed**, not editable). Dates accept shorthand like `611`/`6/11`, `YYYY-MM-DD`, or the 📅 picker (this year shows `MM-DD`); add `＋`, delete `✕` (with confirmation), reorder `⬆⬇`
+- Available: in-place editing of each field (No./name/qty/hours/owner/dates/notes — **effort is auto-computed**, not editable). Dates accept shorthand like `611`/`6/11`, `YYYY-MM-DD`, or the 📅 picker (this year shows `MM-DD`); add `＋`, delete `✕` (with confirmation), reorder `⬆⬇`; **add nested child tasks** (a leaf is promoted to a summary node and the child hangs under it, effort preserved); **edit milestones** (`＋MS` on a project row — date, name, 5-color presets)
 - Not supported (edit the JSON or ask the AI): drag-and-drop reordering / moving to a different parent / automatic renumbering
 
 <details>
@@ -93,6 +96,7 @@ The bundled [`CLAUDE.md`](CLAUDE.md) ([English: `CLAUDE.en.md`](CLAUDE.en.md)) t
 
 ```json
 {
+  "holidays": [ "2026-07-20", { "date": "2026-08-11", "name": "Mountain Day" } ],
   "projects": [
     {
       "name": "Project name",
@@ -113,6 +117,7 @@ The bundled [`CLAUDE.md`](CLAUDE.md) ([English: `CLAUDE.en.md`](CLAUDE.en.md)) t
 ```
 
 - Tasks nest up to 3 levels. A node with `children` is a summary node; without it, a leaf (carries effort)
+- `holidays` (optional, top-level) is shared across all projects. String form = no name / `{ date, name }` form = name shown as a tooltip. **Holidays render red in the date header and shade columns pink with weekends**, and are excluded from the remaining-business-days count
 - **Keys starting with `_` are custom keys** you can add freely (`_ai` = AI effort, `_money` = outsourcing cost, `_links` = reference links above; any structure works). The viewer ignores them and in-browser editing preserves them. URLs you want to click belong in `note` (auto-linked)
 - The legacy single-project format `{ "project", "milestones", "tasks" }` is still readable (backward compatible)
 - For exact formulas, operations, and edge-case handling, see [`CLAUDE.en.md`](CLAUDE.en.md) (single source of truth for the spec)
