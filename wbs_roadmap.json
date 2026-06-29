@@ -699,6 +699,43 @@
                 "end": null
               },
               "note": "#76：https://github.com/piguo45/single-file-wbs/issues/76 ドキュメント整備で判明した『how有り/why未記録』4件（3階層上限・進捗10%刻み・工数の固定除数・保存0.4s）の確認チェックリスト"
+            },
+            {
+              "id": "4.4",
+              "name": "状態フィルタ（未着手/進行中/完了）",
+              "note": "#91：https://github.com/piguo45/single-file-wbs/issues/91 完了が積み上がると未完が埋もれる(ドッグフーディング実需)。3状態を既存進捗ロジックで排他分割しON/OFF。STATESテーブル駆動・サマリ不変(誠実なview)・遅延は別軸で対象外",
+              "children": [
+                {
+                  "id": "4.4.1",
+                  "name": "表示行フィルタ基盤＋親残し判定",
+                  "qty": 1,
+                  "hours": 8,
+                  "assignee": "Claude",
+                  "plan": { "start": "2026-06-29", "end": "2026-07-01" },
+                  "actual": { "start": null, "end": null },
+                  "note": "render内の表示行集合フィルタ(STATES)。配下に対象の子が残る親は残す/全部対象外は隠す。描画パスは行数比例の軽微追加"
+                },
+                {
+                  "id": "4.4.2",
+                  "name": "状態トグルUI(操作バー・記憶・i18n)",
+                  "qty": 1,
+                  "hours": 6,
+                  "assignee": "Claude",
+                  "plan": { "start": "2026-07-01", "end": "2026-07-03" },
+                  "actual": { "start": null, "end": null },
+                  "note": "操作バーに3チェック(既定全ON)・localStorage記憶・i18n ja/en両方"
+                },
+                {
+                  "id": "4.4.3",
+                  "name": "ガント高さ同期＋テスト＋doc",
+                  "qty": 1,
+                  "hours": 6,
+                  "assignee": "Claude",
+                  "plan": { "start": "2026-07-03", "end": "2026-07-04" },
+                  "actual": { "start": null, "end": null },
+                  "note": "隠した行をガントからも消す(高さ同期)。e2e追加＋golden/pixel撮り直し＋CLAUDE.md/CLAUDE.en.md同コミット追記"
+                }
+              ]
             }
           ]
         },
