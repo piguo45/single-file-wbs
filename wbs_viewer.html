@@ -34,11 +34,13 @@
   #openBtn.over{background:#eef4ff!important;border:1px dashed var(--accent)!important;color:var(--accent)!important} /* ドラッグ中だけ「落とせる」点線合図 */
   #topbar #langBtn{border-color:transparent;background:transparent;color:var(--muted)} /* 表示設定＝データ操作より弱く・右端 */
   #topbar #langBtn:hover{border-color:var(--btn-border);background:#fff}
+  #filterBar{display:none;align-items:center;gap:10px;padding:5px 12px;border-bottom:1px solid var(--line);background:#f4f6f9} /* フィルタバー(#91)＝左の情報表の真上・表示専用の絞り込み */
+  #filterBar .fbar-ttl{font-size:11px;font-weight:600;color:var(--muted)}
   .sfilter{display:inline-flex;align-items:center;gap:4px}                       /* 状態フィルタ(#91)＝表示専用トグル */
   .sfilter .sf-lbl{font-size:11px;color:var(--muted)}
-  #topbar .sf-btn{padding:2px 8px;font-size:11px;border-radius:11px;color:var(--muted)} /* ピル形＝操作ボタン(角丸6px)と区別 */
-  #topbar .sf-btn.on{background:#eef4ff;border-color:var(--accent);color:var(--accent)} /* 表示中＝薄い青。既定は全ONで穏やか(Deference) */
-  #topbar .sf-btn:not(.on){text-decoration:line-through;opacity:.6}             /* 非表示＝取り消し線で色以外でも分かる(CUD冗長化) */
+  .sf-btn{font:inherit;font-size:11px;padding:2px 8px;border:1px solid var(--btn-border);background:#fff;border-radius:11px;cursor:pointer;color:var(--muted)} /* ピル形＝操作ボタン(角丸6px)と区別 */
+  .sf-btn.on{background:#eef4ff;border-color:var(--accent);color:var(--accent)}  /* 表示中＝薄い青。既定は全ONで穏やか(Deference) */
+  .sf-btn:not(.on){text-decoration:line-through;opacity:.6}                      /* 非表示＝取り消し線で色以外でも分かる(CUD冗長化) */
   #stat{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;color:var(--muted);line-height:1.18}
   #stat b{color:var(--text)}
   #stat .mrows{display:inline-block;text-align:left;font-variant-numeric:tabular-nums}
@@ -220,11 +222,10 @@
     <input id="fallbackInput" type="file" accept=".json,application/json" hidden>
     <span id="stat">未読み込み</span>
     <span class="tdiv"></span>
-    <span id="stateFilter" class="sfilter"></span>
-    <span class="tdiv"></span>
     <button id="langBtn" title="Switch language">EN</button>
   </div>
   <div id="notice"></div>
+  <div id="filterBar"><span class="fbar-ttl"></span><span id="stateFilter" class="sfilter"></span></div>
   <div id="main">
     <div id="empty">「ファイルを開く」または D&amp;D で <b>wbs.json</b> を読み込んでください（Chrome）。</div>
     <div id="left" style="display:none"><div class="htab-sp"></div><div id="leftHead" class="head"></div><div id="leftRows"></div></div>
@@ -262,7 +263,7 @@
       notLoaded:"未読み込み",empty:"「ファイルを開く」または D&D で <b>wbs.json</b> を読み込んでください（Chrome）。",
       colNo:"No.",colTask:"作業項目",colQty:"数量",colHrs:"時間",colWork:"工数",colWorkUnit:"(人日)",colWorkTip:"工数(人日) ＝ 数量 × 時間(h) ÷ 8h（所定労働時間）",colProg:"進捗",colProgTip:"進捗％。編集モードで ◀▶ で±10%。未着手0%・完了100%は自動。親は配下の加重平均",colStat:"状況",colStatTip:"状況＝遅れ/実績/予定（％）。遅れ=赤・実績=青・予定=黒。遅れてない行は実績のみ。予定=本日あるべき%（EVMのPV）・遅れ=予定−実績（SV）",statD:"遅れ",statA:"実績",statP:"予定",viewTime:"時間",viewProg:"進捗",colAsg:"担当",
       colStart:"開始",colEnd:"終了",colNote:"備考",grpPlan:"予定",grpActual:"実績",
-      fLabel:"状態",fTodo:"未着手",fWip:"進行中",fDone:"完了",fTip:"状態で表示/非表示（表示専用・データは変えません）。押下＝表示中",
+      fBar:"絞り込み",fLabel:"状態",fTodo:"未着手",fWip:"進行中",fDone:"完了",fTip:"状態で表示/非表示（表示専用・データは変えません）。押下＝表示中",
       wd:["日","月","火","水","木","金","土"],locale:"ja-JP",active:"進行中",newTask:"新規作業",
       addTask:"＋タスク",addTaskTip:"タスクを追加",up:"上へ",down:"下へ",addBelow:"下に作業を追加",del:"削除",
       addChild:"子タスクを追加（入れ子にする）",addChildLabel:"＋子",
@@ -298,7 +299,7 @@
       notLoaded:"No file loaded",empty:"Load <b>wbs.json</b> via \"Open file\" or drag &amp; drop (Chrome).",
       colNo:"No.",colTask:"Task",colQty:"Qty",colHrs:"Hours",colWork:"Effort",colWorkUnit:"(p-d)",colWorkTip:"Effort (person-days) = qty × time(h) ÷ 8h (standard working hours)",colProg:"Progress",colProgTip:"Progress %. In edit mode, ◀▶ steps ±10%. 0% (not started) and 100% (done) are automatic; parents are the weighted average",colStat:"Status",colStatTip:"Status = behind / actual / planned (%). Behind=red, actual=blue, planned=black. On-track rows show actual only. Planned = what should be done by today (EVM PV); behind = planned − actual (SV)",statD:"B",statA:"A",statP:"P",viewTime:"Time",viewProg:"Progress",colAsg:"Owner",
       colStart:"Start",colEnd:"End",colNote:"Notes",grpPlan:"Plan",grpActual:"Actual",
-      fLabel:"Show",fTodo:"To do",fWip:"In progress",fDone:"Done",fTip:"Show/hide by state (display only — data is never changed). Pressed = shown",
+      fBar:"Filter",fLabel:"State",fTodo:"To do",fWip:"In progress",fDone:"Done",fTip:"Show/hide by state (display only — data is never changed). Pressed = shown",
       wd:["Su","Mo","Tu","We","Th","Fr","Sa"],locale:"en-US",active:"active",newTask:"New task",
       addTask:"+Task",addTaskTip:"Add a task",up:"Move up",down:"Move down",addBelow:"Add task below",del:"Delete",
       addChild:"Add a child task (nest)",addChildLabel:"+sub",
@@ -745,6 +746,7 @@
         +`<div id="colHl"></div><div id="rowHl"></div>`;
     }
     document.getElementById("empty").style.display="none";
+    document.getElementById("filterBar").style.display="flex";   // フィルタバー(#91)：データ読込時のみ表示
     document.getElementById("left").style.display="block";
     document.getElementById("right").style.display="block";
     const _ps=allLeaves.map(n=>n._calc.planStart),_pe=allLeaves.map(n=>n._calc.planEnd);
@@ -1149,6 +1151,7 @@
     document.getElementById("editBtn").title=t("editTitle");
     document.getElementById("empty").innerHTML=t("empty");
     if(!lastData)document.getElementById("stat").textContent=t("notLoaded");
+    document.querySelector("#filterBar .fbar-ttl").textContent=t("fBar");
     renderStateFilter();
   }
   // 状態フィルタUI(#91)：押下式トグル3つ。表示専用＝押すと render() で行を間引くだけ（データ不変）

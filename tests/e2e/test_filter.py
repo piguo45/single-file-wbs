@@ -28,6 +28,12 @@ with sync_playwright() as p:
     nDays = lambda: pg.eval_on_selector_all("#dates .d", "e=>e.length")
     leafNames = lambda: pg.eval_on_selector_all("#leftRows .lrow .nm", "e=>e.map(x=>x.textContent)")
 
+    # 移設(#91/4.4.4)：トグルは左の情報表の真上の「フィルタバー」にある（topbarでない）
+    inBar = pg.eval_on_selector_all("#filterBar .sf-btn", "e=>e.length")
+    inTop = pg.eval_on_selector_all("#topbar .sf-btn", "e=>e.length")
+    check(inBar == 3 and inTop == 0, f"トグル3つがフィルタバー内・topbarに無い ({inBar}/{inTop})")
+    check(pg.is_visible("#filterBar"), "データ読込でフィルタバーが表示される")
+
     # 既定=全ON：proj(1)+工程1+1.1/1.2/1.3+工程2+2.1 = 7行・左右一致
     check(nL() == 7, f"既定全ONで全7行 -> {nL()}")
     check(nL() == nG(), f"左右の行数が一致(高さ同期) {nL()}/{nG()}")

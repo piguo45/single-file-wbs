@@ -702,8 +702,8 @@
             },
             {
               "id": "4.4",
-              "name": "状態フィルタ（未着手/進行中/完了）",
-              "note": "#91：https://github.com/piguo45/single-file-wbs/issues/91 完了が積み上がると未完が埋もれる(ドッグフーディング実需)。3状態を既存進捗ロジックで排他分割しON/OFF。STATESテーブル駆動・サマリ不変(誠実なview)・遅延は別軸で対象外",
+              "name": "フィルタバー：状態(#91)",
+              "note": "#91：https://github.com/piguo45/single-file-wbs/issues/91 完了が積み上がると未完が埋もれる(ドッグフーディング実需)。PMの絞り込み4軸を軽量フィルタバー(左上)で段階導入＝全列Excelは作らない。本ノードは第一弾の状態軸。共通仕様：軸内OR/軸間AND・既定=絞らない・サマリ不変・横軸固定・親残し判定・表示専用でデータ不変",
               "children": [
                 {
                   "id": "4.4.1",
@@ -712,18 +712,18 @@
                   "hours": 8,
                   "assignee": "Claude",
                   "plan": { "start": "2026-06-29", "end": "2026-07-01" },
-                  "actual": { "start": null, "end": null },
-                  "note": "render内の表示行集合フィルタ(STATES)。配下に対象の子が残る親は残す/全部対象外は隠す。描画パスは行数比例の軽微追加"
+                  "actual": { "start": "2026-06-29", "end": null },
+                  "note": "render内の表示行集合フィルタ(STATES)。配下に対象の子が残る親は残す/全部対象外は隠す。描画パスは行数比例の軽微追加。実装済(PRマージで完了)"
                 },
                 {
                   "id": "4.4.2",
-                  "name": "状態トグルUI(操作バー・記憶・i18n)",
+                  "name": "状態トグルUI(記憶・i18n)",
                   "qty": 1,
                   "hours": 6,
                   "assignee": "Claude",
                   "plan": { "start": "2026-07-01", "end": "2026-07-03" },
-                  "actual": { "start": null, "end": null },
-                  "note": "操作バーに3チェック(既定全ON)・localStorage記憶・i18n ja/en両方"
+                  "actual": { "start": "2026-06-29", "end": null },
+                  "note": "3トグル(既定全ON)・localStorage記憶・i18n ja/en両方。実装済(PRマージで完了)"
                 },
                 {
                   "id": "4.4.3",
@@ -732,8 +732,109 @@
                   "hours": 6,
                   "assignee": "Claude",
                   "plan": { "start": "2026-07-03", "end": "2026-07-04" },
+                  "actual": { "start": "2026-06-29", "end": null },
+                  "note": "隠した行をガントからも消す(高さ同期)。test_filter.py(13検証)＋pixel撮り直し＋CLAUDE.md/CLAUDE.en.md追記。実装済(PRマージで完了)"
+                },
+                {
+                  "id": "4.4.4",
+                  "name": "左上のフィルタバーへ移設",
+                  "qty": 1,
+                  "hours": 4,
+                  "assignee": "Claude",
+                  "plan": { "start": "2026-07-04", "end": "2026-07-05" },
+                  "actual": { "start": "2026-06-29", "end": null },
+                  "note": "当初EN横→効く対象(左表)の真上の帯へ移設。後続軸(遅延/担当/期間)の土台。左右の上端高さ合わせに注意"
+                }
+              ]
+            },
+            {
+              "id": "4.5",
+              "name": "フィルタバー：遅延(#92)",
+              "note": "#92：https://github.com/piguo45/single-file-wbs/issues/92 遅れているタスクだけ表示。slip>0(進捗遅れ)or期限超過。状態と別の派生軸・管理の核",
+              "children": [
+                {
+                  "id": "4.5.1",
+                  "name": "遅延判定トグル＋AND結合",
+                  "qty": 1,
+                  "hours": 4,
+                  "assignee": "Claude",
+                  "plan": { "start": "2026-07-06", "end": "2026-07-07" },
                   "actual": { "start": null, "end": null },
-                  "note": "隠した行をガントからも消す(高さ同期)。e2e追加＋golden/pixel撮り直し＋CLAUDE.md/CLAUDE.en.md同コミット追記"
+                  "note": "「遅延のみ」トグル。slip>0 or 本日>予定終了かつ未完。状態軸とAND・記憶・i18n"
+                },
+                {
+                  "id": "4.5.2",
+                  "name": "テスト＋doc",
+                  "qty": 1,
+                  "hours": 2,
+                  "assignee": "Claude",
+                  "plan": { "start": "2026-07-07", "end": "2026-07-08" },
+                  "actual": { "start": null, "end": null },
+                  "note": "e2e(遅延判定・AND結合・親残し)＋golden/pixel確認＋CLAUDE更新"
+                }
+              ]
+            },
+            {
+              "id": "4.6",
+              "name": "フィルタバー：担当(#93)",
+              "note": "#93：https://github.com/piguo45/single-file-wbs/issues/93 担当は可変・多数→ドロップダウン+チェックリスト(複数選択)。ビジョン『担当別の負荷(人vsAI)』に直結",
+              "children": [
+                {
+                  "id": "4.6.1",
+                  "name": "担当ドロップダウンUI(details/summary)",
+                  "qty": 1,
+                  "hours": 6,
+                  "assignee": "Claude",
+                  "plan": { "start": "2026-07-08", "end": "2026-07-10" },
+                  "actual": { "start": null, "end": null },
+                  "note": "標準details/summaryで開閉(モーダル不使用)・チェックリスト・全選択/全解除・件数バッジ"
+                },
+                {
+                  "id": "4.6.2",
+                  "name": "担当の動的収集＋複数選択OR",
+                  "qty": 1,
+                  "hours": 4,
+                  "assignee": "Claude",
+                  "plan": { "start": "2026-07-10", "end": "2026-07-11" },
+                  "actual": { "start": null, "end": null },
+                  "note": "assigneeからユニーク一覧を生成。軸内OR・他軸とAND・記憶・i18n"
+                },
+                {
+                  "id": "4.6.3",
+                  "name": "テスト＋doc",
+                  "qty": 1,
+                  "hours": 3,
+                  "assignee": "Claude",
+                  "plan": { "start": "2026-07-11", "end": "2026-07-12" },
+                  "actual": { "start": null, "end": null },
+                  "note": "e2e(動的収集・複数選択OR・AND結合)＋golden/pixel確認＋CLAUDE更新"
+                }
+              ]
+            },
+            {
+              "id": "4.7",
+              "name": "フィルタバー：期間(#94)",
+              "note": "#94：https://github.com/piguo45/single-file-wbs/issues/94 今日/今週/全期間のセグメント(単一選択)。デイリー/ウィークリーの視野。横軸は固定で行のみ絞る",
+              "children": [
+                {
+                  "id": "4.7.1",
+                  "name": "期間セグメント＋範囲重なり判定",
+                  "qty": 1,
+                  "hours": 6,
+                  "assignee": "Claude",
+                  "plan": { "start": "2026-07-13", "end": "2026-07-14" },
+                  "actual": { "start": null, "end": null },
+                  "note": "今日/今週/全期間。予定or実績が範囲に重なるリーフ。週=本日含む月〜日。他軸とAND・記憶・i18n"
+                },
+                {
+                  "id": "4.7.2",
+                  "name": "テスト＋doc",
+                  "qty": 1,
+                  "hours": 2,
+                  "assignee": "Claude",
+                  "plan": { "start": "2026-07-14", "end": "2026-07-15" },
+                  "actual": { "start": null, "end": null },
+                  "note": "e2e(範囲重なり・週境界・AND結合)＋golden/pixel確認＋CLAUDE更新"
                 }
               ]
             }
