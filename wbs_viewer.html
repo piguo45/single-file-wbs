@@ -53,6 +53,10 @@
   .asg-list label{display:flex;align-items:center;gap:5px;font-size:12px;padding:2px 4px;white-space:nowrap;cursor:pointer}
   .asg-list .asg-acts{display:flex;gap:6px;border-bottom:1px solid var(--line);padding-bottom:4px;margin-bottom:4px}
   .asg-list .asg-acts button{font:inherit;font-size:10px;padding:1px 6px;border:1px solid var(--btn-border);border-radius:4px;background:#fff;cursor:pointer;color:var(--muted)}
+  .sfilter .seg{display:inline-flex;border:1px solid var(--btn-border);border-radius:11px;overflow:hidden}  /* 期間(#94)＝単一選択セグメント（連結ボタン） */
+  .seg-btn{font:inherit;font-size:11px;padding:2px 8px;border:none;border-left:1px solid var(--btn-border);background:#fff;color:var(--muted);cursor:pointer}
+  .seg-btn:first-child{border-left:none}
+  .seg-btn.on{background:var(--accent);color:#fff}                               /* 選択中＝塗り（単一選択を明示） */
   #stat{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;color:var(--muted);line-height:1.18}
   #stat b{color:var(--text)}
   #stat .mrows{display:inline-block;text-align:left;font-variant-numeric:tabular-nums}
@@ -278,6 +282,7 @@
       fBar:"絞り込み",fLabel:"状態",fTodo:"未着手",fWip:"進行中",fDone:"完了",fTip:"状態で表示/非表示（表示専用・データは変えません）。押下＝表示中",
       fDelay:"遅延のみ",fDelayTip:"遅れているタスクだけ表示（進捗遅れ or 期限超過）。状態など他の絞り込みと重ねて効く（表示専用）",
       fAsg:"担当",fAsgAll:"全員",fAsgNone:"(未割当)",fAsgSelAll:"全選択",fAsgClear:"全解除",fAsgTip:"担当で表示/非表示（複数選択・チェックした人だけ表示）。他の絞り込みと重ねて効く（表示専用）",
+      fPerToday:"今日",fPerWeek:"今週",fPerAll:"全期間",fPerTip:"予定or実績がその期間に重なるタスクだけ表示（今週=本日を含む月〜日）。横軸は動かさず行だけ絞る（表示専用）",
       wd:["日","月","火","水","木","金","土"],locale:"ja-JP",active:"進行中",newTask:"新規作業",
       addTask:"＋タスク",addTaskTip:"タスクを追加",up:"上へ",down:"下へ",addBelow:"下に作業を追加",del:"削除",
       addChild:"子タスクを追加（入れ子にする）",addChildLabel:"＋子",
@@ -316,6 +321,7 @@
       fBar:"Filter",fLabel:"State",fTodo:"To do",fWip:"In progress",fDone:"Done",fTip:"Show/hide by state (display only — data is never changed). Pressed = shown",
       fDelay:"Delayed only",fDelayTip:"Show only delayed tasks (behind schedule or past due). Combines with the other filters (display only)",
       fAsg:"Owner",fAsgAll:"All",fAsgNone:"(none)",fAsgSelAll:"All",fAsgClear:"None",fAsgTip:"Show/hide by owner (multi-select; only checked owners shown). Combines with the other filters (display only)",
+      fPerToday:"Today",fPerWeek:"This week",fPerAll:"All",fPerTip:"Show only tasks whose plan or actual overlaps the period (this week = Mon–Sun containing today). The axis doesn't move, only rows are filtered (display only)",
       wd:["Su","Mo","Tu","We","Th","Fr","Sa"],locale:"en-US",active:"active",newTask:"New task",
       addTask:"+Task",addTaskTip:"Add a task",up:"Move up",down:"Move down",addBelow:"Add task below",del:"Delete",
       addChild:"Add a child task (nest)",addChildLabel:"+sub",
@@ -355,8 +361,12 @@
   let delayOnly=false;try{if(localStorage.getItem("wbsDelayOnly")==="1")delayOnly=true;}catch(_){}  // 遅延フィルタ(#92)：既定OFF＝絞らない
   const asgOff=new Set();try{const a=JSON.parse(localStorage.getItem("wbsAsgOff")||"null");if(Array.isArray(a))a.forEach(x=>asgOff.add(x));}catch(_){}  // 担当フィルタ(#93)：非表示にした担当。既定=空=全員表示（新担当は既定で表示＝off集合方式で堅牢）
   let asgList=[];   // データ内のユニーク担当（renderで更新・ドロップダウン用）
+  const PERIODS=[{k:"today",l:"fPerToday"},{k:"week",l:"fPerWeek"},{k:"all",l:"fPerAll"}];  // 期間フィルタ(#94)：単一選択
+  let period="all";try{const p=localStorage.getItem("wbsPeriod");if(p==="today"||p==="week")period=p;}catch(_){}  // 既定=全期間＝絞らない
+  let periodR=null;   // 期間の対象範囲 [start,end]（render毎に設定・"all"はnull）
+  const inPeriod=c=>{ if(!periodR)return true; const ps=periodR[0],pe=periodR[1],ov=(s,e)=>!!s&&!!e&&!(e<ps||s>pe); return ov(c.planStart,c.planEnd)||ov(c.actualStart,c.actualEndEff); };  // 予定 or 実績の期間が範囲に重なる（横軸は動かさず行だけ絞る）
   const isDelayed=(c,today)=>(c.slip||0)>0||isOverdue(c,today);   // 遅れ＝進捗遅れ(slip>0) or 期限超過(本日>予定終了かつ未完)
-  const leafVisible=(c,today,asg)=>STATES.some(s=>stateOn.has(s.k)&&s.test(c))&&(!delayOnly||isDelayed(c,today))&&(!asgOff.size||!asgOff.has(asg||""));  // 状態(#91)×遅延(#92)×担当(#93)＝軸内OR・軸間AND
+  const leafVisible=(c,today,asg)=>STATES.some(s=>stateOn.has(s.k)&&s.test(c))&&(!delayOnly||isDelayed(c,today))&&(!asgOff.size||!asgOff.has(asg||""))&&inPeriod(c);  // 状態(#91)×遅延(#92)×担当(#93)×期間(#94)＝軸内OR・軸間AND
   let leftColBounds=null;                                                  // 左表の列境界キャッシュ（render毎に無効化・mousemoveのreflow回避）
   let dirty=false, saveTimer=null, saveChain=Promise.resolve(), fileMtime=0;  // 保存キュー（直列化＋外部変更検知）
   let pickerNeeded=false;   // file://等：権限APIが使えず保存ピッカー方式が必要（セッション中記憶）
@@ -505,6 +515,8 @@
     const scrollKeep={left:document.getElementById("right").scrollLeft,
                       top:document.getElementById("right").scrollTop};   // スクロール位置を保持
     const TODAY=todayStr();
+    periodR = period==="all" ? null : period==="today" ? [TODAY,TODAY]   // 期間(#94)：週=本日を含む月〜日
+      : (()=>{const mon=addStr(TODAY,-((parse(TODAY).getUTCDay()+6)%7));return [mon,addStr(mon,6)];})();
     const projects=normalizeProjects(data);
     curProjects=projects;                                                    // 編集ハンドラ用に保持
     const cw=c=>editMode&&DATE_FIELDS[c.key]?84:editMode&&c.key==="name"?c.w+72:editMode&&(c.key==="qty"||c.key==="hrs")?52:c.w;  // 編集時：日付列84px(#59)・作業項目+72(操作ボタンぶん名前入力に幅確保)・数量/時間は▲▼を残し3桁見える52px
@@ -1192,7 +1204,9 @@
       asg=`<span class="sf-sep"></span><details class="asg-dd"${wasOpen?" open":""}><summary title="${esc(t("fAsgTip"))}">${esc(t("fAsg"))} <span class="asg-cnt">${esc(badge)}</span></summary>`
         +`<div class="asg-list"><div class="asg-acts"><button type="button" class="asg-all">${esc(t("fAsgSelAll"))}</button><button type="button" class="asg-none">${esc(t("fAsgClear"))}</button></div>${opts}</div></details>`;
     }
-    el.innerHTML=states+delay+asg;
+    const per=`<span class="sf-sep"></span><span class="seg" title="${esc(t("fPerTip"))}">`+   // 期間(#94)：単一選択セグメント
+      PERIODS.map(p=>`<button class="seg-btn${period===p.k?" on":""}" data-period="${esc(p.k)}">${esc(t(p.l))}</button>`).join("")+`</span>`;
+    el.innerHTML=states+delay+asg+per;
   }
   const refreshFilters=()=>{ if(lastData)render(lastData); else renderStateFilter(); };  // renderがフィルタバーも再構築（開閉は保持）
   document.getElementById("stateFilter").addEventListener("click",e=>{
@@ -1203,6 +1217,7 @@
       refreshFilters();
     }else if(e.target.closest(".asg-all")){asgOff.clear();saveAsg();refreshFilters();}                    // 担当:全選択
     else if(e.target.closest(".asg-none")){asgOff.clear();asgList.forEach(a=>asgOff.add(a));saveAsg();refreshFilters();}  // 担当:全解除
+    else if(e.target.closest(".seg-btn")){period=e.target.closest(".seg-btn").getAttribute("data-period");try{localStorage.setItem("wbsPeriod",period);}catch(_){}refreshFilters();}  // 期間(#94)
   });
   document.getElementById("stateFilter").addEventListener("change",e=>{       // 担当(#93)チェックボックス＝複数選択
     const cb=e.target.closest(".asg-cb"); if(!cb)return;

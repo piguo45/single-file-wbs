@@ -123,5 +123,24 @@ with sync_playwright() as p:
     pg.click(".asg-all"); pg.click('.sf-btn[data-state="wip"]'); pg.click('.sf-btn[data-state="todo"]'); pg.wait_for_timeout(150)
     check(nL() == 7, f"担当全員+状態全ONで全復活7行 -> {nL()}")
     check(pg.evaluate("()=>localStorage.getItem('wbsAsgOff')") == "[]", "全員=空off集合がlocalStorageに保存")
+
+    # ===== 期間フィルタ(#94) ===== 本日=月曜(2026-06-15)・週=6/15〜6/21
+    check(pg.eval_on_selector_all(".seg-btn.on", "e=>e.length") == 1, "期間は単一選択(onは1つ)")
+    # 今日(6/15)：実績が本日に重なる1.2だけ(1.1/2.1は過去完了・1.3は未来予定)
+    pg.click('.seg-btn[data-period="today"]'); pg.wait_for_timeout(200)
+    tn = leafNames()
+    check(nL() == 3 and any("進行中" in n for n in tn), f"今日→本日に重なる1.2のみ=3行 -> {nL()} {tn}")
+    check(nL() == nG(), f"期間フィルタ後も左右一致(高さ同期) {nL()}/{nG()}")
+    check(nDays() == daysAll, f"期間フィルタでも横軸は不変(行だけ絞る) {nDays()}/{daysAll}")
+    check(pg.inner_text("#stat") == summaryAll, "期間フィルタでもサマリ不変(誠実なview)")
+    check(pg.evaluate("()=>localStorage.getItem('wbsPeriod')") == "today", "期間がlocalStorageに保存")
+    # 今週(6/15-6/21)：1.2(実績)＋1.3(予定6/18-6/25が重なる)＝4行
+    pg.click('.seg-btn[data-period="week"]'); pg.wait_for_timeout(200)
+    wn = leafNames()
+    check(nL() == 4 and any("未着手" in n for n in wn), f"今週→1.2+1.3(予定が週に重なる)=4行 -> {nL()} {wn}")
+    # 全期間に戻す→全復活
+    pg.click('.seg-btn[data-period="all"]'); pg.wait_for_timeout(150)
+    check(nL() == 7, f"全期間で全復活7行 -> {nL()}")
+    check(pg.evaluate("()=>localStorage.getItem('wbsPeriod')") == "all", "全期間がlocalStorageに保存")
     b.close()
 finish(errors)
