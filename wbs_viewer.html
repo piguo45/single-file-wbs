@@ -44,6 +44,15 @@
   .sfilter .sf-sep{width:1px;align-self:stretch;background:var(--border);margin:2px 2px} /* 状態｜遅延 の軸区切り */
   .sf-btn.sf-solo:not(.on){text-decoration:none;opacity:1}                       /* 単独トグル(遅延)＝"非表示状態"ではないので取り消し線なし */
   .sf-btn.sf-solo.on{background:#fdecef;border-color:#d94f72;color:#b23a5b}       /* 遅延ON＝赤系(意味色:遅延=赤)。形(ピル)＋ラベルでも冗長化 */
+  .asg-dd{position:relative;display:inline-block}                                /* 担当(#93)＝ドロップダウン。可変多数はピルでなくチェックリストに収納 */
+  .asg-dd>summary{list-style:none;cursor:pointer;font:inherit;font-size:11px;padding:2px 8px;border:1px solid var(--btn-border);border-radius:11px;background:#fff;color:var(--muted)}
+  .asg-dd>summary::-webkit-details-marker{display:none}
+  .asg-dd[open]>summary{background:#eef4ff;border-color:var(--accent);color:var(--accent)}
+  .asg-dd .asg-cnt{font-weight:600}
+  .asg-list{position:absolute;top:100%;left:0;z-index:20;margin-top:3px;background:#fff;border:1px solid var(--btn-border);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.12);padding:6px;min-width:120px;max-height:240px;overflow:auto}
+  .asg-list label{display:flex;align-items:center;gap:5px;font-size:12px;padding:2px 4px;white-space:nowrap;cursor:pointer}
+  .asg-list .asg-acts{display:flex;gap:6px;border-bottom:1px solid var(--line);padding-bottom:4px;margin-bottom:4px}
+  .asg-list .asg-acts button{font:inherit;font-size:10px;padding:1px 6px;border:1px solid var(--btn-border);border-radius:4px;background:#fff;cursor:pointer;color:var(--muted)}
   #stat{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;color:var(--muted);line-height:1.18}
   #stat b{color:var(--text)}
   #stat .mrows{display:inline-block;text-align:left;font-variant-numeric:tabular-nums}
@@ -268,6 +277,7 @@
       colStart:"開始",colEnd:"終了",colNote:"備考",grpPlan:"予定",grpActual:"実績",
       fBar:"絞り込み",fLabel:"状態",fTodo:"未着手",fWip:"進行中",fDone:"完了",fTip:"状態で表示/非表示（表示専用・データは変えません）。押下＝表示中",
       fDelay:"遅延のみ",fDelayTip:"遅れているタスクだけ表示（進捗遅れ or 期限超過）。状態など他の絞り込みと重ねて効く（表示専用）",
+      fAsg:"担当",fAsgAll:"全員",fAsgNone:"(未割当)",fAsgSelAll:"全選択",fAsgClear:"全解除",fAsgTip:"担当で表示/非表示（複数選択・チェックした人だけ表示）。他の絞り込みと重ねて効く（表示専用）",
       wd:["日","月","火","水","木","金","土"],locale:"ja-JP",active:"進行中",newTask:"新規作業",
       addTask:"＋タスク",addTaskTip:"タスクを追加",up:"上へ",down:"下へ",addBelow:"下に作業を追加",del:"削除",
       addChild:"子タスクを追加（入れ子にする）",addChildLabel:"＋子",
@@ -305,6 +315,7 @@
       colStart:"Start",colEnd:"End",colNote:"Notes",grpPlan:"Plan",grpActual:"Actual",
       fBar:"Filter",fLabel:"State",fTodo:"To do",fWip:"In progress",fDone:"Done",fTip:"Show/hide by state (display only — data is never changed). Pressed = shown",
       fDelay:"Delayed only",fDelayTip:"Show only delayed tasks (behind schedule or past due). Combines with the other filters (display only)",
+      fAsg:"Owner",fAsgAll:"All",fAsgNone:"(none)",fAsgSelAll:"All",fAsgClear:"None",fAsgTip:"Show/hide by owner (multi-select; only checked owners shown). Combines with the other filters (display only)",
       wd:["Su","Mo","Tu","We","Th","Fr","Sa"],locale:"en-US",active:"active",newTask:"New task",
       addTask:"+Task",addTaskTip:"Add a task",up:"Move up",down:"Move down",addBelow:"Add task below",del:"Delete",
       addChild:"Add a child task (nest)",addChildLabel:"+sub",
@@ -342,8 +353,10 @@
   const stateOn=new Set(STATES.map(s=>s.k));   // 既定=全ON（既存の見た目と一致＝goldenを割らない）
   try{const s=JSON.parse(localStorage.getItem("wbsStateFilter")||"null");if(Array.isArray(s)){stateOn.clear();s.forEach(k=>STATES.some(x=>x.k===k)&&stateOn.add(k));}}catch(_){}
   let delayOnly=false;try{if(localStorage.getItem("wbsDelayOnly")==="1")delayOnly=true;}catch(_){}  // 遅延フィルタ(#92)：既定OFF＝絞らない
+  const asgOff=new Set();try{const a=JSON.parse(localStorage.getItem("wbsAsgOff")||"null");if(Array.isArray(a))a.forEach(x=>asgOff.add(x));}catch(_){}  // 担当フィルタ(#93)：非表示にした担当。既定=空=全員表示（新担当は既定で表示＝off集合方式で堅牢）
+  let asgList=[];   // データ内のユニーク担当（renderで更新・ドロップダウン用）
   const isDelayed=(c,today)=>(c.slip||0)>0||isOverdue(c,today);   // 遅れ＝進捗遅れ(slip>0) or 期限超過(本日>予定終了かつ未完)
-  const leafVisible=(c,today)=>STATES.some(s=>stateOn.has(s.k)&&s.test(c))&&(!delayOnly||isDelayed(c,today));  // 状態(#91)×遅延(#92)＝軸内OR・軸間AND
+  const leafVisible=(c,today,asg)=>STATES.some(s=>stateOn.has(s.k)&&s.test(c))&&(!delayOnly||isDelayed(c,today))&&(!asgOff.size||!asgOff.has(asg||""));  // 状態(#91)×遅延(#92)×担当(#93)＝軸内OR・軸間AND
   let leftColBounds=null;                                                  // 左表の列境界キャッシュ（render毎に無効化・mousemoveのreflow回避）
   let dirty=false, saveTimer=null, saveChain=Promise.resolve(), fileMtime=0;  // 保存キュー（直列化＋外部変更検知）
   let pickerNeeded=false;   // file://等：権限APIが使えず保存ピッカー方式が必要（セッション中記憶）
@@ -503,17 +516,17 @@
       const prog=load?lv.reduce((s,n)=>s+n._calc.progress*n._calc.load,0)/load:0;
       const pvAgg=load?lv.reduce((s,n)=>s+(n._calc.pv||0)*n._calc.load,0)/load:0;
       const pkey="P|"+proj.name, pcol=collapsed.has(pkey);
-      const projHasVisible=lv.some(n=>leafVisible(n._calc,TODAY));            // フィルタ(#91/#92)：配下に表示対象が1つも無ければPJごと隠す
+      const projHasVisible=lv.some(n=>leafVisible(n._calc,TODAY,n.assignee)); // フィルタ(#91/#92/#93)：配下に表示対象が1つも無ければPJごと隠す
       if(lv.length>0&&!projHasVisible)return;                                 // 表示専用＝行を間引くだけ。データ(wbs.json)は不変
       const taskRows=pcol?[]:(function build(ns,depth,prefix){const out=[];   // ボトムアップ：残る子がある親だけ残す（親残し判定）
         for(let ci=0;ci<ns.length;ci++){const n=ns[ci];const path=prefix+"/"+ci;
           const hasCh=!!(n.children&&n.children.length), key="T|"+proj.name+"|"+n.id, col=hasCh&&collapsed.has(key);
           if(hasCh){const kids=col?null:build(n.children,depth+1,path);
-            const vis=col?leavesOf(n.children).some(x=>leafVisible(x._calc,TODAY)):kids.length>0;
+            const vis=col?leavesOf(n.children).some(x=>leafVisible(x._calc,TODAY,x.assignee)):kids.length>0;
             if(!vis)continue;
             out.push({kind:"task",node:n,depth,key,collapsible:true,collapsed:col,terminal:col,path});
             if(!col)out.push(...kids);
-          }else{ if(!leafVisible(n._calc,TODAY))continue;
+          }else{ if(!leafVisible(n._calc,TODAY,n.assignee))continue;
             out.push({kind:"task",node:n,depth,key,collapsible:false,collapsed:false,terminal:true,path});}
         }return out;})(proj.tasks||[],0,String(pi));
       rows.push({kind:"proj",name:proj.name,pi,load,prog,progress:prog,pv:pvAgg,slip:Math.max(pvAgg-prog,0),key:pkey,collapsible:true,collapsed:pcol,terminal:pcol,
@@ -754,6 +767,8 @@
     }
     document.getElementById("empty").style.display="none";
     document.getElementById("filterBar").style.display="flex";   // フィルタバー(#91)：データ読込時のみ表示
+    asgList=[...new Set(allLeaves.map(n=>n.assignee||""))].sort();  // 担当(#93)：データからユニーク担当を動的収集
+    renderStateFilter();                                          // 担当リスト反映のためrender毎に再構築（開閉状態は保持）
     document.getElementById("left").style.display="block";
     document.getElementById("right").style.display="block";
     const _ps=allLeaves.map(n=>n._calc.planStart),_pe=allLeaves.map(n=>n._calc.planEnd);
@@ -1161,25 +1176,39 @@
     document.querySelector("#filterBar .fbar-ttl").textContent=t("fBar");
     renderStateFilter();
   }
-  // フィルタバーUI(#91状態＋#92遅延)：押下式トグル。表示専用＝押すと render() で行を間引くだけ（データ不変）
+  // フィルタバーUI(#91状態＋#92遅延＋#93担当)：表示専用＝押すと render() で行を間引くだけ（データ不変）
+  const saveAsg=()=>{try{localStorage.setItem("wbsAsgOff",JSON.stringify([...asgOff]));}catch(_){}};
   function renderStateFilter(){
     const el=document.getElementById("stateFilter"); if(!el)return;
+    const dd=el.querySelector(".asg-dd"), wasOpen=!!(dd&&dd.open);            // ドロップダウンの開閉状態を保持
     const states=`<span class="sf-lbl">${esc(t("fLabel"))}</span>`+
       STATES.map(s=>`<button class="sf-btn${stateOn.has(s.k)?" on":""}" data-state="${esc(s.k)}" title="${esc(t("fTip"))}">${esc(t("f"+s.k[0].toUpperCase()+s.k.slice(1)))}</button>`).join("");
     const delay=`<span class="sf-sep"></span><button class="sf-btn sf-solo${delayOnly?" on":""}" data-delay="1" title="${esc(t("fDelayTip"))}">${esc(t("fDelay"))}</button>`;
-    el.innerHTML=states+delay;
-  }
-  document.getElementById("stateFilter").addEventListener("click",e=>{
-    const b=e.target.closest(".sf-btn"); if(!b)return;
-    if(b.hasAttribute("data-delay")){                                         // 遅延のみ(#92)＝単独トグル
-      delayOnly=!delayOnly;
-      try{localStorage.setItem("wbsDelayOnly",delayOnly?"1":"0");}catch(_){}
-    }else{                                                                    // 状態(#91)＝複数選択
-      const k=b.getAttribute("data-state");
-      stateOn.has(k)?stateOn.delete(k):stateOn.add(k);
-      try{localStorage.setItem("wbsStateFilter",JSON.stringify([...stateOn]));}catch(_){}
+    let asg="";
+    if(asgList.length){                                                       // 担当(#93)：データ内担当のチェックリスト（複数選択・軸内OR）
+      const sel=asgList.filter(a=>!asgOff.has(a));
+      const badge=sel.length===asgList.length?t("fAsgAll"):sel.length===1?(sel[0]||t("fAsgNone")):`(${sel.length})`;
+      const opts=asgList.map(a=>`<label><input type="checkbox" class="asg-cb" data-asg="${esc(a)}"${asgOff.has(a)?"":" checked"}><span>${esc(a||t("fAsgNone"))}</span></label>`).join("");
+      asg=`<span class="sf-sep"></span><details class="asg-dd"${wasOpen?" open":""}><summary title="${esc(t("fAsgTip"))}">${esc(t("fAsg"))} <span class="asg-cnt">${esc(badge)}</span></summary>`
+        +`<div class="asg-list"><div class="asg-acts"><button type="button" class="asg-all">${esc(t("fAsgSelAll"))}</button><button type="button" class="asg-none">${esc(t("fAsgClear"))}</button></div>${opts}</div></details>`;
     }
-    renderStateFilter(); if(lastData)render(lastData);
+    el.innerHTML=states+delay+asg;
+  }
+  const refreshFilters=()=>{ if(lastData)render(lastData); else renderStateFilter(); };  // renderがフィルタバーも再構築（開閉は保持）
+  document.getElementById("stateFilter").addEventListener("click",e=>{
+    const sf=e.target.closest(".sf-btn");
+    if(sf){
+      if(sf.hasAttribute("data-delay")){delayOnly=!delayOnly;try{localStorage.setItem("wbsDelayOnly",delayOnly?"1":"0");}catch(_){}}  // 遅延(#92)
+      else{const k=sf.getAttribute("data-state");stateOn.has(k)?stateOn.delete(k):stateOn.add(k);try{localStorage.setItem("wbsStateFilter",JSON.stringify([...stateOn]));}catch(_){}}  // 状態(#91)
+      refreshFilters();
+    }else if(e.target.closest(".asg-all")){asgOff.clear();saveAsg();refreshFilters();}                    // 担当:全選択
+    else if(e.target.closest(".asg-none")){asgOff.clear();asgList.forEach(a=>asgOff.add(a));saveAsg();refreshFilters();}  // 担当:全解除
+  });
+  document.getElementById("stateFilter").addEventListener("change",e=>{       // 担当(#93)チェックボックス＝複数選択
+    const cb=e.target.closest(".asg-cb"); if(!cb)return;
+    const a=cb.getAttribute("data-asg");
+    cb.checked?asgOff.delete(a):asgOff.add(a);
+    saveAsg(); refreshFilters();
   });
   document.getElementById("langBtn").addEventListener("click",()=>{
     lang=lang==="ja"?"en":"ja";

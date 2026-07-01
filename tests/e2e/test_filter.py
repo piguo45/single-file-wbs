@@ -8,11 +8,11 @@ from common import VIEWER, check, finish, leaf, granted_handle_init, new_page
 # 1.2は予定終了6/12<本日6/15かつ未完=overdue（遅延フィルタで唯一残る）
 DATA = {"projects": [{"name": "P", "milestones": [], "tasks": [
     {"id": "1", "name": "工程1", "children": [
-        leaf("1.1", "完了タスク",   ps="2026-06-01", pe="2026-06-05", as_="2026-06-01", ae="2026-06-10"),
-        leaf("1.2", "進行中タスク", ps="2026-06-08", pe="2026-06-12", as_="2026-06-12"),
-        leaf("1.3", "未着手タスク", ps="2026-06-18", pe="2026-06-25")]},
+        leaf("1.1", "完了タスク",   asg="佐藤", ps="2026-06-01", pe="2026-06-05", as_="2026-06-01", ae="2026-06-10"),
+        leaf("1.2", "進行中タスク", asg="田中", ps="2026-06-08", pe="2026-06-12", as_="2026-06-12"),
+        leaf("1.3", "未着手タスク", asg="佐藤", ps="2026-06-18", pe="2026-06-25")]},
     {"id": "2", "name": "工程2", "children": [
-        leaf("2.1", "完了のみ", ps="2026-06-01", pe="2026-06-05", as_="2026-06-01", ae="2026-06-09")]}]}]}
+        leaf("2.1", "完了のみ", asg="鈴木", ps="2026-06-01", pe="2026-06-05", as_="2026-06-01", ae="2026-06-09")]}]}]}
 
 errors = []
 with sync_playwright() as p:
@@ -95,5 +95,33 @@ with sync_playwright() as p:
     pg.click('.sf-btn[data-delay="1"]'); pg.click('.sf-btn[data-state="wip"]'); pg.click('.sf-btn[data-state="done"]'); pg.wait_for_timeout(150)
     check(nL() == 7, f"遅延OFF+状態全ONで全復活7行 -> {nL()}")
     check(pg.evaluate("()=>localStorage.getItem('wbsDelayOnly')") == "0", "遅延OFFがlocalStorageに保存")
+
+    # ===== 担当フィルタ(#93) ===== (開始状態:状態全ON・遅延OFF・担当全員=7行)
+    pg.click(".asg-dd > summary"); pg.wait_for_timeout(150)   # ドロップダウンを開く
+    asgs = pg.eval_on_selector_all(".asg-list .asg-cb", "e=>e.map(x=>x.getAttribute('data-asg'))")
+    check(sorted(asgs) == ["佐藤", "田中", "鈴木"], f"担当を動的収集(重複なし) -> {asgs}")
+    # 佐藤を外す→1.1/1.3(佐藤)が消える。工程2(2.1鈴木)は残る
+    pg.click('.asg-cb[data-asg="佐藤"]'); pg.wait_for_timeout(200)
+    check(nL() == 5, f"佐藤OFF→proj+工程1+1.2+工程2+2.1=5行 -> {nL()}")
+    check(nL() == nG(), f"担当フィルタ後も左右一致(高さ同期) {nL()}/{nG()}")
+    check(nDays() == daysAll, f"担当フィルタでも横軸不変 {nDays()}/{daysAll}")
+    check(pg.inner_text("#stat") == summaryAll, "担当フィルタでもサマリ不変(誠実なview)")
+    saved = pg.evaluate("()=>localStorage.getItem('wbsAsgOff')")
+    check(saved and "佐藤" in saved, f"担当OFFがlocalStorageに保存 -> {saved}")
+    check(pg.is_visible(".asg-list"), "チェック後もドロップダウンは開いたまま(開閉保持)")
+    # 全解除→0行、田中だけチェック→3行(軸内OR/複数選択の基礎)
+    pg.click(".asg-none"); pg.wait_for_timeout(150)
+    check(nL() == 0, f"担当全解除で0行(graceful) -> {nL()}")
+    pg.click('.asg-cb[data-asg="田中"]'); pg.wait_for_timeout(200)
+    check(nL() == 3, f"田中のみ→proj+工程1+1.2=3行 -> {nL()}")
+    # 軸間AND：担当=佐藤のみ × 状態=完了のみ → 1.1(佐藤+done)だけ＝proj+工程1+1.1=3行
+    pg.click(".asg-none"); pg.click('.asg-cb[data-asg="佐藤"]'); pg.wait_for_timeout(120)
+    pg.click('.sf-btn[data-state="wip"]'); pg.click('.sf-btn[data-state="todo"]'); pg.wait_for_timeout(150)
+    adn = leafNames()
+    check(nL() == 3 and any("完了タスク" in n for n in adn), f"軸間AND:佐藤∩完了=1.1→3行 -> {nL()} {adn}")
+    # 全員に戻す＋状態全ON→全復活(表示専用＝担当データは消えていない)
+    pg.click(".asg-all"); pg.click('.sf-btn[data-state="wip"]'); pg.click('.sf-btn[data-state="todo"]'); pg.wait_for_timeout(150)
+    check(nL() == 7, f"担当全員+状態全ONで全復活7行 -> {nL()}")
+    check(pg.evaluate("()=>localStorage.getItem('wbsAsgOff')") == "[]", "全員=空off集合がlocalStorageに保存")
     b.close()
 finish(errors)

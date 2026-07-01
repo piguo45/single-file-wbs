@@ -786,8 +786,8 @@
                   "hours": 6,
                   "assignee": "Claude",
                   "plan": { "start": "2026-07-08", "end": "2026-07-10" },
-                  "actual": { "start": null, "end": null },
-                  "note": "標準details/summaryで開閉(モーダル不使用)・チェックリスト・全選択/全解除・件数バッジ"
+                  "actual": { "start": "2026-07-01", "end": null },
+                  "note": "標準details/summaryで開閉(モーダル不使用)・チェックリスト・全選択/全解除・件数バッジ。実装済(PRマージで完了)"
                 },
                 {
                   "id": "4.6.2",
@@ -796,8 +796,8 @@
                   "hours": 4,
                   "assignee": "Claude",
                   "plan": { "start": "2026-07-10", "end": "2026-07-11" },
-                  "actual": { "start": null, "end": null },
-                  "note": "assigneeからユニーク一覧を生成。軸内OR・他軸とAND・記憶・i18n"
+                  "actual": { "start": "2026-07-01", "end": null },
+                  "note": "assigneeからユニーク一覧を生成(空=未割当)。軸内OR・他軸とAND・off集合方式で記憶・i18n。実装済(PRマージで完了)"
                 },
                 {
                   "id": "4.6.3",
@@ -806,8 +806,8 @@
                   "hours": 3,
                   "assignee": "Claude",
                   "plan": { "start": "2026-07-11", "end": "2026-07-12" },
-                  "actual": { "start": null, "end": null },
-                  "note": "e2e(動的収集・複数選択OR・AND結合)＋golden/pixel確認＋CLAUDE更新"
+                  "actual": { "start": "2026-07-01", "end": null },
+                  "note": "e2e(動的収集・複数選択OR・AND結合・開閉保持)＋pixel撮り直し＋CLAUDE.md/en更新。実装済(PRマージで完了)"
                 }
               ]
             },
