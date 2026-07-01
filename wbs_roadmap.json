@@ -759,8 +759,8 @@
                   "hours": 4,
                   "assignee": "Claude",
                   "plan": { "start": "2026-07-06", "end": "2026-07-07" },
-                  "actual": { "start": null, "end": null },
-                  "note": "「遅延のみ」トグル。slip>0 or 本日>予定終了かつ未完。状態軸とAND・記憶・i18n"
+                  "actual": { "start": "2026-07-01", "end": null },
+                  "note": "「遅延のみ」トグル。slip>0 or 本日>予定終了かつ未完。状態軸とAND・記憶・i18n。実装済(PRマージで完了)"
                 },
                 {
                   "id": "4.5.2",
@@ -769,8 +769,8 @@
                   "hours": 2,
                   "assignee": "Claude",
                   "plan": { "start": "2026-07-07", "end": "2026-07-08" },
-                  "actual": { "start": null, "end": null },
-                  "note": "e2e(遅延判定・AND結合・親残し)＋golden/pixel確認＋CLAUDE更新"
+                  "actual": { "start": "2026-07-01", "end": null },
+                  "note": "e2e(遅延判定・AND結合・親残し)＋pixel撮り直し＋CLAUDE.md/en更新。実装済(PRマージで完了)"
                 }
               ]
             },
