@@ -561,7 +561,7 @@
 
     // --- レンジ・横軸計算 ---
     // 横軸は全データ基準で固定（状態フィルタ#91で行を隠しても時間軸は動かさない＝残ったバーが動いて見えない）
-    function buildRange(allLeaves){
+    function buildRange(){
       const ds=[];
       allLeaves.forEach(n=>{const c=n._calc;[c.planStart,c.planEnd,c.actualStart,c.actualEndEff].forEach(d=>d&&ds.push(d));});
       projects.forEach(p=>(p.milestones||[]).forEach(m=>isDate(m.date)&&ds.push(m.date)));
@@ -575,7 +575,7 @@
 
     // --- 左ヘッダ構築 ---
     // 列メタ(eCols)からHTML文字列 lh を生成。グループ/caret/凡例/単位など列種別に応じて分岐
-    function buildLeftHeader(eCols, rows){
+    function buildLeftHeader(){
       let lh="";
       for(let i=0;i<eCols.length;i++){const c=eCols[i];
         if(c.group){let sub="",w=0,j=i;
@@ -600,7 +600,7 @@
 
     // --- 日付ヘッダ構築 ---
     // 年月セグメント(ym)・日付セル(dc)・月区切り線(bg)・土日/祝日のx座標(weX)・祝日マップ(holMap)
-    function buildDateHeader(rangeStart, totalDays){
+    function buildDateHeader(){
       // 祝日（top-level の holidays）。文字列"YYYY-MM-DD" or {date,name} を許容。日付ヘッダ=赤字／列=ピンク（土日と同じ.we）
       const holMap=new Map();((data&&Array.isArray(data.holidays))?data.holidays:[]).forEach(h=>{const hd=typeof h==="string"?h:(h&&h.date);if(isDate(hd))holMap.set(hd,(h&&h.name)||"");});
       let ym="",dc="",bg="",weX=[],i=0;
@@ -618,7 +618,7 @@
     // --- 行本体構築 ---
     // 左表(lrows)・ガント行(grows)・進捗行(progRows)・イナズマ点(pts) を一括生成
     // sym はクロージャ内で定義（caret HTML の単一ソース）
-    function buildRowBodies(rows, eCols, xToday, ganttW, xOf, centerOf, barW){
+    function buildRowBodies(){
       const sym=(r,tg)=>r.collapsible                                          // tg=true: caret自体をクリック可能に
         ?`<span class="${tg?"clk ":""}caret"${tg?` data-collapse="${esc(r.key)}"`:""}>${r.collapsed?"▶":"▼"}</span>`
         :`<span class="caret-sp"></span>`;
@@ -746,7 +746,7 @@
 
     // --- SVGオーバーレイ構築 ---
     // 土日/祝日シェード・マイルストーン線・イナズマ線/点 を1つのSVG文字列として生成
-    function buildSvgOverlay(ms, weX, ganttW, rowsH, pts, rangeStart, rangeEnd, centerOf){
+    function buildSvgOverlay(){
       // 土日/祝日の列を行の上に薄ピンクで重ねる（#ganttBg背景は不透明な行背景に隠れるため、オーバーレイで全高に効かせる）
       // 半透明なのでバー/イナズマ/本日線は後段で上書きされ視認性を損なわない
       let svg=weX.map(x=>`<rect class="we" x="${x}" y="0" width="${DAY_W}" height="${rowsH}" fill="#d94f72" opacity="0.10"></rect>`).join("");
@@ -771,7 +771,7 @@
 
     // --- DOM注入＋表示切替 ---
     // 構築済みのHTML文字列を一括でDOMに書き込み、タブ・ビュー切替も行う
-    function injectDOM(lh, lrows, grows, progRows, ym, dc, bg, svg, eCols, ganttW, rowsH){
+    function injectDOM(){
       $("leftHead").innerHTML=lh;
       $("leftRows").innerHTML=lrows+`<div id="leftColHl"></div>`; leftColBounds=null;  // 列幅が変わりうるので境界キャッシュを無効化
       $("left").style.width=eCols.reduce((s,c)=>s+cw(c),0)+"px";
@@ -809,7 +809,7 @@
 
     // --- サマリ更新＋スクロール復元 ---
     // フィルタバー・担当リスト・右上サマリを更新し、スクロール位置を復元する
-    function updateSummaryAndScroll(allLeaves, holMap, totalLoad, ganttW, xToday){
+    function updateSummaryAndScroll(){
       $("empty").style.display="none";
       $("filterBar").style.display="flex";   // フィルタバー(#91)：データ読込時のみ表示
       asgList=[...new Set(allLeaves.map(n=>n.assignee||""))].sort();  // 担当(#93)：データからユニーク担当を動的収集
@@ -843,15 +843,15 @@
     const {ms, rows} = buildRows();
     const allLeaves=[]; projects.forEach(p=>allLeaves.push(...leavesOf(p.tasks)));
     const totalLoad=allLeaves.reduce((s,n)=>s+n._calc.load,0);
-    const {rangeStart,rangeEnd,totalDays,ganttW,xOf,centerOf,barW,xToday} = buildRange(allLeaves);
+    const {rangeStart,rangeEnd,totalDays,ganttW,xOf,centerOf,barW,xToday} = buildRange();
     const eCols=effCols();
-    const lh = buildLeftHeader(eCols, rows);
-    const {holMap, ym, dc, bg, weX} = buildDateHeader(rangeStart, totalDays);
-    const {lrows, grows, progRows, pts, rowsH} = buildRowBodies(rows, eCols, xToday, ganttW, xOf, centerOf, barW);
+    const lh = buildLeftHeader();
+    const {holMap, ym, dc, bg, weX} = buildDateHeader();
+    const {lrows, grows, progRows, pts, rowsH} = buildRowBodies();
     pts.push([xToday,rowsH]);
-    const svg = buildSvgOverlay(ms, weX, ganttW, rowsH, pts, rangeStart, rangeEnd, centerOf);
-    injectDOM(lh, lrows, grows, progRows, ym, dc, bg, svg, eCols, ganttW, rowsH);
-    updateSummaryAndScroll(allLeaves, holMap, totalLoad, ganttW, xToday);
+    const svg = buildSvgOverlay();
+    injectDOM();
+    updateSummaryAndScroll();
   }
   function applyData(data,isNew){
     lastData=data;
