@@ -1,0 +1,60 @@
+{
+  "projects": [
+    {
+      "name": "リスケ履歴デモ",
+      "milestones": [],
+      "tasks": [
+        {
+          "id": "1",
+          "name": "開発",
+          "children": [
+            {
+              "id": "1.1",
+              "name": "3回リスケ（開始も終了も）",
+              "qty": 1, "hours": 16, "assignee": "田中",
+              "plan": { "start": "2026-06-17", "end": "2026-06-21" },
+              "actual": { "start": null, "end": null },
+              "note": "",
+              "_planLog": [
+                { "at": "2026-06-05T09:00:00Z",
+                  "from": { "start": "2026-06-01", "end": "2026-06-05" },
+                  "to":   { "start": "2026-06-06", "end": "2026-06-10" },
+                  "by": "manual", "reason": "要件追加" },
+                { "at": "2026-06-09T09:00:00Z",
+                  "from": { "start": "2026-06-06", "end": "2026-06-10" },
+                  "to":   { "start": "2026-06-11", "end": "2026-06-15" },
+                  "by": "manual", "reason": "#504の遅延で後ろ倒し" },
+                { "at": "2026-06-14T09:00:00Z",
+                  "from": { "start": "2026-06-11", "end": "2026-06-15" },
+                  "to":   { "start": "2026-06-17", "end": "2026-06-21" },
+                  "by": "manual", "reason": "レビュー差戻し" }
+              ]
+            },
+            {
+              "id": "1.2",
+              "name": "終了のみ1回リスケ",
+              "qty": 1, "hours": 8, "assignee": "佐藤",
+              "plan": { "start": "2026-06-16", "end": "2026-06-25" },
+              "actual": { "start": null, "end": null },
+              "note": "",
+              "_planLog": [
+                { "at": "2026-06-12T09:00:00Z",
+                  "from": { "start": "2026-06-16", "end": "2026-06-22" },
+                  "to":   { "start": "2026-06-16", "end": "2026-06-25" },
+                  "by": "claude-opus-4-8", "reason": "結合範囲の拡大" }
+              ]
+            },
+            {
+              "id": "1.3",
+              "name": "リスケなし",
+              "qty": 1, "hours": 8, "assignee": "鈴木",
+              "plan": { "start": "2026-06-22", "end": "2026-06-25" },
+              "actual": { "start": null, "end": null },
+              "note": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

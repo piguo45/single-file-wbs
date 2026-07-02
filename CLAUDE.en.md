@@ -63,7 +63,8 @@ In addition to text / AI editing, `wbs.json` can be **edited directly on screen*
   **adding leaves** (row `＋` = sibling below; project row `+Task`; ids are minted collision-free; adding to a collapsed project auto-expands it),
   **nesting (add a child task)** (row `＋子`/`+sub`: on a leaf it **becomes a summary node** carrying its values into child 1 = effort/progress unchanged; on a summary it appends a blank child; child id = parent id + suffix; **not shown on the 3rd level** = no 4th level),
   **deletion** (`✕`, with confirmation, including children; **deleting the last child of a summary returns that child's values to the parent and demotes it to a leaf** = effort is never lost), **reordering among siblings** (`▲▼`),
-  **milestone editing** (`＋MS` on the project row / an edit row below it with **date (📅) · name · color · ✕ delete**. Color is **chosen from 5 CUD-safe Okabe-Ito presets** — the GUI uses a picker, not free hex; JSON/AI can still set any `#hex`).
+  **milestone editing** (`＋MS` on the project row / an edit row below it with **date (📅) · name · color · ✕ delete**. Color is **chosen from 5 CUD-safe Okabe-Ito presets** — the GUI uses a picker, not free hex; JSON/AI can still set any `#hex`),
+  **reschedule (#96)** (the leaf row's `↷` = record the plan change into `_planLog` and auto-update the plan; see `_planLog` in the Data section).
 - **Autosave**: changes are written back to `wbs.json` after a ~0.4 s debounce (File System Access API).
   Writes are serialized through a single queue. Only the internal derived values `_calc`/`_leaf` are stripped (**user keys starting with `_` are preserved**).
   Save status (Unsaved changes… / Saved HH:MM:SS / Save failed) is **always visible at the top right**.
@@ -122,7 +123,9 @@ In addition to text / AI editing, `wbs.json` can be **edited directly on screen*
   ```
   - `at` = change timestamp (ISO) / `from`·`to` = `plan` before·after / `by` = `"manual"` or a model name / `reason` = why (e.g. the upstream `#N`).
   - **AI-native**: "push B back by a week and record the reason = delay in #504" → the AI updates `plan` and appends one line to `_planLog`.
-  - Scope: recording is **limited to changes of `plan`** (no full-field audit log). Display (hover history, baseline ghost bar) is a separate viewer feature.
+  - **GUI path (edit mode)**: the leaf row's **↷ button → form (new start / new end / optional reason) → "Confirm"** = appending to `_planLog` + **auto-updating `plan`** + autosave, all in one click (structurally prevents half-done updates). **Editing a date cell directly is a "correction" = not recorded** (intent is separated from rescheduling). No-change confirms are not recorded. There is no GUI deletion of history (fix via JSON if needed).
+  - **Display**: only the **latest change** gets a **trail** (dotted gray; bottom lane = start moved, top lane = end moved — the lane tells the change type). The task name gets **↷N** (count of valid entries). **Click ↷N or a rescheduled plan bar** to open a balloon = full history (when, from → to, ±N days, reason) plus vs-baseline. Click outside / Esc closes. No extra rows; gantt ink stays constant no matter how many reschedules. Trail origins are automatically included in the time-axis range. Broken entries are ignored (graceful; `tests/異常_リスケ履歴.json`).
+  - Scope: recording is **limited to changes of `plan`** (no full-field audit log).
 - `milestones: [{ date, label, color }]` is optional per project.
 
 ## Adding / updating data (how-to)

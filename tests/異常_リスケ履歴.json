@@ -1,0 +1,44 @@
+{
+  "projects": [
+    {
+      "name": "リスケ履歴の壊れ入力",
+      "milestones": [],
+      "tasks": [
+        {
+          "id": "1",
+          "name": "工程",
+          "children": [
+            {
+              "id": "1.1",
+              "name": "壊れ要素混在（有効1件だけ数える）",
+              "qty": 1, "hours": 8, "assignee": "佐藤",
+              "plan": { "start": "2026-06-16", "end": "2026-06-20" },
+              "actual": { "start": null, "end": null },
+              "note": "",
+              "_planLog": [
+                "文字列の要素",
+                123,
+                null,
+                {},
+                { "from": "オブジェクトでないfrom", "to": { "start": "2026-06-16", "end": "2026-06-20" } },
+                { "at": "2026-06-10T09:00:00Z",
+                  "from": { "start": "not-a-date", "end": null },
+                  "to":   { "start": "2026-06-16", "end": "2026-06-20" },
+                  "reason": "日付が壊れた有効形（トレイルは出ない・件数には数える）" }
+              ]
+            },
+            {
+              "id": "1.2",
+              "name": "_planLogが配列でない",
+              "qty": 1, "hours": 8, "assignee": "田中",
+              "plan": { "start": "2026-06-18", "end": "2026-06-22" },
+              "actual": { "start": null, "end": null },
+              "note": "",
+              "_planLog": "not-an-array"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

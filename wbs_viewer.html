@@ -128,7 +128,8 @@
   .movegrp{margin-right:3px}   /* 移動⬆⬇はチェックの前・横並び独立（穂先が大きく視認しやすい・＋✕と同サイズ） */
   .acts button,.movegrp button{font:inherit;font-size:12px;line-height:1.3;padding:2px 6px;border:1px solid var(--btn-border);
                background:#fff;border-radius:3px;cursor:pointer;color:#445;display:inline-flex;align-items:center;justify-content:center}
-  .movegrp button,.acts button[data-act="add"],.acts button[data-act="addchild"],.acts button[data-act="del"]{padding:2px 3px}  /* アイコンボタンは横を詰めて名前入力に幅を返す（＋タスクのテキストは据え置き）・#49 */
+  .movegrp button,.acts button[data-act="add"],.acts button[data-act="addchild"],.acts button[data-act="del"],.acts button[data-act="resched"]{padding:2px 3px}  /* アイコンボタンは横を詰めて名前入力に幅を返す（＋タスクのテキストは据え置き）・#49 */
+  .bar.plan[data-rslog]{cursor:pointer}  /* リスケ済みバー=クリックで履歴(#96) */
   .ic{width:13px;height:13px;flex:0 0 auto}                 /* インラインSVGアイコン（currentColor）・#49 */
   .acts .ic,.movegrp .ic{width:12px;height:12px}            /* 行内アイコンは少し小さく */
   #stat .mstat .ic{width:12px;height:12px;vertical-align:-2px;margin-right:1px}  /* メタ行は文字に揃える */
@@ -217,6 +218,26 @@
   .bar.actual.cut{border-radius:3px 0 0 3px}                                 /* 超過がある時は右角を直角に（赤と連続させる） */
   .bar.over{top:8px;height:14px;background:#e11d48;border-radius:0 3px 3px 0;z-index:1}                   /* 終了遅延=予定終了の超過分（枠の右を超える分・赤+N）。着手遅れは枠の左が空くことで表現＝専用バー不要 */
   .delay{position:absolute;top:-4px;font-size:10px;font-weight:700;color:#e11d48;white-space:nowrap;z-index:4;line-height:16px}  /* バーの上に出す＝本日付近を走るイナズマ線と被らない。枠(z2)より前面 */
+  /* リスケ履歴(#96)＝直近の修正1本のトレイル。下レーン=開始の変化・上レーン=終了の変化（出る場所で修正種別が読める） */
+  .rs-seg{position:absolute;top:26px;border-top:2px dotted #9aa2ad;z-index:1}
+  .rs-seg.top{top:2px}
+  .rs-knob{position:absolute;top:24px;width:5px;height:5px;border-radius:50%;background:#9aa2ad;z-index:1}
+  .rs-knob.top{top:0}
+  .rs-arr{position:absolute;top:19px;color:#9aa2ad;font-weight:700;font-size:12px;line-height:1;z-index:1}
+  .rs-arr.top{top:-3px}
+  .rsbdg{font:inherit;font-size:10px;padding:0 4px;margin-left:4px;border:none;background:transparent;color:#6b7280;cursor:pointer;border-radius:4px}  /* ↷N=修正回数。クリックで吹き出し */
+  .rsbdg:hover{background:#eef4ff;color:var(--accent)}
+  #rsPop,#rsForm{position:fixed;z-index:60;background:#fff;border:1px solid var(--btn-border);border-radius:8px;
+    box-shadow:0 3px 12px rgba(0,0,0,.18);padding:8px 12px;font-size:12px;line-height:1.7;color:var(--text);max-width:560px}
+  #rsPop .rsp-row{white-space:nowrap}
+  #rsPop .rsp-base{border-top:1px solid var(--line);margin-top:4px;padding-top:4px;color:var(--muted)}
+  #rsForm{border-color:var(--accent)}
+  #rsForm input{font:inherit;border:1px solid #c3c9d2;border-radius:4px;padding:1px 5px}
+  #rsForm input.rs-date{width:92px}
+  #rsForm input.rs-reason{width:260px}
+  #rsForm .rs-btns{display:flex;gap:8px;margin-top:6px}
+  #rsForm .rs-ok{font:inherit;background:var(--accent);color:#fff;border:none;border-radius:5px;padding:3px 12px;cursor:pointer}
+  #rsForm .rs-cancel{font:inherit;background:#fff;border:1px solid var(--btn-border);border-radius:5px;padding:3px 10px;cursor:pointer}
   .grow.done .bar.actual{background:#8c98a6}  /* 完了=グレーのバー（青=進行中／グレー=完了 を一目で。状態の区別・色覚に依らない輝度差） */
   .grow.done .bar.over{background:#b07480} .grow.done .delay{color:#b07480}  /* 完了済みの終了遅延=くすんだ赤（確定・過去）。進行中の鮮赤=まだ増える緊急、と区別 */
   /* 親(集約)=細いサマリーバー（予定枠も実績も遅延も薄く）＝形で葉と区別・色は増やさない・CUD安全・全情報も保持 */
@@ -286,6 +307,10 @@
       fDelay:"遅延のみ",fDelayTip:"遅れているタスクだけ表示（進捗遅れ or 期限超過）。状態など他の絞り込みと重ねて効く（表示専用）",
       fAsg:"担当",fAsgAll:"全員",fAsgNone:"(未割当)",fAsgSelAll:"全選択",fAsgClear:"全解除",fAsgTip:"担当で表示/非表示（複数選択・チェックした人だけ表示）。他の絞り込みと重ねて効く（表示専用）",
       fPerToday:"今日",fPerWeek:"今週",fPerAll:"全期間",fPerTip:"予定or実績がその期間に重なるタスクだけ表示（今週=本日を含む月〜日）。横軸は動かさず行だけ絞る（表示専用）",
+      rsTip:"予定変更の履歴（クリックで表示）",rsBtnTip:"リスケ（予定変更を履歴に記録して予定を更新）",
+      rsTitle:n=>`変更履歴（${n}回）`,rsBy:"由来",rsOrig:"当初",rsNow:"現在",rsVs:"当初比",rsD:n=>`${n>0?"+":""}${n}日`,
+      rsForm:"リスケ（履歴に記録）",rsCur:"現予定",rsNewS:"新開始",rsNewE:"新終了",rsReasonPh:"由来（任意・例: #504の遅延で後ろ倒し）",
+      rsOk:"リスケ確定",rsCancel:"取消",rsBadDate:"日付が不正です（YYYY-MM-DD・1900〜2099年）",
       wd:["日","月","火","水","木","金","土"],locale:"ja-JP",active:"進行中",newTask:"新規作業",
       addTask:"＋タスク",addTaskTip:"タスクを追加",up:"上へ",down:"下へ",addBelow:"下に作業を追加",del:"削除",
       addChild:"子タスクを追加（入れ子にする）",addChildLabel:"＋子",
@@ -325,6 +350,10 @@
       fDelay:"Delayed only",fDelayTip:"Show only delayed tasks (behind schedule or past due). Combines with the other filters (display only)",
       fAsg:"Owner",fAsgAll:"All",fAsgNone:"(none)",fAsgSelAll:"All",fAsgClear:"None",fAsgTip:"Show/hide by owner (multi-select; only checked owners shown). Combines with the other filters (display only)",
       fPerToday:"Today",fPerWeek:"This week",fPerAll:"All",fPerTip:"Show only tasks whose plan or actual overlaps the period (this week = Mon–Sun containing today). The axis doesn't move, only rows are filtered (display only)",
+      rsTip:"Reschedule history (click to show)",rsBtnTip:"Reschedule (record the change in history and update the plan)",
+      rsTitle:n=>`Reschedule history (${n})`,rsBy:"Reason",rsOrig:"Baseline",rsNow:"Now",rsVs:"vs baseline",rsD:n=>`${n>0?"+":""}${n}d`,
+      rsForm:"Reschedule (recorded)",rsCur:"Current",rsNewS:"New start",rsNewE:"New end",rsReasonPh:"Reason (optional, e.g. pushed back by #504)",
+      rsOk:"Confirm",rsCancel:"Cancel",rsBadDate:"Invalid date (YYYY-MM-DD, 1900–2099)",
       wd:["Su","Mo","Tu","We","Th","Fr","Sa"],locale:"en-US",active:"active",newTask:"New task",
       addTask:"+Task",addTaskTip:"Add a task",up:"Move up",down:"Move down",addBelow:"Add task below",del:"Delete",
       addChild:"Add a child task (nest)",addChildLabel:"+sub",
@@ -385,6 +414,8 @@
   const maxStr=a=>{a=a.filter(Boolean);return a.length?a.slice().sort()[a.length-1]:null;};
   const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
   const mdSlash=s=>s?(parse(s).getUTCMonth()+1)+"/"+parse(s).getUTCDate():"";
+  // _planLog(#96)：壊れた要素は黙って捨てる（graceful degradation・異常系表の方針）。from/to がオブジェクトの要素だけ有効
+  const planLogOf=n=>{const l=n&&n._planLog;return Array.isArray(l)?l.filter(e=>e&&typeof e==="object"&&e.from&&typeof e.from==="object"&&e.to&&typeof e.to==="object"):[];};
   const fmtLoad=v=>{const r=Math.round(v*10)/10;return Number.isInteger(r)?String(r):r.toFixed(1);};
   const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
   // note内の http(s) URL のみリンク化（表示はURLのまま）。URL検出は生文字列・出力は全片esc()で
@@ -515,6 +546,7 @@
 
   function render(data){
     clearTimeout(refreshTimer);                                              // 保留中の遅延再描画を破棄（二重描画防止）
+    closeRsUI();                                                             // 吹き出し/リスケフォームは再描画で位置が古くなるため閉じる(#96)
     const scrollKeep={left:$("right").scrollLeft,
                       top:$("right").scrollTop};   // スクロール位置を保持
     const TODAY=todayStr();
@@ -563,7 +595,9 @@
     // 横軸は全データ基準で固定（状態フィルタ#91で行を隠しても時間軸は動かさない＝残ったバーが動いて見えない）
     function buildRange(){
       const ds=[];
-      allLeaves.forEach(n=>{const c=n._calc;[c.planStart,c.planEnd,c.actualStart,c.actualEndEff].forEach(d=>d&&ds.push(d));});
+      allLeaves.forEach(n=>{const c=n._calc;[c.planStart,c.planEnd,c.actualStart,c.actualEndEff].forEach(d=>d&&ds.push(d));
+        const lg=planLogOf(n);                                                // リスケ履歴(#96)：直近トレイルの起点が軸外に切れないよう範囲に含める
+        if(lg.length){const f=lg[lg.length-1].from;[f.start,f.end].forEach(d=>{if(isDate(d))ds.push(d);});}});
       projects.forEach(p=>(p.milestones||[]).forEach(m=>isDate(m.date)&&ds.push(m.date)));
       ds.push(TODAY);
       const rangeStart=minStr(ds)||TODAY, rangeEnd=maxStr(ds)||TODAY;
@@ -665,6 +699,7 @@
           const n=r.node,c=n._calc,leaf=n._leaf;
           const inProg=leaf&&c.actualStart&&!c.actualEnd, done=c.allDone;  // 完了=実績終了あり（集計は全子完了）
           const P=esc(r.path);
+          const rlog=leaf?planLogOf(n):[];                                    // リスケ履歴(#96・リーフのみ)
           const x={leaf,inProg,path:P};
           const inp=(f,val,type)=>type==="date"                                // 編集入力欄（型でテンプレ分岐）
             ?`<span class="date-wrap"><input data-path="${P}" data-field="${f}" type="text" placeholder="MM-DD" value="${esc(val)}">`
@@ -675,22 +710,25 @@
           eCols.forEach(col=>{let v="";
             if(col.key==="no")v=editMode?inp("id",n.id,"text"):esc(n.id);
             else if(col.key==="name"){
+              const bdg=rlog.length?`<button class="rsbdg" data-rslog="${P}" title="${esc(t("rsTip"))}">↷${rlog.length}</button>`:"";  // ↷N=修正回数（クリックで履歴の吹き出し・#96）
               if(editMode){
                 const move=`<span class="movegrp"><button data-act="up" data-path="${P}" title="${esc(t("up"))}">${ICN.up}</button>`  // ⬆⬇=兄弟内移動（caretの三角と区別）・チェックの前
                   +`<button data-act="down" data-path="${P}" title="${esc(t("down"))}">${ICN.down}</button></span>`;
-                const acts=`<span class="acts"><button data-act="add" data-path="${P}" title="${esc(t("addBelow"))}">${ICN.add}</button>`
+                const acts=`<span class="acts">`
+                  +(leaf?`<button data-act="resched" data-path="${P}" title="${esc(t("rsBtnTip"))}">↷</button>`:"")  // リスケ(#96)：履歴に記録して予定を更新（日付セル直接編集=訂正と分離）
+                  +`<button data-act="add" data-path="${P}" title="${esc(t("addBelow"))}">${ICN.add}</button>`
                   +(r.depth<2?`<button data-act="addchild" data-path="${P}" title="${esc(t("addChild"))}">${ICN.leaf}</button>`:"")  // ＋子=入れ子追加（葉アイコン・#49/#70）。3L(深さ2)は4L禁止のため出さない
                   +`<button data-act="del" data-path="${P}" title="${esc(t("del"))}">${ICN.del}</button></span>`;
                 const doneCtl=leaf                                              // リーフ=押せる完了チェック／集計ノード=読み取り✓のまま
                   ?`<button class="donechk${done?" on":""}" data-act="done" data-path="${P}" title="${esc(t("doneTip"))}">${done?"✓":""}</button>`
                   :(done?'<span class="done-mark">✓</span>':"");
                 v=`<span class="nm-wrap" style="padding-left:${r.depth*15}px">${sym(r,true)}${move}${doneCtl}`
-                  +`<input class="nm-in" data-path="${P}" data-field="name" type="text" value="${esc(n.name)}" title="${esc(n.name)}">${acts}</span>`;
+                  +`<input class="nm-in" data-path="${P}" data-field="name" type="text" value="${esc(n.name)}" title="${esc(n.name)}">${bdg}${acts}</span>`;
               }else{
                 const body=`${sym(r)}${done?"✓ ":""}<span class="nm">${esc(n.name)}</span>`;
                 v=r.collapsible
-                  ?`<span style="padding-left:${r.depth*15}px"><span class="clk" data-collapse="${esc(r.key)}">${body}</span></span>`
-                  :`<span style="padding-left:${r.depth*15}px">${body}</span>`;
+                  ?`<span style="padding-left:${r.depth*15}px"><span class="clk" data-collapse="${esc(r.key)}">${body}</span>${bdg}</span>`
+                  :`<span style="padding-left:${r.depth*15}px">${body}${bdg}</span>`;
               }
             }
             else{                                                              // メタデータ駆動：表示=view・編集=field/get（リーフのみ）
@@ -712,7 +750,7 @@
           let bt=[ps&&pe?`${t("grpPlan")} ${md(ps,pe)}`:"", as?`${t("grpActual")} ${md(as,ae)}`:"",
                   startDelay?t("startDelayTip")(startDelay):"", endDelay?t("endDelayTip")(endDelay,!ae):""].filter(Boolean).join("&#10;");
           if(bt)bt=` title="${bt}"`;
-          if(ps&&pe)bars+=`<div class="bar plan"${bt} style="left:${xOf(ps)}px;width:${barW(ps,pe)}px"></div>`;   // 予定=塗りなしの枠（前面）
+          if(ps&&pe)bars+=`<div class="bar plan"${bt}${rlog.length?` data-rslog="${P}"`:""} style="left:${xOf(ps)}px;width:${barW(ps,pe)}px"></div>`;   // 予定=塗りなしの枠（前面）。リスケ済みはクリックで履歴(#96)
           // 着手遅れは枠の左が空くことで表現（専用バー無し）。精密値は startDelayTip でツールチップに残す
           if(as&&aeEff){
             const pxAS=xOf(as), pxAEend=xOf(aeEff)+DAY_W, pxPEend=pe?xOf(pe)+DAY_W:pxAEend;
@@ -722,6 +760,16 @@
               bars+=`<div class="bar over"${bt} style="left:${ovL}px;width:${pxAEend-ovL}px"></div>`;
               // 遅延ラベルは一律「線の先」（実績終了の直後）。中央配置はイナズマの角度で隠れ得るため、被りは妥協し一貫性を優先
               bars+=`<div class="delay" style="left:${pxAEend+3}px">+${endDelay}</div>`;}
+          }
+          if(rlog.length&&ps&&pe){                                            // リスケ履歴(#96)：直近の修正1本だけトレイル（下=開始/上=終了。過去分は吹き出し＝ごちゃつき上限固定）
+            const lt=rlog[rlog.length-1];
+            const tr=(od,x1,top)=>{ if(!isDate(od))return;
+              const x0=centerOf(od); if(Math.abs(x1-x0)<3)return;
+              bars+=`<span class="rs-knob${top?" top":""}" style="left:${x0-2}px"></span>`
+                  +`<span class="rs-seg${top?" top":""}" style="left:${Math.min(x0,x1)}px;width:${Math.max(Math.abs(x1-x0),6)}px"></span>`
+                  +`<span class="rs-arr${top?" top":""}" style="left:${x1-5}px">›</span>`;};
+            if(lt.from.start!==ps)tr(lt.from.start,xOf(ps),false);
+            if(lt.from.end!==pe)tr(lt.from.end,xOf(pe)+DAY_W,true);
           }
           grows+=`<div class="grow ${leaf?"leaf":"parent"} ${lvl} ${done?"done":""}">${bars}</div>`;
           progRows+=progBarRow(c,!leaf,done,lvl);
@@ -1083,6 +1131,7 @@
       const m=curProjects&&curProjects[pi]&&curProjects[pi].milestones&&curProjects[pi].milestones[mi]; if(!m)return;
       m.color=b.getAttribute("data-color"); queueSave(); render(lastData); return;
     }
+    if(act==="resched"){openRsForm(b.getAttribute("data-path"),b);return;}   // リスケ(#96)：フォーム→確定で_planLog追記＋plan更新
     const r=resolvePath(b.getAttribute("data-path")), arr=r.parentArray, i=r.index;
     if(!arr||!r.node)return;
     if(act==="up"){if(i<=0)return; const t=arr[i-1];arr[i-1]=arr[i];arr[i]=t;}
@@ -1224,6 +1273,69 @@
     else alert(t("dropFail"));
   });
 
+  // ===== リスケ履歴(#96)：吹き出し（閲覧・クリックで開閉）とリスケフォーム（編集モードの記録） =====
+  let rsPopPath=null;                                                        // 開いている吹き出しの対象path（同じトリガー再クリック=閉じる）
+  const closeRsUI=()=>{["rsPop","rsForm"].forEach(id=>{const el=$(id);if(el)el.remove();});rsPopPath=null;};
+  document.addEventListener("click",e=>{                                     // 外側クリックで閉じる（トリガー自身は各ハンドラでトグルするため除外）
+    if(e.target.closest('#rsPop,#rsForm,[data-rslog],[data-act="resched"]'))return;
+    closeRsUI();
+  },true);
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeRsUI();});
+  const rsPlace=(el,anchor)=>{                                               // アンカー直下・画面内にクランプ（fixed=スクロール座標に依存しない）
+    document.body.appendChild(el);
+    const a=anchor.getBoundingClientRect(),w=el.offsetWidth,h=el.offsetHeight;
+    el.style.left=clamp(a.left-20,4,window.innerWidth-w-4)+"px";
+    el.style.top=(a.bottom+6+h>window.innerHeight?Math.max(4,a.top-h-6):a.bottom+6)+"px";
+  };
+  const rsSpan=p=>`${isDate(p.start)?mdSlash(p.start):"—"}〜${isDate(p.end)?mdSlash(p.end):"—"}`;
+  const rsDelta=(f,tt)=>{const dd=(a,b)=>(isDate(a)&&isDate(b))?diff(a,b):0;  // 修正種別：開始/終了の差分日数（同じなら+N日にまとめる）
+    const sd=dd(f.start,tt.start),ed=dd(f.end,tt.end);
+    if(sd&&sd===ed)return t("rsD")(sd);
+    const ps2=[];if(sd)ps2.push(t("colStart")+t("rsD")(sd));if(ed)ps2.push(t("colEnd")+t("rsD")(ed));
+    return ps2.join("/");};
+  function toggleRsPop(path,anchor){
+    if(rsPopPath===path){closeRsUI();return;}
+    closeRsUI();
+    const r=resolvePath(path),n=r&&r.node,log=n?planLogOf(n):[];
+    if(!log.length)return;
+    const md5=s=>typeof s==="string"&&s.length>=10?s.slice(5,10).replace("-","/"):"";
+    let html=`<b>${esc(t("rsTitle")(log.length))}</b>`;
+    log.slice().reverse().forEach(en=>{                                       // 新しい順
+      const d=rsDelta(en.from,en.to);
+      html+=`<div class="rsp-row">${esc(md5(en.at))}  ${esc(rsSpan(en.from))} → ${esc(rsSpan(en.to))}${d?`（${esc(d)}）`:""}${en.reason?`　${esc(t("rsBy"))}: ${esc(String(en.reason))}`:""}</div>`;});
+    const cur=(n.plan&&typeof n.plan==="object")?n.plan:{};
+    const vs=rsDelta(log[0].from,cur);
+    html+=`<div class="rsp-base">${esc(t("rsOrig"))} ${esc(rsSpan(log[0].from))} → ${esc(t("rsNow"))} ${esc(rsSpan(cur))}${vs?`（${esc(t("rsVs"))} ${esc(vs)}）`:""}</div>`;
+    const el=document.createElement("div");el.id="rsPop";el.innerHTML=html;
+    rsPlace(el,anchor);rsPopPath=path;
+  }
+  function openRsForm(path,anchor){
+    closeRsUI();
+    const r=resolvePath(path),n=r&&r.node;if(!n)return;
+    const p=(n.plan&&typeof n.plan==="object")?n.plan:{};
+    const el=document.createElement("div");el.id="rsForm";
+    el.innerHTML=`<b>${esc(t("rsForm"))}</b><br><span style="color:var(--muted)">${esc(t("rsCur"))} ${esc(p.start||"—")} 〜 ${esc(p.end||"—")}</span><br>`
+      +`${esc(t("rsNewS"))} <input class="rs-date" data-rs="s" value="${esc(p.start||"")}" placeholder="YYYY-MM-DD">　`
+      +`${esc(t("rsNewE"))} <input class="rs-date" data-rs="e" value="${esc(p.end||"")}" placeholder="YYYY-MM-DD"><br>`
+      +`<input class="rs-reason" data-rs="r" placeholder="${esc(t("rsReasonPh"))}">`
+      +`<div class="rs-btns"><button class="rs-ok">${esc(t("rsOk"))}</button><button class="rs-cancel">${esc(t("rsCancel"))}</button></div>`;
+    el.querySelector(".rs-cancel").addEventListener("click",closeRsUI);
+    el.querySelector(".rs-ok").addEventListener("click",()=>{
+      const gv=k=>el.querySelector(`[data-rs="${k}"]`).value;
+      const s=expandDate(gv("s"),p.start),e2=expandDate(gv("e"),p.end);       // 短縮形も既存ルールで展開（#59）
+      if(!isDate(s)||!isDate(e2)){alert(t("rsBadDate"));return;}
+      if(s===p.start&&e2===p.end){closeRsUI();return;}                        // 変更なし＝記録しない
+      const entry={at:new Date().toISOString(),from:{start:p.start??null,end:p.end??null},to:{start:s,end:e2},by:"manual"};
+      const rsn=gv("r").trim();if(rsn)entry.reason=rsn;
+      if(!Array.isArray(n._planLog))n._planLog=[];
+      n._planLog.push(entry);n.plan={start:s,end:e2};                         // 確定＝履歴追記＋予定の自動更新（片手落ちを構造的に防ぐ）
+      closeRsUI();queueSave();render(lastData);
+    });
+    rsPlace(el,anchor);
+    el.querySelector('[data-rs="s"]').focus();
+  }
+  $("leftRows").addEventListener("click",e=>{const b=e.target.closest(".rsbdg");if(b)toggleRsPop(b.getAttribute("data-rslog"),b);});
+  $("rightBody").addEventListener("click",e=>{const b=e.target.closest("[data-rslog]");if(b)toggleRsPop(b.getAttribute("data-rslog"),b);});
   // ===== 言語切替（既定:日本語。選択は localStorage に記憶） =====
   function applyLang(){
     document.documentElement.lang=lang;
