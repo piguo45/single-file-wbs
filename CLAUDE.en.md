@@ -285,6 +285,6 @@ Avoid the following when entering data (nothing crashes, but display degrades).
 
 A skill that keeps GitHub Issues and the WBS roadmap consistent. **The Japanese `CLAUDE.md` holds the full reference** (this is the single source; `~/.claude/CLAUDE-single-file-wbs.md` symlinks to it). Summary:
 - **Split of truth**: Issue = problem / challenge / done-criteria; WBS (`wbs_roadmap.json`) = the work breakdown needed. Linked by `#N`. The WBS format itself is the "data" sections above.
-- **4 modes (AI picks from context)**: file (discuss → issue + WBS) / start (`actual.start`) / done (auto-verify → close + `actual.end`) / auto-file on test failure (dedup + threshold).
+- **4 modes (AI picks from context)**: file (discuss → issue + WBS; optionally an **"AI starter memo"** — entry files / verify commands / constraints / out-of-scope only, never step-by-step instructions: prompts rot, problems and done-criteria don't) / start (`actual.start`) / done (auto-verify → close + `actual.end`) / auto-file on test failure (dedup + threshold).
 - **Done is auto-verified** (don't close on "should be fixed"): machine-checkable criteria are run (e2e green — command in the private `.claude/rules/` as it has a local path; PII grep); visual / save-path smoke is human-confirmed.
 - **repo** `piguo45/single-file-wbs`; **versioning** features=MINOR / fixes=PATCH / breaking=MAJOR (once); a different altitude or artifact is a separate tool (#72).
