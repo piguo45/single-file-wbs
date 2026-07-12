@@ -43,9 +43,12 @@ Updating the tool = overwriting `wbs_viewer.html`; your `wbs.json` data is never
 - **Data is one JSON of facts only** — it holds nothing but plan and actual dates. Effort (qty × hours ÷ 8, person-days), progress, and the inazuma line are all **computed automatically** — no numbers to maintain by hand
 - **Three ways to edit** — in-browser editing (autosave) / any text editor / **AI chat** (ships with `CLAUDE.md` so Claude Code already understands the data format)
 - **Holidays & weekends at a glance** — a top-level `holidays` list renders **holidays in red** in the date header and shades **weekend + holiday columns faint pink full-height**. Remaining-business-days also excludes weekends & holidays (2026 Japanese holidays ship with the sample data)
+- **Filter bar (four axes)** — above the left table: **state (to do / in progress / done), delayed-only, owner (multi-select), and period (today / this week / all)**. OR within an axis, AND across axes — e.g. "in progress AND delayed AND assigned to me". **Display-only**: it never touches `wbs.json` or the time axis — hiding is a blindfold, not a delete
+- **Reschedule history** — press the **↷ button** in edit mode to confirm a reschedule: the plan updates automatically and the change is **recorded with a reason** (`_planLog`). The Gantt shows only the latest change as a subtle dotted **trail**; click the task's **↷N** to see the full history plus the change vs. the original baseline. A plain date-cell edit ("correction") is treated differently and leaves no history
 - Plus: multiple projects, collapsible tree, milestone lines, completed-task graying with ✓, auto-linked URLs in notes, Japanese/English UI
 
-> **Main additions in v1.3** (the fruits of the v1.2 maintenance period): (1) **add nested child tasks** in edit mode; (2) **edit milestones in the GUI** (date, name, 5-color presets); (3) **plain display that hides the logo/version** (toggle by clicking the title); (4) **holiday settings + pink weekend/holiday columns** (remaining business days exclude holidays too); (5) icon cleanup, tooltips, and edit-column-width polish.
+> **Main additions in v1.4**: (1) **filter bar** (state / delay / owner / period, four axes); (2) **reschedule history** (`_planLog`, recorded via the ↷ button, shown as a trail, full history on click).
+> v1.3 (the fruits of the v1.2 maintenance period): (1) **add nested child tasks** in edit mode; (2) **edit milestones in the GUI** (date, name, 5-color presets); (3) **plain display that hides the logo/version** (toggle by clicking the title); (4) **holiday settings + pink weekend/holiday columns** (remaining business days exclude holidays too); (5) icon cleanup, tooltips, and edit-column-width polish.
 
 ## Working the screen
 
@@ -58,8 +61,14 @@ Updating the tool = overwriting `wbs_viewer.html`; your `wbs.json` data is never
 
 Turn the **Edit** button ON to edit directly on screen. Changes are **autosaved to `wbs.json` ~0.4 s later** (save status always visible at the top right).
 
-- Available: in-place editing of each field (No./name/qty/hours/owner/dates/notes — **effort is auto-computed**, not editable). Dates accept shorthand like `611`/`6/11`, `YYYY-MM-DD`, or the 📅 picker (this year shows `MM-DD`); add `＋`, delete `✕` (with confirmation), reorder `⬆⬇`; **add nested child tasks** (a leaf is promoted to a summary node and the child hangs under it, effort preserved); **edit milestones** (`＋MS` on a project row — date, name, 5-color presets)
+- Available: in-place editing of each field (No./name/qty/hours/owner/dates/notes — **effort is auto-computed**, not editable). Dates accept shorthand like `611`/`6/11`, `YYYY-MM-DD`, or the 📅 picker (this year shows `MM-DD`); add `＋`, delete `✕` (with confirmation), reorder `⬆⬇`; **add nested child tasks** (a leaf is promoted to a summary node and the child hangs under it, effort preserved); **edit milestones** (`＋MS` on a project row — date, name, 5-color presets); **reschedule** (the **↷ button** — enter a new plan and a reason, and confirming updates the plan while recording the change)
 - Not supported (edit the JSON or ask the AI): drag-and-drop reordering / moving to a different parent / automatic renumbering
+
+### Recording why a plan changed (reschedule history)
+
+"Why did this slip?" is the first thing everyone forgets once a project drags on. Confirming a reschedule via the **↷ button** updates the plan and **records the reason** at the same time. The Gantt shows only the latest change as a subtle dotted trail — it never adds rows or extra ink. The full history is always one click away via **↷N**.
+
+![reschedule history](docs/screenshot-history.en.png)
 
 <details>
 <summary>⚠ Enabling edit mode requires re-selecting the file (click for steps)</summary>
