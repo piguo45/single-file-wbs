@@ -1097,6 +1097,139 @@
                   "note": "e2e(表示/記録/訂正は履歴なし/XSS/graceful)＋golden差分目視＋CLAUDE.md/en＋書込系のため実機スモーク"
                 }
               ]
+            },
+            {
+              "id": "4.10",
+              "name": "列幅ドラッグ変更の仕上げ(PR #100)",
+              "note": "PR #100：https://github.com/piguo45/single-file-wbs/pull/100 外部コントリビュータの列幅ドラッグ変更を取り込み、規律に合わせて仕上げ（Zennコメント「備考列を伸ばしたい」にも対応）",
+              "children": [
+                {
+                  "id": "4.10.1",
+                  "name": "ドラッグ負荷・DClick復帰・min統合",
+                  "qty": 1,
+                  "hours": 4,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-06",
+                    "end": "2026-09-06"
+                  },
+                  "actual": {
+                    "start": "2026-09-06",
+                    "end": null
+                  },
+                  "note": ""
+                },
+                {
+                  "id": "4.10.2",
+                  "name": "仕様書(ja/en/README)＋e2e＋監査",
+                  "qty": 1,
+                  "hours": 3,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-06",
+                    "end": "2026-09-07"
+                  },
+                  "actual": {
+                    "start": "2026-09-06",
+                    "end": null
+                  },
+                  "note": ""
+                },
+                {
+                  "id": "4.10.3",
+                  "name": "検収・マージ",
+                  "qty": 1,
+                  "hours": 1,
+                  "assignee": "ぴぐお",
+                  "plan": {
+                    "start": "2026-09-07",
+                    "end": "2026-09-07"
+                  },
+                  "actual": {
+                    "start": null,
+                    "end": null
+                  },
+                  "note": ""
+                }
+              ]
+            },
+            {
+              "id": "4.11",
+              "name": "期間フィルタに今月(#105)",
+              "note": "#105：https://github.com/piguo45/single-file-wbs/issues/105 セグメント4択（今日/今週/今月/全期間）＋README に数量列の使いどころ1行",
+              "children": [
+                {
+                  "id": "4.11.1",
+                  "name": "今月セグメント＋i18n＋e2e＋doc",
+                  "qty": 1,
+                  "hours": 3,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-07",
+                    "end": "2026-09-08"
+                  },
+                  "actual": {
+                    "start": null,
+                    "end": null
+                  },
+                  "note": ""
+                }
+              ]
+            },
+            {
+              "id": "4.12",
+              "name": "進捗タブの色の圧を下げる(#106)",
+              "note": "#106：https://github.com/piguo45/single-file-wbs/issues/106 案A＝淡色＋斜線ハッチ（色相は時間タブと同じ）。比較スクショ→ユーザー承認→マージ",
+              "children": [
+                {
+                  "id": "4.12.1",
+                  "name": "現状/案A 比較スクショ",
+                  "qty": 1,
+                  "hours": 3,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-08",
+                    "end": "2026-09-09"
+                  },
+                  "actual": {
+                    "start": null,
+                    "end": null
+                  },
+                  "note": ""
+                },
+                {
+                  "id": "4.12.2",
+                  "name": "実装＋配色監査＋golden撮り直し",
+                  "qty": 1,
+                  "hours": 6,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-09",
+                    "end": "2026-09-11"
+                  },
+                  "actual": {
+                    "start": null,
+                    "end": null
+                  },
+                  "note": ""
+                },
+                {
+                  "id": "4.12.3",
+                  "name": "見た目の承認",
+                  "qty": 1,
+                  "hours": 1,
+                  "assignee": "ぴぐお",
+                  "plan": {
+                    "start": "2026-09-11",
+                    "end": "2026-09-11"
+                  },
+                  "actual": {
+                    "start": null,
+                    "end": null
+                  },
+                  "note": ""
+                }
+              ]
             }
           ]
         },
