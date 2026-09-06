@@ -85,6 +85,17 @@ with sync_playwright() as p:
     check(grew, "それでもドラッグ中に幅は追従する（CSS変数の書き換えだけ）")
     check(pg.evaluate("()=>window.__row!==document.querySelector('#leftRows .lrow')"),
           "mouseup で1回だけ確定の再描画が走る")
+    # ⑤ 編集モード：下限(日付84px)が効く／1:1で追従／入力中の値を再描画で壊さない／書込は起きない
+    pg.click("#editBtn"); pg.wait_for_timeout(400)
+    base = pg.evaluate(CWVAR, "ps")
+    check(base == 84, f"編集時の予定開始は下限84px（既定64pxより広い） -> {base}")
+    pg.fill('#leftRows input[data-field="assignee"]', "テスト担当")   # fillはinputのみ＝change未発火(=未確定)
+    writes = pg.evaluate("()=>window.__writes")
+    drag(pg, "ps", 40)
+    check(pg.evaluate(CWVAR, "ps") == base + 40, f"編集モードでも見えている幅と1:1で追従 -> {pg.evaluate(CWVAR, 'ps')}")
+    check(pg.evaluate("()=>document.querySelector('#leftRows input[data-field=\"assignee\"]').value")
+          == "テスト担当", "確定の再描画で入力中の値が消えない（フォーカス中は遅延再描画に委ねる）")
+    check(pg.evaluate("()=>window.__writes") == writes, "列幅ドラッグ自体はファイル書込を起こさない")
     check(len(errors) == 0, f"最後までJSエラー無し -> {errors}")
 
     b.close()

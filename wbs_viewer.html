@@ -956,7 +956,10 @@
     const moved=resizingCol.moved; resizingCol=null;
     document.body.classList.remove("resizing-cols");
     if(!moved)return;                                                          // 掴んだだけ（ダブルクリックの各クリック含む）は保存も再描画もしない
-    saveColWidths(); if(lastData)render(lastData);
+    saveColWidths();
+    const a=document.activeElement;                                          // 編集中の入力はまだ change 未発火（mousedownでpreventDefault=フォーカスが残る）。
+    if(a&&a.tagName==="INPUT"&&a.closest&&a.closest("#leftRows"))deferRender();  // ここで再描画すると入力値を捨ててしまうので、フォーカスが外れるまで待つ既存の遅延再描画に委ねる
+    else if(lastData)render(lastData);
   });
   $("leftHead").addEventListener("dblclick",e=>{                               // ダブルクリック＝保存値を捨てて既定幅 w に戻す（Excel慣習）
     const h=e.target.closest("[data-resize-col]"); if(!h)return;
