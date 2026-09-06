@@ -217,6 +217,16 @@ Hand the fuzzy "roughly what %" to an AI. The steps are deterministic:
   `qty+hours` (the breakdown of effort), Effort, Progress, Status, Assignee, Plan, Actual, Notes (**No. and Task name are always shown**).
   Collapsed columns are **removed at 0 width (no leftover gap stub)**, the + sits at the boundary (absolute). State is
   saved in localStorage; scroll/tree-collapse are preserved; collapsing widens the Gantt. Implemented via the `COL_CG` map + `effCols()` filter (draw cost = column count, not row-dependent).
+- **Column resize (#100)**: **drag a column header boundary** to change its width (a thin blue line on hover marks the grip);
+  **double-click resets it to the default** (the Excel convention). Widths are remembered in localStorage
+  (`wbsColWidths`, key→px; default = `w` in `COLS`, floor = `min` in `COLS`). **Independent of column collapse** (a collapsed
+  column keeps its width and returns to it when expanded). **View-only — `wbs.json` (the data) never changes.** Edit-mode
+  width needs (84px floor for dates, 52px for qty/hours, +72px for the Task name) still take precedence as before.
+  Widths live in the CSS variables `--cw-<column key>`, so a drag **only rewrites the variable** (no re-render, no extra
+  row×column work); the single confirming re-render happens on mouseup.
+  **Capped so the left pane never exceeds `window width − 200px`** (the Gantt always keeps 200px), which stops a column
+  from being widened until the grips on its right go off-screen. The same check runs at startup, so **saved widths that
+  no longer fit the screen are reset to the defaults** (no dead end when widths saved on a large monitor are opened on a small one).
 - **Plan/Actual date columns have a two-level header**: "Plan" / "Actual" on top, "Start / End" beneath (adjacent columns grouped by the `group` property in `COLS`).
 - Row layer colors: **◆project (with separators) > L1 > L2 > L3**.
 - Gantt: date + weekday (year-month header), **weekend + holiday (`holidays`) columns shaded faint pink full-height** (`--weekend` / a translucent overlay drawn above the rows; bars/inazuma/today-line stay in front for legibility); active tasks extend the actual bar to today.
