@@ -32,7 +32,7 @@ def drag(pg, key, dx, steps=12):
 errors = []
 with sync_playwright() as p:
     b = p.chromium.launch()
-    pg = new_page(b, viewport={"width": 1500, "height": 400})
+    pg = new_page(b, viewport={"width": 1800, "height": 400})
     pg.on("pageerror", lambda e: errors.append(str(e)))
     pg.add_init_script(granted_handle_init(DATA))
     open_file(pg)
@@ -86,6 +86,8 @@ with sync_playwright() as p:
     check(pg.evaluate("()=>window.__row!==document.querySelector('#leftRows .lrow')"),
           "mouseup で1回だけ確定の再描画が走る")
     # ⑤ 編集モード：下限(日付84px)が効く／1:1で追従／入力中の値を再描画で壊さない／書込は起きない
+    pg.dblclick("#leftHead [data-resize-col='asg']")   # ④までの幅を捨てて既定に戻す（以降を順序非依存に）
+    pg.wait_for_timeout(200)
     pg.click("#editBtn"); pg.wait_for_timeout(400)
     base = pg.evaluate(CWVAR, "ps")
     check(base == 84, f"編集時の予定開始は下限84px（既定64pxより広い） -> {base}")
@@ -97,6 +99,24 @@ with sync_playwright() as p:
           == "テスト担当", "確定の再描画で入力中の値が消えない（フォーカス中は遅延再描画に委ねる）")
     check(pg.evaluate("()=>window.__writes") == writes, "列幅ドラッグ自体はファイル書込を起こさない")
     check(len(errors) == 0, f"最後までJSエラー無し -> {errors}")
+    pg.click("#editBtn"); pg.wait_for_timeout(400)   # 編集OFFに戻す
+
+    # ⑥ 上限：どれだけ引っぱっても左ペインは innerWidth-200 を超えない（ガントを最低200px残す）
+    drag(pg, "note", 2000, steps=20)
+    total = pg.evaluate("()=>document.getElementById('left').getBoundingClientRect().width")
+    limit = pg.evaluate("()=>window.innerWidth-200")
+    check(total <= limit + 1, f"左ペインは innerWidth-200 以内に収まる ({total} <= {limit})")
+    check(pg.evaluate(CWVAR, "note") > 200, "それでも備考列は既定より広がっている（クランプ＝停止であって無効化ではない）")
+
+    # ⑦ 復帰：画面に入らない保存値を持って開き直すと既定に戻り、保存値も捨てられる
+    pg.evaluate("()=>localStorage.setItem('wbsColWidths',JSON.stringify({note:5000,asg:900}))")
+    pg.reload()
+    pg.click("#openBtn"); pg.wait_for_timeout(250)
+    check(pg.evaluate(CWVAR, "note") == 200 and pg.evaluate(CWVAR, "asg") == 64,
+          f"収まらない保存値は既定に戻る -> note={pg.evaluate(CWVAR, 'note')} asg={pg.evaluate(CWVAR, 'asg')}")
+    check(pg.evaluate("()=>Object.keys(JSON.parse(localStorage.getItem('wbsColWidths')||'{}')).length") == 0,
+          "保存値も捨てられる（次回以降も詰まない）")
+    check(len(errors) == 0, f"上限/復帰でもJSエラー無し -> {errors}")
 
     b.close()
 finish(errors)

@@ -224,6 +224,9 @@ Hand the fuzzy "roughly what %" to an AI. The steps are deterministic:
   width needs (84px floor for dates, 52px for qty/hours, +72px for the Task name) still take precedence as before.
   Widths live in the CSS variables `--cw-<column key>`, so a drag **only rewrites the variable** (no re-render, no extra
   row×column work); the single confirming re-render happens on mouseup.
+  **Capped so the left pane never exceeds `window width − 200px`** (the Gantt always keeps 200px), which stops a column
+  from being widened until the grips on its right go off-screen. The same check runs at startup, so **saved widths that
+  no longer fit the screen are reset to the defaults** (no dead end when widths saved on a large monitor are opened on a small one).
 - **Plan/Actual date columns have a two-level header**: "Plan" / "Actual" on top, "Start / End" beneath (adjacent columns grouped by the `group` property in `COLS`).
 - Row layer colors: **◆project (with separators) > L1 > L2 > L3**.
 - Gantt: date + weekday (year-month header), **weekend + holiday (`holidays`) columns shaded faint pink full-height** (`--weekend` / a translucent overlay drawn above the rows; bars/inazuma/today-line stay in front for legibility); active tasks extend the actual bar to today.

@@ -491,6 +491,8 @@
   const cwv=c=>`var(--cw-${c.key})`;                                            // セル/ヘッダの幅はCSS変数で参照（ドラッグ中は変数1つの書き換えだけで全セルが追従）
   const cwAdd=a=>a.length?a.map(cwv).join(" + "):"0px";                         // calc() 内で使う幅の加算式
   const setColVar=c=>document.documentElement.style.setProperty("--cw-"+c.key,cwEff(c)+"px");
+  const MIN_GANTT_W=200;                                                        // 列幅の上限＝ガントに最低これだけ残す（右側の掴み代が画面外に出て戻せなくなるのを防ぐ）
+  const maxTotalCW=()=>window.innerWidth-MIN_GANTT_W;
 
   // アウトライン式の列折りたたみ：列→折りたたみ単位の対応（No.・作業項目は対応なし＝常時表示）。数量+時間は工数の内訳でまとめる／工数は個別
   const COL_CG={qty:"qh",hrs:"qh",work:"work",prog:"prog",stat:"stat",asg:"asg",ps:"plan",pe:"plan",as:"act",ae:"act",note:"note"};
@@ -498,6 +500,9 @@
   try{const s=JSON.parse(lsGet("wbsColCollapsed")||"[]");if(Array.isArray(s))colCollapsed=new Set(s);}catch(_){}
   function saveColCollapsed(){lsSet("wbsColCollapsed",JSON.stringify([...colCollapsed]));}
   function effCols(){return COLS.filter(c=>{const g=COL_CG[c.key];return !(g&&colCollapsed.has(g));});}  // 畳んだ列は完全に消す（隙間を作らない）。+/−はタブ帯の上に絶対配置
+  const totalCW=()=>effCols().reduce((s,c)=>s+cwEff(c),0);                      // 表示列の実効幅の合計＝左ペインの幅
+  // 画面に収まらない保存値は既定に戻す（大きいモニタで保存した幅を小さい画面で開くと掴み代が画面外＝手動で戻せなくなるため）
+  if(Object.keys(colWidths).length&&totalCW()>maxTotalCW()){colWidths={};saveColWidths();}
 
   const isColor=s=>typeof s==="string"&&/^#[0-9a-fA-F]{3,8}$/.test(s);
   function normalizeProjects(d){
@@ -940,13 +945,15 @@
     const h=e.target.closest("[data-resize-col]"); if(!h)return;
     e.preventDefault(); e.stopPropagation();
     const c=COLS.find(x=>x.key===h.getAttribute("data-resize-col")); if(!c)return;
-    resizingCol={col:c,startX:e.clientX,startW:cwBase(c),moved:false};
+    const others=totalCW()-cwEff(c);                                          // 他の表示列は動かないので上限は掴んだ時点で確定＝mousemove は clamp だけ
+    resizingCol={col:c,startX:e.clientX,startW:cwBase(c),moved:false,
+                 maxW:Math.max(c.min||40,maxTotalCW()-others-(cwEff(c)-cwBase(c)))};
     document.body.classList.add("resizing-cols");
   });
   document.addEventListener("mousemove",e=>{
     if(!resizingCol)return;
     e.preventDefault();
-    const c=resizingCol.col, w=Math.max(c.min||40,Math.round(resizingCol.startW+e.clientX-resizingCol.startX));
+    const c=resizingCol.col, w=clamp(Math.round(resizingCol.startW+e.clientX-resizingCol.startX),c.min||40,resizingCol.maxW);
     if(colWidths[c.key]===w)return;
     colWidths[c.key]=w; resizingCol.moved=true;
     setColVar(c); leftColBounds=null;                                          // 幅が変わったら列境界キャッシュは無効（ハイライト帯のズレ防止）
