@@ -85,8 +85,8 @@
                   white-space:nowrap;border-right:1px solid var(--border)}
   #leftHead .hsub:last-child{border-right:none}
   #leftHead .h,#leftHead .hsub{position:relative;user-select:none}
-  .col-resizer{position:absolute;top:0;right:-3px;width:7px;height:100%;cursor:col-resize;z-index:8}
-  .col-resizer:hover{background:rgba(37,99,235,.18)}
+  .col-resizer{position:absolute;top:0;right:-3px;width:7px;height:100%;cursor:col-resize;z-index:8}  /* 列幅ドラッグの掴み代（境界線の左右3px）。ダブルクリックで既定幅に戻す */
+  .col-resizer:hover::after{content:"";position:absolute;left:2px;top:0;width:3px;height:100%;background:var(--accent)}  /* ホバー時だけ細い青線（新色は足さず --accent を再利用） */
   body.resizing-cols{cursor:col-resize;user-select:none}
   #leftHead .h.h2l{flex-direction:column;justify-content:flex-start;line-height:1.25;
                    padding-top:calc(var(--header-h)/2 - .625em)} /* 1行目の中心=他の単行列名と同じ中央線（.625em=行高1.25の半分） */
@@ -302,7 +302,7 @@
       open:"ファイルを開く",openSub:"（ドラッグ&ドロップ）",reload:"更新",edit:"編集",langBtn:"EN",
       allTipExpand:"ツリーが全部展開されます ※Ctrl+Z でクリック前の状態に戻ります",
       allTipCollapse:"ツリーが全部折りたたまれます ※Ctrl+Z でクリック前の状態に戻ります",
-      colHide:"この列を畳む",colShow:"畳んだ列を開く",colResize:"列幅を変更",
+      colHide:"この列を畳む",colShow:"畳んだ列を開く",colResize:"ドラッグで列幅を変更（ダブルクリックで既定幅に戻す）",
       editTitle:"インライン編集（自動保存）。ONにする時、書き込み許可のため保存ダイアログで wbs.json を選び直します",
       notLoaded:"未読み込み",empty:"「ファイルを開く」または D&D で <b>wbs.json</b> を読み込んでください（Chrome）。",
       colNo:"No.",colTask:"作業項目",colQty:"数量",colHrs:"時間",colWork:"工数",colWorkUnit:"(人日)",colWorkTip:"工数(人日) ＝ 数量 × 時間(h) ÷ 8h（所定労働時間）",colProg:"進捗",colProgTip:"進捗％。編集モードで ◀▶ で±10%。未着手0%・完了100%は自動。親は配下の加重平均",colStat:"状況",colStatTip:"状況＝遅れ/実績/予定（％）。遅れ=赤・実績=青・予定=黒。遅れてない行は実績のみ。予定=本日あるべき%（EVMのPV）・遅れ=予定−実績（SV）",statD:"遅れ",statA:"実績",statP:"予定",viewTime:"時間",viewProg:"進捗",colAsg:"担当",
@@ -345,7 +345,7 @@
       open:"Open file",openSub:"(drag & drop)",reload:"Reload",edit:"Edit",langBtn:"日本語",
       allTipExpand:"Expands the whole tree (Ctrl+Z restores the view before the click)",
       allTipCollapse:"Collapses the whole tree (Ctrl+Z restores the view before the click)",
-      colHide:"Collapse this column",colShow:"Expand collapsed column",colResize:"Resize column",
+      colHide:"Collapse this column",colShow:"Expand collapsed column",colResize:"Drag to resize (double-click to reset)",
       editTitle:"Inline editing (autosave). When turning ON, re-select wbs.json in the save dialog to grant write permission",
       notLoaded:"No file loaded",empty:"Load <b>wbs.json</b> via \"Open file\" or drag &amp; drop (Chrome).",
       colNo:"No.",colTask:"Task",colQty:"Qty",colHrs:"Hours",colWork:"Effort",colWorkUnit:"(p-d)",colWorkTip:"Effort (person-days) = qty × time(h) ÷ 8h (standard working hours)",colProg:"Progress",colProgTip:"Progress %. In edit mode, ◀▶ steps ±10%. 0% (not started) and 100% (done) are automatic; parents are the weighted average",colStat:"Status",colStatTip:"Status = behind / actual / planned (%). Behind=red, actual=blue, planned=black. On-track rows show actual only. Planned = what should be done by today (EVM PV); behind = planned − actual (SV)",statD:"B",statA:"A",statP:"P",viewTime:"Time",viewProg:"Progress",colAsg:"Owner",
@@ -454,36 +454,43 @@
   // 列メタデータ（表示=view・編集=field/edit/get を1エントリに集約）。view(c,n,x) x={leaf,inProg}・get(c,n)。
   // no/name は caret/✓/アクション等で特殊なため描画ループ側で個別処理（#16）。helper参照のためヘルパー定義の後ろに置く
   const COLS=[
-    {key:"no",label:"colNo",w:48,cls:"num"},
-    {key:"name",label:"colTask",w:200,cls:"name"},
-    {key:"qty",label:"colQty",w:40,cls:"r",
+    {key:"no",min:36,label:"colNo",w:48,cls:"num"},
+    {key:"name",min:120,label:"colTask",w:200,cls:"name"},
+    {key:"qty",min:36,label:"colQty",w:40,cls:"r",
      view:(c,n,x)=>x.leaf?esc(n.qty):"", field:"qty",edit:"number",get:(c,n)=>n.qty},
-    {key:"hrs",label:"colHrs",w:50,cls:"r",
+    {key:"hrs",min:42,label:"colHrs",w:50,cls:"r",
      view:(c,n,x)=>x.leaf?esc(n.hours):"", field:"hours",edit:"number",get:(c,n)=>n.hours},
-    {key:"work",label:"colWork",sub:"colWorkUnit",tip:"colWorkTip",w:56,cls:"r",
+    {key:"work",min:56,label:"colWork",sub:"colWorkUnit",tip:"colWorkTip",w:56,cls:"r",
      view:c=>c.load?esc(fmtLoad(c.load)):""},                                  // 派生（編集不可）
-    {key:"prog",label:"colProg",tip:"colProgTip",w:80,cls:"prog",             // 進捗ステッパー（編集=±10%／表示=集計%）。独自ウィジェット（◀N%▶=最小80px）
+    {key:"prog",min:80,label:"colProg",tip:"colProgTip",w:80,cls:"prog",             // 進捗ステッパー（編集=±10%／表示=集計%）。独自ウィジェット（◀N%▶=最小80px）
      view:(c,n,x)=>progStep(c.progress, editMode&&x.leaf, x.path)},
-    {key:"stat",label:"colStat",tip:"colStatTip",w:104,cls:"r stat",         // 状況=遅れ/実績/予定（工数と同じ作り：2段ヘッダ＋セル1行右寄せ）
+    {key:"stat",min:84,label:"colStat",tip:"colStatTip",w:104,cls:"r stat",         // 状況=遅れ/実績/予定（工数と同じ作り：2段ヘッダ＋セル1行右寄せ）
      view:c=>statusCell(c)},
-    {key:"asg",label:"colAsg",w:64,cls:"",
+    {key:"asg",min:54,label:"colAsg",w:64,cls:"",
      view:(c,n,x)=>x.leaf?esc(n.assignee||""):"", field:"assignee",edit:"text",get:(c,n)=>n.assignee||""},
-    {key:"ps",label:"colStart",group:"grpPlan",w:64,cls:"r",
+    {key:"ps",min:58,label:"colStart",group:"grpPlan",w:64,cls:"r",
      view:c=>esc(mdSlash(c.planStart)), field:"ps",edit:"date",get:c=>shortDate(c.planStart)},
-    {key:"pe",label:"colEnd",group:"grpPlan",w:64,cls:"r",
+    {key:"pe",min:58,label:"colEnd",group:"grpPlan",w:64,cls:"r",
      view:c=>esc(mdSlash(c.planEnd)), field:"pe",edit:"date",get:c=>shortDate(c.planEnd)},
-    {key:"as",label:"colStart",group:"grpActual",w:64,cls:"r",
+    {key:"as",min:58,label:"colStart",group:"grpActual",w:64,cls:"r",
      view:c=>esc(c.actualStart?mdSlash(c.actualStart):"—"), field:"as",edit:"date",get:c=>shortDate(c.actualStart)},
-    {key:"ae",label:"colEnd",group:"grpActual",w:64,cls:"r",
+    {key:"ae",min:58,label:"colEnd",group:"grpActual",w:64,cls:"r",
      view:(c,n,x)=>esc(c.actualEnd?mdSlash(c.actualEnd):(x.inProg?t("active"):"—")), field:"ae",edit:"date",get:c=>shortDate(c.actualEnd)},
-    {key:"note",label:"colNote",w:200,cls:"note",
+    {key:"note",min:100,label:"colNote",w:200,cls:"note",
      view:(c,n,x)=>x.leaf?linkify(n.note||""):"", field:"note",edit:"text",get:(c,n)=>n.note||""},
   ];
-  const COL_MIN={no:36,name:120,qty:36,hrs:42,work:56,prog:80,stat:84,asg:54,ps:58,pe:58,as:58,ae:58,note:100};
+  // 列幅の上書き（key→px）。既定＝COLS の w・下限＝COLS の min（別テーブルを作らずメタデータに統合）
   let colWidths={};
   try{const saved=JSON.parse(lsGet("wbsColWidths")||"{}");if(saved&&typeof saved==="object")colWidths=saved;}catch(_){}
-  const colW=c=>Math.max(COL_MIN[c.key]||40,Number.isFinite(Number(colWidths[c.key]))?Number(colWidths[c.key]):c.w);
+  const colW=c=>Math.max(c.min||40,Number.isFinite(Number(colWidths[c.key]))?Number(colWidths[c.key]):c.w);
   const saveColWidths=()=>lsSet("wbsColWidths",JSON.stringify(colWidths));
+  // 実効列幅。編集時は日付84px・数量/時間52pxを下限、作業項目は+72（操作ボタンぶん名前入力に幅確保）(#59)
+  const editFloor=c=>DATE_FIELDS[c.key]?84:(c.key==="qty"||c.key==="hrs")?52:0;
+  const cwBase=c=>editMode?Math.max(colW(c),editFloor(c)):colW(c);              // ドラッグが動かす値＝見えている幅と1:1
+  const cwEff=c=>cwBase(c)+(editMode&&c.key==="name"?72:0);
+  const cwv=c=>`var(--cw-${c.key})`;                                            // セル/ヘッダの幅はCSS変数で参照（ドラッグ中は変数1つの書き換えだけで全セルが追従）
+  const cwAdd=a=>a.length?a.map(cwv).join(" + "):"0px";                         // calc() 内で使う幅の加算式
+  const setColVar=c=>document.documentElement.style.setProperty("--cw-"+c.key,cwEff(c)+"px");
 
   // アウトライン式の列折りたたみ：列→折りたたみ単位の対応（No.・作業項目は対応なし＝常時表示）。数量+時間は工数の内訳でまとめる／工数は個別
   const COL_CG={qty:"qh",hrs:"qh",work:"work",prog:"prog",stat:"stat",asg:"asg",ps:"plan",pe:"plan",as:"act",ae:"act",note:"note"};
@@ -563,7 +570,7 @@
       : (()=>{const mon=addStr(TODAY,-((parse(TODAY).getUTCDay()+6)%7));return [mon,addStr(mon,6)];})();
     const projects=normalizeProjects(data);
     curProjects=projects;                                                    // 編集ハンドラ用に保持
-    const cw=c=>{const base=colW(c);return editMode&&DATE_FIELDS[c.key]?Math.max(base,84):editMode&&c.key==="name"?base+72:editMode&&(c.key==="qty"||c.key==="hrs")?Math.max(base,52):base;};  // 列幅はヘッダー境界D&Dで変更（localStorage保存）。編集時は必要幅だけ下限/加算
+    const cwSty={};COLS.forEach(c=>cwSty[c.key]=` style="width:${cwv(c)}"`);  // 列ぶんだけ先に組む（行×列のセル毎に幅を計算しない）
 
     // --- 行モデル構築 ---
     // projects→rows（フィルタ適用・親残し判定）。ms は SVG オーバーレイ用のマイルストーン収集
@@ -622,22 +629,22 @@
       const rz=c=>`<span class="col-resizer" data-resize-col="${esc(c.key)}" title="${esc(t("colResize"))}"></span>`;
       let lh="";
       for(let i=0;i<eCols.length;i++){const c=eCols[i];
-        if(c.group){let sub="",w=0,j=i;
-          while(j<eCols.length&&eCols[j].group===c.group){const cc=eCols[j];sub+=`<div class="hsub" data-col-key="${esc(cc.key)}" style="width:${cw(cc)}px">${esc(t(cc.label))}${rz(cc)}</div>`;w+=cw(cc);j++;}
-          lh+=`<div class="hg" style="width:${w}px"><div class="hgt">${esc(t(c.group))}</div><div class="hgb">${sub}</div></div>`;
+        if(c.group){let sub="",gc=[],j=i;
+          while(j<eCols.length&&eCols[j].group===c.group){const cc=eCols[j];gc.push(cc);sub+=`<div class="hsub" data-col-key="${esc(cc.key)}" style="width:${cwv(cc)}">${esc(t(cc.label))}${rz(cc)}</div>`;j++;}
+          lh+=`<div class="hg" style="width:calc(${cwAdd(gc)})"><div class="hgt">${esc(t(c.group))}</div><div class="hgb">${sub}</div></div>`;
           i=j-1;
         }else if(c.key==="name"){                                            // 作業項目ヘッダに全体caret（#52）
           const anyCol=rows.some(r=>r.collapsed);
-          lh+=`<div class="h" data-col-key="${esc(c.key)}" style="width:${cw(c)}px"><span id="allCaret" class="clk caret" title="${esc(t(anyCol?"allTipExpand":"allTipCollapse"))}">${anyCol?"▶":"▼"}</span>${esc(t(c.label))}${rz(c)}</div>`;
+          lh+=`<div class="h" data-col-key="${esc(c.key)}" style="width:${cwv(c)}"><span id="allCaret" class="clk caret" title="${esc(t(anyCol?"allTipExpand":"allTipCollapse"))}">${anyCol?"▶":"▼"}</span>${esc(t(c.label))}${rz(c)}</div>`;
         }else if(c.key==="stat"){                                            // 状況=2段見出し＋色分け凡例（遅赤/実青/予黒）＝そのまま凡例
           const leg=`<span class="s-d">${esc(t("statD"))}</span><span class="s-x">/</span><span class="s-a">${esc(t("statA"))}</span><span class="s-x">/</span><span class="s-p">${esc(t("statP"))}</span>`;
-          lh+=`<div class="h h2l" data-col-key="${esc(c.key)}" style="width:${cw(c)}px" title="${esc(t(c.tip))}">${esc(t(c.label))}<span class="unit">${leg}</span>${rz(c)}</div>`;
+          lh+=`<div class="h h2l" data-col-key="${esc(c.key)}" style="width:${cwv(c)}" title="${esc(t(c.tip))}">${esc(t(c.label))}<span class="unit">${leg}</span>${rz(c)}</div>`;
         }else if(c.sub){                                                       // 単位付き見出し：短い単位は同一行・長い単位は2行（いずれも小さく薄く）。tipは計算式等のhover表示
           const tip=c.tip?` title="${esc(t(c.tip))}"`:"";
           lh+=c.inline
-            ?`<div class="h" data-col-key="${esc(c.key)}" style="width:${cw(c)}px"${tip}><span>${esc(t(c.label))}<span class="unit">${esc(t(c.sub))}</span></span>${rz(c)}</div>`
-            :`<div class="h h2l" data-col-key="${esc(c.key)}" style="width:${cw(c)}px"${tip}>${esc(t(c.label))}<span class="unit">${esc(t(c.sub))}</span>${rz(c)}</div>`;
-        }else lh+=`<div class="h" data-col-key="${esc(c.key)}" style="width:${cw(c)}px">${esc(t(c.label))}${rz(c)}</div>`;
+            ?`<div class="h" data-col-key="${esc(c.key)}" style="width:${cwv(c)}"${tip}><span>${esc(t(c.label))}<span class="unit">${esc(t(c.sub))}</span></span>${rz(c)}</div>`
+            :`<div class="h h2l" data-col-key="${esc(c.key)}" style="width:${cwv(c)}"${tip}>${esc(t(c.label))}<span class="unit">${esc(t(c.sub))}</span>${rz(c)}</div>`;
+        }else lh+=`<div class="h" data-col-key="${esc(c.key)}" style="width:${cwv(c)}">${esc(t(c.label))}${rz(c)}</div>`;
       }
       return lh;
     }
@@ -686,7 +693,7 @@
             else if(col.key==="ps")v=esc(mdSlash(r.planStart));
             else if(col.key==="pe")v=esc(mdSlash(r.planEnd));
             const xc=(col.key==="pe"&&isOverdue(r,TODAY))?" overdue":"";        // 予定終了:本日超過かつ未完了=赤
-            info+=`<div class="c ${col.cls}${xc}" style="width:${cw(col)}px">${v}</div>`;});
+            info+=`<div class="c ${col.cls}${xc}"${cwSty[col.key]}>${v}</div>`;});
           lrows+=`<div class="lrow prow">${info}</div>`;
           const span=r.planStart&&r.planEnd?`<div class="pspan" style="left:${xOf(r.planStart)}px;width:${barW(r.planStart,r.planEnd)}px"></div>`:"";
           grows+=`<div class="grow prow">${span}</div>`;
@@ -749,7 +756,7 @@
             if(col.key==="name"&&!editMode)tip=` title="${esc(n.name)}"`;
             else if(col.key==="note"&&leaf&&n.note&&!editMode)tip=` title="${esc(n.note)}"`;
             const xc=(col.key==="pe"&&isOverdue(c,TODAY))?" overdue":"";        // 予定終了:本日超過かつ未完了=赤
-            info+=`<div class="c ${col.cls}${xc}" style="width:${cw(col)}px"${tip}>${v}</div>`;});
+            info+=`<div class="c ${col.cls}${xc}"${cwSty[col.key]}${tip}>${v}</div>`;});
           const lvl=`lvl${Math.min(r.depth,2)}`;
           lrows+=`<div class="lrow ${leaf?"leaf":"parent"} ${lvl} ${done?"done":""}">${info}</div>`;
           let bars="";
@@ -830,18 +837,19 @@
     // --- DOM注入＋表示切替 ---
     // 構築済みのHTML文字列を一括でDOMに書き込み、タブ・ビュー切替も行う
     function injectDOM(){
+      COLS.forEach(setColVar);                                                   // 幅の実体はCSS変数。畳んだ列ぶんも入れる（未定義だと width:auto に落ちて表が崩れる）
       $("leftHead").innerHTML=lh;
       $("leftRows").innerHTML=lrows+`<div id="leftColHl"></div>`; leftColBounds=null;  // 列幅が変わりうるので境界キャッシュを無効化
-      $("left").style.width=eCols.reduce((s,c)=>s+cw(c),0)+"px";
-      let ctgl="",tx=0,lastCx=-99;                                               // 列折りたたみ +/−：畳んだ列は0幅＝隙間なし、+/−はタブ帯に絶対配置（アウトライン式）
-      for(let ci=0;ci<COLS.length;ci++){const c=COLS[ci];const g=COL_CG[c.key];
+      $("left").style.width=`calc(${cwAdd(eCols)})`;
+      let ctgl="",txc=[],tx=0,lastCx=-99;                                        // 列折りたたみ +/−：畳んだ列は0幅＝隙間なし、+/−はタブ帯に絶対配置（アウトライン式）
+      for(let ci=0;ci<COLS.length;ci++){const c=COLS[ci];const g=COL_CG[c.key];   // 位置は calc(幅変数の和) ＝ドラッグ中の幅変更にも追従（txc=左にある表示列）
         if(g){let j=ci;while(j<COLS.length&&COL_CG[COLS[j].key]===g)j++;
           if(colCollapsed.has(g)){let bx=tx;if(bx-lastCx<16)bx=lastCx+16;        // 隣接で畳んだ時に + が重ならないよう少しずらす
-            ctgl+=`<button class="ctglb" style="left:${bx}px" data-colexp="${g}" title="${esc(t("colShow"))}">+</button>`;lastCx=bx;}
-          else{let w=0;for(let k=ci;k<j;k++)w+=cw(COLS[k]);
-            ctgl+=`<button class="ctglb" style="left:${tx+w/2}px" data-colcol="${g}" title="${esc(t("colHide"))}">−</button>`;tx+=w;}
+            ctgl+=`<button class="ctglb" style="left:calc(${cwAdd(txc)} + ${bx-tx}px)" data-colexp="${g}" title="${esc(t("colShow"))}">+</button>`;lastCx=bx;}
+          else{const gc=COLS.slice(ci,j);gc.forEach(k=>tx+=cwEff(k));
+            ctgl+=`<button class="ctglb" style="left:calc(${cwAdd(txc)} + (${cwAdd(gc)})/2)" data-colcol="${g}" title="${esc(t("colHide"))}">−</button>`;txc.push(...gc);}
           ci=j-1;}
-        else tx+=cw(c);}
+        else{txc.push(c);tx+=cwEff(c);}}
       document.querySelector(".htab-sp").innerHTML=ctgl;
       // 右ペインはタブで二択：アクティブな方"だけ"をDOM注入（非アクティブ側は文字列のまま捨てる＝重いDOM挿入は1ビューぶん）
       const rh=$("rightHead"); const rb=$("rightBody");
@@ -924,27 +932,37 @@
   right.addEventListener("scroll",()=>{if(lock)return;lock=true;left.scrollTop=right.scrollTop;lock=false;});
   left.addEventListener("scroll",()=>{if(lock)return;lock=true;right.scrollTop=left.scrollTop;lock=false;});
 
-  // 列幅変更（Excel風にヘッダー境界をドラッグ。表示列のみ対象・列折りたたみとは独立）
+  // 列幅変更（Excel風にヘッダー境界をドラッグ／ダブルクリックで既定幅。表示列のみ対象・列折りたたみとは独立）
+  // Why not: ドラッグ中に render() を呼ばない。幅は CSS 変数 --cw-<key> 経由なので変数1つの書き換えでヘッダ/全セルが追従する
+  //（毎 mousemove の innerHTML 全再構築＝行数×列数の仕事を避ける）。px 直値で組む +/− 位置の確定だけ mouseup で1回再描画する。
   let resizingCol=null;
   $("leftHead").addEventListener("mousedown",e=>{
     const h=e.target.closest("[data-resize-col]"); if(!h)return;
     e.preventDefault(); e.stopPropagation();
-    const key=h.getAttribute("data-resize-col"), c=COLS.find(x=>x.key===key); if(!c)return;
-    resizingCol={key,startX:e.clientX,startW:colW(c)};
+    const c=COLS.find(x=>x.key===h.getAttribute("data-resize-col")); if(!c)return;
+    resizingCol={col:c,startX:e.clientX,startW:cwBase(c),moved:false};
     document.body.classList.add("resizing-cols");
   });
   document.addEventListener("mousemove",e=>{
     if(!resizingCol)return;
     e.preventDefault();
-    const min=COL_MIN[resizingCol.key]||40;
-    colWidths[resizingCol.key]=Math.max(min,Math.round(resizingCol.startW+e.clientX-resizingCol.startX));
-    if(lastData)render(lastData);
+    const c=resizingCol.col, w=Math.max(c.min||40,Math.round(resizingCol.startW+e.clientX-resizingCol.startX));
+    if(colWidths[c.key]===w)return;
+    colWidths[c.key]=w; resizingCol.moved=true;
+    setColVar(c); leftColBounds=null;                                          // 幅が変わったら列境界キャッシュは無効（ハイライト帯のズレ防止）
   });
   document.addEventListener("mouseup",()=>{
     if(!resizingCol)return;
-    resizingCol=null;
+    const moved=resizingCol.moved; resizingCol=null;
     document.body.classList.remove("resizing-cols");
-    saveColWidths();
+    if(!moved)return;                                                          // 掴んだだけ（ダブルクリックの各クリック含む）は保存も再描画もしない
+    saveColWidths(); if(lastData)render(lastData);
+  });
+  $("leftHead").addEventListener("dblclick",e=>{                               // ダブルクリック＝保存値を捨てて既定幅 w に戻す（Excel慣習）
+    const h=e.target.closest("[data-resize-col]"); if(!h)return;
+    const key=h.getAttribute("data-resize-col");
+    if(!(key in colWidths))return;
+    delete colWidths[key]; saveColWidths(); if(lastData)render(lastData);
   });
 
   // 右ペインのタブ切替（時間/進捗）

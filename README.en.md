@@ -48,6 +48,7 @@ The latest version's main additions are the **filter bar** (narrow by state, del
 
 - **Filter bar** — above the left table, four axes sit side by side: **state (to do / in progress / done), delayed-only, owner (multi-select), and period (today / this week / all)**. Values inside one axis combine with OR; axes combine with AND, so you can stack them freely — e.g. "in progress AND delayed AND assigned to me." It is **display-only**: neither `wbs.json` nor the time axis changes. Hiding a row is a blindfold, not a delete
 - **Column collapse** — **+/−** above the headers fold or unfold column groups (qty+hours, progress, status, owner, plan, actual, notes), freeing up room for the Gantt
+- **Column resize** — drag a column header boundary to change its width; double-click resets it to the default (widths are remembered in the browser; the data is untouched)
 
 ### Edit
 
@@ -66,6 +67,7 @@ The latest version's main additions are the **filter bar** (narrow by state, del
 - **Narrow down**: the **filter bar** above the left table narrows by state, delay, owner, and period. Only the display changes — the data never moves
 - **Collapse rows**: click a project or phase name, or `▼/▶`. The **`▼/▶` in the Task column header** expands or collapses everything (**Ctrl+Z** restores the previous view after a slip)
 - **Collapse columns**: the **+/−** above the headers fold or unfold column groups (qty+hours, progress, status, owner, plan, actual, notes)
+- **Resize columns**: drag a column header boundary; double-click resets it to the default width
 - **Gantt**: the day column under your mouse is **highlighted**, with its date emphasized in the header. **Hover a bar** to see the exact plan and actual dates
 
 ## In-browser editing (optional)

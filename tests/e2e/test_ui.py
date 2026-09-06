@@ -17,7 +17,8 @@ with sync_playwright() as p:
     pg.click("#openBtn"); pg.wait_for_timeout(150)
     pg.click("#editBtn"); pg.wait_for_timeout(200)
 
-    w = pg.evaluate("()=>document.querySelector('#leftRows .lrow .c.name').style.width")
+    cwvar = "k=>getComputedStyle(document.documentElement).getPropertyValue('--cw-'+k).trim()"
+    w = pg.evaluate(cwvar, "name")
     check(w == "272px", f"編集時は作業項目列が拡幅 -> {w}")
     h = pg.evaluate("()=>Math.round(document.querySelector('#leftRows .nm-wrap .clk.caret').getBoundingClientRect().height)")
     check(h >= 24, f"行caretのヒット領域が行高相当 ({h}px)")
@@ -25,8 +26,7 @@ with sync_playwright() as p:
     check(bw >= 20 and bh >= 20, f"操作ボタンの寸法 ({bw}x{bh}px)")
 
     # #78: 編集モードで数量/時間の列を3桁見える幅(52px)に拡幅
-    qw = pg.evaluate("()=>{const i=document.querySelector('input[data-field=\"qty\"]');return i?i.closest('.c').style.width:null;}")
-    hw = pg.evaluate("()=>{const i=document.querySelector('input[data-field=\"hours\"]');return i?i.closest('.c').style.width:null;}")
+    qw, hw = pg.evaluate(cwvar, "qty"), pg.evaluate(cwvar, "hrs")
     check(qw == "52px" and hw == "52px", f"編集時は数量/時間が52px ({qw}/{hw})")
 
     # #49: アイコンは単色インラインSVG（emoji/テキスト回帰の検知）。操作ボタンとヘッダ指標の両方
