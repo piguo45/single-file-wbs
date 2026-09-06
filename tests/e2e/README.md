@@ -39,6 +39,7 @@ python tests/e2e/run_all.py
 | test_gantt_bars.py | ガントの予実バー幾何（予定=枠／実績=塗り／終了遅延=赤+N／完了=グレー／親=細サマリー） |
 | test_progress.py | 進捗ビュー（ステッパー・状況列・EVM=実績/予定/遅れ・予定終了の赤・タブ切替） |
 | test_colcollapse.py | 列の折りたたみ（アウトライン式 +/−・畳むと列が消え左が縮む・+で復元） |
+| test_col_resize.py | 列幅の変更（ヘッダ境界ドラッグ・最小幅・localStorage 記憶・ダブルクリックで既定復帰・ドラッグ中は再描画しない） |
 | test_collapse.py | 行の全体caret（▼▶/状態依存tooltip/全展開・全たたみ/Ctrl+Z復旧） |
 | test_highlight.py | 行/列ハイライト（十字の縦横） |
 | test_done.py | 完了トグル（✓・実績終了=本日・行グレー＋取り消し線） |
