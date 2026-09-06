@@ -44,7 +44,7 @@ graph LR
     LOAD["loadText() → applyData()"]
     CALC["computeNode()<br/>派生値を算出：工数・進捗(EV/PV/slip)"]
     RENDER["render()"]
-    LEFT[左：情報表<br/>No.〜備考・列折りたたみ]
+    LEFT[左：情報表<br/>No.〜備考・列折りたたみ・列幅調整]
     TABS{右ペイン<br/>時間 / 進捗 タブ}
     GANTT[時間軸ガント<br/>予実オーバーレイ＋イナズマ線]
     PROG[進捗軸ビュー<br/>EV/PV/slip バー]
@@ -86,6 +86,7 @@ graph TD
 
 - **計算ロジック**（工数・進捗率・EVM・親の加重平均）の正は [`CLAUDE.md` 計算ロジック節](../../CLAUDE.md)。
 - **編集モードは構造編集も担う**：入れ子（リーフの集計化と、最後の子削除での降格・案Y）とマイルストーンの追加／編集／削除。工数はリーフにのみ宿り、昇格／降格で総量は保存される。→ [ADR-0003](../adr/0003-no-derived-values-in-data.md)
+- **左表は列折りたたみと列幅調整を持つ**：列幅はヘッダー境界のドラッグで変更し、`localStorage` の `wbsColWidths` に保存する。折りたたみ状態は `wbsColCollapsed` に保存し、両者は独立に扱う。
 - **保存パスは聖域**（データ消失歴あり）：書込は単一キュー直列化・mtime検知・パース成功後にハンドル差替。→ [ADR-0002](../adr/0002-file-system-access-editing.md)
 - **配色はCUD配慮**（Okabe-Ito・形/位置/ラベルで冗長化）。→ [ADR-0005](../adr/0005-cud-color-design.md)
 

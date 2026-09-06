@@ -84,6 +84,10 @@
   #leftHead .hsub{display:flex;align-items:center;justify-content:center;font-weight:600;
                   white-space:nowrap;border-right:1px solid var(--border)}
   #leftHead .hsub:last-child{border-right:none}
+  #leftHead .h,#leftHead .hsub{position:relative;user-select:none}
+  .col-resizer{position:absolute;top:0;right:-3px;width:7px;height:100%;cursor:col-resize;z-index:8}
+  .col-resizer:hover{background:rgba(37,99,235,.18)}
+  body.resizing-cols{cursor:col-resize;user-select:none}
   #leftHead .h.h2l{flex-direction:column;justify-content:flex-start;line-height:1.25;
                    padding-top:calc(var(--header-h)/2 - .625em)} /* 1行目の中心=他の単行列名と同じ中央線（.625em=行高1.25の半分） */
   #leftHead .h .unit{font-size:9px;color:var(--muted);margin-left:1px}
@@ -298,7 +302,7 @@
       open:"ファイルを開く",openSub:"（ドラッグ&ドロップ）",reload:"更新",edit:"編集",langBtn:"EN",
       allTipExpand:"ツリーが全部展開されます ※Ctrl+Z でクリック前の状態に戻ります",
       allTipCollapse:"ツリーが全部折りたたまれます ※Ctrl+Z でクリック前の状態に戻ります",
-      colHide:"この列を畳む",colShow:"畳んだ列を開く",
+      colHide:"この列を畳む",colShow:"畳んだ列を開く",colResize:"列幅を変更",
       editTitle:"インライン編集（自動保存）。ONにする時、書き込み許可のため保存ダイアログで wbs.json を選び直します",
       notLoaded:"未読み込み",empty:"「ファイルを開く」または D&D で <b>wbs.json</b> を読み込んでください（Chrome）。",
       colNo:"No.",colTask:"作業項目",colQty:"数量",colHrs:"時間",colWork:"工数",colWorkUnit:"(人日)",colWorkTip:"工数(人日) ＝ 数量 × 時間(h) ÷ 8h（所定労働時間）",colProg:"進捗",colProgTip:"進捗％。編集モードで ◀▶ で±10%。未着手0%・完了100%は自動。親は配下の加重平均",colStat:"状況",colStatTip:"状況＝遅れ/実績/予定（％）。遅れ=赤・実績=青・予定=黒。遅れてない行は実績のみ。予定=本日あるべき%（EVMのPV）・遅れ=予定−実績（SV）",statD:"遅れ",statA:"実績",statP:"予定",viewTime:"時間",viewProg:"進捗",colAsg:"担当",
@@ -341,7 +345,7 @@
       open:"Open file",openSub:"(drag & drop)",reload:"Reload",edit:"Edit",langBtn:"日本語",
       allTipExpand:"Expands the whole tree (Ctrl+Z restores the view before the click)",
       allTipCollapse:"Collapses the whole tree (Ctrl+Z restores the view before the click)",
-      colHide:"Collapse this column",colShow:"Expand collapsed column",
+      colHide:"Collapse this column",colShow:"Expand collapsed column",colResize:"Resize column",
       editTitle:"Inline editing (autosave). When turning ON, re-select wbs.json in the save dialog to grant write permission",
       notLoaded:"No file loaded",empty:"Load <b>wbs.json</b> via \"Open file\" or drag &amp; drop (Chrome).",
       colNo:"No.",colTask:"Task",colQty:"Qty",colHrs:"Hours",colWork:"Effort",colWorkUnit:"(p-d)",colWorkTip:"Effort (person-days) = qty × time(h) ÷ 8h (standard working hours)",colProg:"Progress",colProgTip:"Progress %. In edit mode, ◀▶ steps ±10%. 0% (not started) and 100% (done) are automatic; parents are the weighted average",colStat:"Status",colStatTip:"Status = behind / actual / planned (%). Behind=red, actual=blue, planned=black. On-track rows show actual only. Planned = what should be done by today (EVM PV); behind = planned − actual (SV)",statD:"B",statA:"A",statP:"P",viewTime:"Time",viewProg:"Progress",colAsg:"Owner",
@@ -475,6 +479,11 @@
     {key:"note",label:"colNote",w:200,cls:"note",
      view:(c,n,x)=>x.leaf?linkify(n.note||""):"", field:"note",edit:"text",get:(c,n)=>n.note||""},
   ];
+  const COL_MIN={no:36,name:120,qty:36,hrs:42,work:56,prog:80,stat:84,asg:54,ps:58,pe:58,as:58,ae:58,note:100};
+  let colWidths={};
+  try{const saved=JSON.parse(lsGet("wbsColWidths")||"{}");if(saved&&typeof saved==="object")colWidths=saved;}catch(_){}
+  const colW=c=>Math.max(COL_MIN[c.key]||40,Number.isFinite(Number(colWidths[c.key]))?Number(colWidths[c.key]):c.w);
+  const saveColWidths=()=>lsSet("wbsColWidths",JSON.stringify(colWidths));
 
   // アウトライン式の列折りたたみ：列→折りたたみ単位の対応（No.・作業項目は対応なし＝常時表示）。数量+時間は工数の内訳でまとめる／工数は個別
   const COL_CG={qty:"qh",hrs:"qh",work:"work",prog:"prog",stat:"stat",asg:"asg",ps:"plan",pe:"plan",as:"act",ae:"act",note:"note"};
@@ -554,7 +563,7 @@
       : (()=>{const mon=addStr(TODAY,-((parse(TODAY).getUTCDay()+6)%7));return [mon,addStr(mon,6)];})();
     const projects=normalizeProjects(data);
     curProjects=projects;                                                    // 編集ハンドラ用に保持
-    const cw=c=>editMode&&DATE_FIELDS[c.key]?84:editMode&&c.key==="name"?c.w+72:editMode&&(c.key==="qty"||c.key==="hrs")?52:c.w;  // 編集時：日付列84px(#59)・作業項目+72(操作ボタンぶん名前入力に幅確保)・数量/時間は▲▼を残し3桁見える52px
+    const cw=c=>{const base=colW(c);return editMode&&DATE_FIELDS[c.key]?Math.max(base,84):editMode&&c.key==="name"?base+72:editMode&&(c.key==="qty"||c.key==="hrs")?Math.max(base,52):base;};  // 列幅はヘッダー境界D&Dで変更（localStorage保存）。編集時は必要幅だけ下限/加算
 
     // --- 行モデル構築 ---
     // projects→rows（フィルタ適用・親残し判定）。ms は SVG オーバーレイ用のマイルストーン収集
@@ -610,24 +619,25 @@
     // --- 左ヘッダ構築 ---
     // 列メタ(eCols)からHTML文字列 lh を生成。グループ/caret/凡例/単位など列種別に応じて分岐
     function buildLeftHeader(){
+      const rz=c=>`<span class="col-resizer" data-resize-col="${esc(c.key)}" title="${esc(t("colResize"))}"></span>`;
       let lh="";
       for(let i=0;i<eCols.length;i++){const c=eCols[i];
         if(c.group){let sub="",w=0,j=i;
-          while(j<eCols.length&&eCols[j].group===c.group){sub+=`<div class="hsub" style="width:${cw(eCols[j])}px">${esc(t(eCols[j].label))}</div>`;w+=cw(eCols[j]);j++;}
+          while(j<eCols.length&&eCols[j].group===c.group){const cc=eCols[j];sub+=`<div class="hsub" data-col-key="${esc(cc.key)}" style="width:${cw(cc)}px">${esc(t(cc.label))}${rz(cc)}</div>`;w+=cw(cc);j++;}
           lh+=`<div class="hg" style="width:${w}px"><div class="hgt">${esc(t(c.group))}</div><div class="hgb">${sub}</div></div>`;
           i=j-1;
         }else if(c.key==="name"){                                            // 作業項目ヘッダに全体caret（#52）
           const anyCol=rows.some(r=>r.collapsed);
-          lh+=`<div class="h" style="width:${cw(c)}px"><span id="allCaret" class="clk caret" title="${esc(t(anyCol?"allTipExpand":"allTipCollapse"))}">${anyCol?"▶":"▼"}</span>${esc(t(c.label))}</div>`;
+          lh+=`<div class="h" data-col-key="${esc(c.key)}" style="width:${cw(c)}px"><span id="allCaret" class="clk caret" title="${esc(t(anyCol?"allTipExpand":"allTipCollapse"))}">${anyCol?"▶":"▼"}</span>${esc(t(c.label))}${rz(c)}</div>`;
         }else if(c.key==="stat"){                                            // 状況=2段見出し＋色分け凡例（遅赤/実青/予黒）＝そのまま凡例
           const leg=`<span class="s-d">${esc(t("statD"))}</span><span class="s-x">/</span><span class="s-a">${esc(t("statA"))}</span><span class="s-x">/</span><span class="s-p">${esc(t("statP"))}</span>`;
-          lh+=`<div class="h h2l" style="width:${cw(c)}px" title="${esc(t(c.tip))}">${esc(t(c.label))}<span class="unit">${leg}</span></div>`;
+          lh+=`<div class="h h2l" data-col-key="${esc(c.key)}" style="width:${cw(c)}px" title="${esc(t(c.tip))}">${esc(t(c.label))}<span class="unit">${leg}</span>${rz(c)}</div>`;
         }else if(c.sub){                                                       // 単位付き見出し：短い単位は同一行・長い単位は2行（いずれも小さく薄く）。tipは計算式等のhover表示
           const tip=c.tip?` title="${esc(t(c.tip))}"`:"";
           lh+=c.inline
-            ?`<div class="h" style="width:${cw(c)}px"${tip}><span>${esc(t(c.label))}<span class="unit">${esc(t(c.sub))}</span></span></div>`
-            :`<div class="h h2l" style="width:${cw(c)}px"${tip}>${esc(t(c.label))}<span class="unit">${esc(t(c.sub))}</span></div>`;
-        }else lh+=`<div class="h" style="width:${cw(c)}px">${esc(t(c.label))}</div>`;
+            ?`<div class="h" data-col-key="${esc(c.key)}" style="width:${cw(c)}px"${tip}><span>${esc(t(c.label))}<span class="unit">${esc(t(c.sub))}</span></span>${rz(c)}</div>`
+            :`<div class="h h2l" data-col-key="${esc(c.key)}" style="width:${cw(c)}px"${tip}>${esc(t(c.label))}<span class="unit">${esc(t(c.sub))}</span>${rz(c)}</div>`;
+        }else lh+=`<div class="h" data-col-key="${esc(c.key)}" style="width:${cw(c)}px">${esc(t(c.label))}${rz(c)}</div>`;
       }
       return lh;
     }
@@ -913,6 +923,30 @@
   const left=$("left"), right=$("right");
   right.addEventListener("scroll",()=>{if(lock)return;lock=true;left.scrollTop=right.scrollTop;lock=false;});
   left.addEventListener("scroll",()=>{if(lock)return;lock=true;right.scrollTop=left.scrollTop;lock=false;});
+
+  // 列幅変更（Excel風にヘッダー境界をドラッグ。表示列のみ対象・列折りたたみとは独立）
+  let resizingCol=null;
+  $("leftHead").addEventListener("mousedown",e=>{
+    const h=e.target.closest("[data-resize-col]"); if(!h)return;
+    e.preventDefault(); e.stopPropagation();
+    const key=h.getAttribute("data-resize-col"), c=COLS.find(x=>x.key===key); if(!c)return;
+    resizingCol={key,startX:e.clientX,startW:colW(c)};
+    document.body.classList.add("resizing-cols");
+  });
+  document.addEventListener("mousemove",e=>{
+    if(!resizingCol)return;
+    e.preventDefault();
+    const min=COL_MIN[resizingCol.key]||40;
+    colWidths[resizingCol.key]=Math.max(min,Math.round(resizingCol.startW+e.clientX-resizingCol.startX));
+    if(lastData)render(lastData);
+  });
+  document.addEventListener("mouseup",()=>{
+    if(!resizingCol)return;
+    resizingCol=null;
+    document.body.classList.remove("resizing-cols");
+    saveColWidths();
+  });
+
   // 右ペインのタブ切替（時間/進捗）
   $("rtabs").addEventListener("click",e=>{
     const b=e.target.closest(".rtab"); if(!b)return;
