@@ -1,6 +1,7 @@
-"""フィルタバー：状態(#91)＋遅延(#92)。表示専用＝行を間引くだけ・データ/横軸は不変。
+"""フィルタバー：状態(#91)＋遅延(#92)＋期間(#94・今月=#105)。表示専用＝行を間引くだけ・データ/横軸は不変。
 状態=3排他ON/OFF・遅延=遅れてるタスクのみ・軸間AND・親残し判定・左右の高さ同期・横軸固定・サマリ不変・永続化・全OFF graceful。
-本日=CLOCK_PIN(2026-06-15)固定。done=実績終了あり / wip=着手のみ / todo=実績なし。1.2は予定終了6/12<本日=overdue(遅延)。"""
+本日=CLOCK_PIN(2026-06-15)固定。done=実績終了あり / wip=着手のみ / todo=実績なし。1.2は予定終了6/12<本日=overdue(遅延)。
+末尾の2ブロック目は今月フィルタの月境界(5月/7月除外)を別fixtureで検証(#105)。"""
 from playwright.sync_api import sync_playwright
 from common import VIEWER, check, finish, leaf, granted_handle_init, new_page
 
@@ -138,9 +139,47 @@ with sync_playwright() as p:
     pg.click('.seg-btn[data-period="week"]'); pg.wait_for_timeout(200)
     wn = leafNames()
     check(nL() == 4 and any("未着手" in n for n in wn), f"今週→1.2+1.3(予定が週に重なる)=4行 -> {nL()} {wn}")
+    # 今月(6/1-6/30)：本fixtureは全リーフが6月内(1.1-2.1)なので全期間と同じ7行に戻る(#105)
+    pg.click('.seg-btn[data-period="month"]'); pg.wait_for_timeout(200)
+    check(nL() == 7, f"今月→全リーフが6月内なので7行 -> {nL()}")
+    check(nL() == nG(), f"今月フィルタ後も左右一致(高さ同期) {nL()}/{nG()}")
+    check(nDays() == daysAll, f"今月フィルタでも横軸は不変(行だけ絞る) {nDays()}/{daysAll}")
+    check(pg.inner_text("#stat") == summaryAll, "今月フィルタでもサマリ不変(誠実なview)")
+    check(pg.evaluate("()=>localStorage.getItem('wbsPeriod')") == "month", "今月がlocalStorageに保存")
     # 全期間に戻す→全復活
     pg.click('.seg-btn[data-period="all"]'); pg.wait_for_timeout(150)
     check(nL() == 7, f"全期間で全復活7行 -> {nL()}")
     check(pg.evaluate("()=>localStorage.getItem('wbsPeriod')") == "all", "全期間がlocalStorageに保存")
     b.close()
-finish(errors)
+
+# ===== 今月フィルタの月境界の実効性(#105)：月外は除外され月内だけ残る =====
+# 本日=CLOCK_PIN(2026-06-15)固定・今月=6/1-6/30。5月のみ/7月のみのリーフは除外され、6月に重なるリーフだけ残る。
+DATA_MONTH = {"projects": [{"name": "Q", "milestones": [], "tasks": [
+    {"id": "1", "name": "工程", "children": [
+        leaf("1.1", "6月のタスク", asg="佐藤", ps="2026-06-10", pe="2026-06-20"),
+        leaf("1.2", "5月のみのタスク", asg="佐藤", ps="2026-05-01", pe="2026-05-10", as_="2026-05-01", ae="2026-05-10"),
+        leaf("1.3", "7月のみのタスク", asg="佐藤", ps="2026-07-05", pe="2026-07-10")]}]}]}
+
+errors2 = []
+with sync_playwright() as p:
+    b2 = p.chromium.launch()
+    pg2 = new_page(b2, viewport={"width": 1500, "height": 500})
+    pg2.on("pageerror", lambda e: errors2.append(str(e)))
+    pg2.on("dialog", lambda d: d.accept())
+    pg2.add_init_script(granted_handle_init(DATA_MONTH))
+    pg2.goto(VIEWER)
+    pg2.click("#openBtn"); pg2.wait_for_timeout(200)
+
+    nL2 = lambda: pg2.eval_on_selector_all("#leftRows .lrow", "e=>e.length")
+    nDays2 = lambda: pg2.eval_on_selector_all("#dates .d", "e=>e.length")
+    leafNames2 = lambda: pg2.eval_on_selector_all("#leftRows .lrow .nm", "e=>e.map(x=>x.textContent)")
+    daysAll2 = nDays2()
+    check(nL2() == 5, f"今月フィルタ境界テスト前提:全期間で5行(proj+工程+1.1/1.2/1.3) -> {nL2()}")
+
+    pg2.click('.seg-btn[data-period="month"]'); pg2.wait_for_timeout(200)
+    mn = leafNames2()
+    check(nL2() == 3 and any("6月" in n for n in mn) and not any(("5月のみ" in n or "7月のみ" in n) for n in mn),
+          f"今月→6月に重なる1.1だけ残り5月/7月のみは除外(proj+工程+1.1=3行) -> {nL2()} {mn}")
+    check(nDays2() == daysAll2, f"今月フィルタ境界テストでも横軸は不変 {nDays2()}/{daysAll2}")
+    b2.close()
+finish(errors + errors2)
