@@ -1230,6 +1230,45 @@
                   "note": ""
                 }
               ]
+            },
+            {
+              "id": "4.13",
+              "name": "0バイト化の再発調査＋復旧案内(#107)",
+              "note": "#107：https://github.com/piguo45/single-file-wbs/issues/107 6/29・6/30に2件（OneDrive側roadmap／WSL側wbs.json）。原因未特定。空データでの編集ON経路を塞ぐ＋0バイト読込時に復旧手順を表示",
+              "children": [
+                {
+                  "id": "4.13.1",
+                  "name": "実機で再現切り分け(wsl/OneDrive)",
+                  "qty": 1,
+                  "hours": 2,
+                  "assignee": "ぴぐお",
+                  "plan": {
+                    "start": "2026-09-10",
+                    "end": "2026-09-11"
+                  },
+                  "actual": {
+                    "start": null,
+                    "end": null
+                  },
+                  "note": ""
+                },
+                {
+                  "id": "4.13.2",
+                  "name": "空データ編集ON防止＋復旧案内＋e2e",
+                  "qty": 1,
+                  "hours": 4,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-11",
+                    "end": "2026-09-12"
+                  },
+                  "actual": {
+                    "start": null,
+                    "end": null
+                  },
+                  "note": ""
+                }
+              ]
             }
           ]
         },
