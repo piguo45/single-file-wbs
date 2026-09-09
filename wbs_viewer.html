@@ -10,6 +10,8 @@
     --day-w:22px; --row-h:30px; --header-h:48px; --tab-h:22px; --pv-pad:14px;
     --border:#d7dbe0; --btn-border:#9aa2ad; --grid:#eceef1; --line:#c5cad3; --weekend:#fbeef1;  /* line=表の区切り（縦横共通・青帯と色相で区別できるグレー）。--grid はガント日グリッド用 */  /* btn-border=操作物の輪郭（罫線より濃く・WCAG非テキスト3:1寄り） */
     --text:#1f2430; --muted:#6b7280; --ym-fg:#11161f;  /* 年月ラベル: 日付の数字(--text)より一段濃い=月>日の階層 */
+    --actual-soft:#4a70db; --short-soft:#d3394e;  /* 進捗タブ専用の実績/不足色（#106）。進捗タブは全行が0-100%のフル幅バーで色の面積が時間タブの数倍あり、
+       原色のままだと画面が重い。色相と明度(L*)は --actual/#e11d48 と同値のまま彩度(C*)だけ15%落とす＝意味色は不変で圧だけ下げる（薄くすると弱く見えるので明度は動かさない） */
     --actual:#2f6fed;  /* 実績は全階層で同色（親もリーフも同じ＝何のバーか一目で分かる・#65）。階層は行背景＋左表で表現 */
     --proj:#93acdf; --proj-line:#3a5694; --lvl0:#b9cdf2; --lvl1:#e3ebfb;
     --done-bg:#d4dae1; --done-fg:#5f6772; --accent:#2563eb; --edit-on:#16a34a;
@@ -204,8 +206,8 @@
   .prw.thin .ptick{top:11px;height:5px}
   .prw.thin .ptrack{top:11px;height:8px}
   .pbar{position:absolute;top:8px;height:14px;z-index:1}                         /* 子=太く（時間ビューの実績バーと同寸） */
-  .pbar.act{left:0;background:var(--actual)}                                     /* 直角（進捗ビューは角丸にしない） */
-  .pbar.short{background:#e11d48}
+  .pbar.act{left:0;background:var(--actual-soft)}                                /* 進捗タブ専用色（#106）。直角＝角丸の時間ビューと形でも区別 */
+  .pbar.short{background:var(--short-soft)}                                      /* 不足分=進捗タブ専用の赤（#106・時間タブの遅延赤と同じ色相/明度） */
   .prw.done .pbar.act{background:#8c98a6}                                        /* 完了=グレー（ガント実績バーと統一） */
   .prw.thin .pbar{top:11px;height:8px}                                           /* 親=集計=細く（時間ビューの親サマリーバーと同寸） */
   #ganttBg{position:absolute;top:0;left:0;z-index:0}   /* 月の区切り線(.mline)用。土日/祝日の列塗りは行背景に隠れるためオーバーレイ(#overlay rect)で全高に出す */
