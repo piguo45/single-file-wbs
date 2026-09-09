@@ -46,7 +46,7 @@ The latest version's main additions are the **filter bar** (narrow by state, del
 
 ### Narrow down
 
-- **Filter bar** — above the left table, four axes sit side by side: **state (to do / in progress / done), delayed-only, owner (multi-select), and period (today / this week / all)**. Values inside one axis combine with OR; axes combine with AND, so you can stack them freely — e.g. "in progress AND delayed AND assigned to me." It is **display-only**: neither `wbs.json` nor the time axis changes. Hiding a row is a blindfold, not a delete
+- **Filter bar** — above the left table, four axes sit side by side: **state (to do / in progress / done), delayed-only, owner (multi-select), and period (today / this week / this month / all)**. Values inside one axis combine with OR; axes combine with AND, so you can stack them freely — e.g. "in progress AND delayed AND assigned to me." It is **display-only**: neither `wbs.json` nor the time axis changes. Hiding a row is a blindfold, not a delete
 - **Column collapse** — **+/−** above the headers fold or unfold column groups (qty+hours, progress, status, owner, plan, actual, notes), freeing up room for the Gantt
 - **Column resize** — drag a column header boundary to change its width; double-click resets it to the default (widths are remembered in the browser; the data is untouched)
 
@@ -139,6 +139,7 @@ The bundled [`CLAUDE.md`](CLAUDE.md) ([English: `CLAUDE.en.md`](CLAUDE.en.md)) t
 ```
 
 - Tasks nest up to 3 levels. A node with `children` is a summary node; without one, it's a leaf that carries effort
+- **`qty` is a repeat count** (e.g. 5 screens × `hours` 4h each). Leave it at `1` for one-off work, and fold the "qty+hours" column group away if you don't use it
 - `holidays` (optional, top-level) is shared across all projects. A plain string means no name; `{ date, name }` shows the name as a tooltip. **Holidays render red in the date header and shade columns pink alongside weekends**, and are excluded from the remaining-business-days count
 - **Keys starting with `_` are custom keys** you can add freely (`_ai` = AI effort above, `_money` = outsourcing cost, `_links` = reference links — any structure works). The viewer ignores them, and in-browser editing preserves them. A URL you want to click belongs in `note` (auto-linked)
 - The legacy single-project format `{ "project", "milestones", "tasks" }` still reads fine (backward compatible)
