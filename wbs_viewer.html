@@ -310,7 +310,7 @@
       fBar:"絞り込み",fLabel:"状態",fTodo:"未着手",fWip:"進行中",fDone:"完了",fTip:"状態で表示/非表示（表示専用・データは変えません）。押下＝表示中",
       fDelay:"遅延のみ",fDelayTip:"遅れているタスクだけ表示（進捗遅れ or 期限超過）。状態など他の絞り込みと重ねて効く（表示専用）",
       fAsg:"担当",fAsgAll:"全員",fAsgNone:"(未割当)",fAsgSelAll:"全選択",fAsgClear:"全解除",fAsgTip:"担当で表示/非表示（複数選択・チェックした人だけ表示）。他の絞り込みと重ねて効く（表示専用）",
-      fPerToday:"今日",fPerWeek:"今週",fPerAll:"全期間",fPerTip:"予定or実績がその期間に重なるタスクだけ表示（今週=本日を含む月〜日）。横軸は動かさず行だけ絞る（表示専用）",
+      fPerToday:"今日",fPerWeek:"今週",fPerMonth:"今月",fPerAll:"全期間",fPerTip:"予定or実績がその期間に重なるタスクだけ表示（今週=本日を含む月〜日／今月=本日を含む暦月）。横軸は動かさず行だけ絞る（表示専用）",
       rsTip:"予定変更の履歴（クリックで表示）",rsBtnTip:"リスケ（予定変更を履歴に記録して予定を更新）",
       rsTitle:n=>`変更履歴（${n}回）`,rsBy:"理由",rsOrig:"当初",rsNow:"現在",rsVs:"当初比",rsD:n=>`${n>0?"+":""}${n}日`,
       rsForm:"リスケ（履歴に記録）",rsCur:"現予定",rsNewS:"新開始",rsNewE:"新終了",rsReasonPh:"理由（任意・例: #504の遅延で後ろ倒し）",
@@ -353,7 +353,7 @@
       fBar:"Filter",fLabel:"State",fTodo:"To do",fWip:"In progress",fDone:"Done",fTip:"Show/hide by state (display only — data is never changed). Pressed = shown",
       fDelay:"Delayed only",fDelayTip:"Show only delayed tasks (behind schedule or past due). Combines with the other filters (display only)",
       fAsg:"Owner",fAsgAll:"All",fAsgNone:"(none)",fAsgSelAll:"All",fAsgClear:"None",fAsgTip:"Show/hide by owner (multi-select; only checked owners shown). Combines with the other filters (display only)",
-      fPerToday:"Today",fPerWeek:"This week",fPerAll:"All",fPerTip:"Show only tasks whose plan or actual overlaps the period (this week = Mon–Sun containing today). The axis doesn't move, only rows are filtered (display only)",
+      fPerToday:"Today",fPerWeek:"This week",fPerMonth:"This month",fPerAll:"All",fPerTip:"Show only tasks whose plan or actual overlaps the period (this week = Mon–Sun containing today; this month = the calendar month containing today). The axis doesn't move, only rows are filtered (display only)",
       rsTip:"Reschedule history (click to show)",rsBtnTip:"Reschedule (record the change in history and update the plan)",
       rsTitle:n=>`Reschedule history (${n})`,rsBy:"Reason",rsOrig:"Baseline",rsNow:"Now",rsVs:"vs baseline",rsD:n=>`${n>0?"+":""}${n}d`,
       rsForm:"Reschedule (recorded)",rsCur:"Current",rsNewS:"New start",rsNewE:"New end",rsReasonPh:"Reason (optional, e.g. pushed back by #504)",
@@ -397,8 +397,8 @@
   let delayOnly=false;if(lsGet("wbsDelayOnly")==="1")delayOnly=true;  // 遅延フィルタ(#92)：既定OFF＝絞らない
   const asgOff=new Set();try{const a=JSON.parse(lsGet("wbsAsgOff")||"null");if(Array.isArray(a))a.forEach(x=>asgOff.add(x));}catch(_){}  // 担当フィルタ(#93)：非表示にした担当。既定=空=全員表示（新担当は既定で表示＝off集合方式で堅牢）
   let asgList=[];   // データ内のユニーク担当（renderで更新・ドロップダウン用）
-  const PERIODS=[{k:"today",l:"fPerToday"},{k:"week",l:"fPerWeek"},{k:"all",l:"fPerAll"}];  // 期間フィルタ(#94)：単一選択
-  let period="all";{const p=lsGet("wbsPeriod");if(p==="today"||p==="week")period=p;}  // 既定=全期間＝絞らない
+  const PERIODS=[{k:"today",l:"fPerToday"},{k:"week",l:"fPerWeek"},{k:"month",l:"fPerMonth"},{k:"all",l:"fPerAll"}];  // 期間フィルタ(#94)：単一選択・(#105)今月を追加
+  let period="all";{const p=lsGet("wbsPeriod");if(p==="today"||p==="week"||p==="month")period=p;}  // 既定=全期間＝絞らない
   let periodR=null;   // 期間の対象範囲 [start,end]（render毎に設定・"all"はnull）
   const inPeriod=c=>{ if(!periodR)return true; const ps=periodR[0],pe=periodR[1],ov=(s,e)=>!!s&&!!e&&!(e<ps||s>pe); return ov(c.planStart,c.planEnd)||ov(c.actualStart,c.actualEndEff); };  // 予定 or 実績の期間が範囲に重なる（横軸は動かさず行だけ絞る）
   const isDelayed=(c,today)=>(c.slip||0)>0||isOverdue(c,today);   // 遅れ＝進捗遅れ(slip>0) or 期限超過(本日>予定終了かつ未完)
@@ -571,8 +571,9 @@
     const scrollKeep={left:$("right").scrollLeft,
                       top:$("right").scrollTop};   // スクロール位置を保持
     const TODAY=todayStr();
-    periodR = period==="all" ? null : period==="today" ? [TODAY,TODAY]   // 期間(#94)：週=本日を含む月〜日
-      : (()=>{const mon=addStr(TODAY,-((parse(TODAY).getUTCDay()+6)%7));return [mon,addStr(mon,6)];})();
+    periodR = period==="all" ? null : period==="today" ? [TODAY,TODAY]   // 期間(#94)：週=本日を含む月〜日／月=本日を含む暦月(#105)
+      : period==="week" ? (()=>{const mon=addStr(TODAY,-((parse(TODAY).getUTCDay()+6)%7));return [mon,addStr(mon,6)];})()
+      : (()=>{const d=parse(TODAY),first=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1)).toISOString().slice(0,10),nextFirst=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1)).toISOString().slice(0,10);return [first,addStr(nextFirst,-1)];})();
     const projects=normalizeProjects(data);
     curProjects=projects;                                                    // 編集ハンドラ用に保持
     const cwSty={};COLS.forEach(c=>cwSty[c.key]=` style="width:${cwv(c)}"`);  // 列ぶんだけ先に組む（行×列のセル毎に幅を計算しない）
