@@ -54,12 +54,24 @@ EDIT_CAPTURE = r"""()=>{
   return {inputs, btns};
 }"""
 
-# 進捗タブ：進捗バー（青実績/赤不足分）の幾何＋PV目盛り線を凍結
+# 進捗タブ：進捗バー（実績/不足分）とトラックを凍結。
+# left/width は JS が付ける%（＝計算結果）、top/height/色は CSS 側（＝見た目の仕様）。
+# 後者は getComputedStyle で撮る＝バーの太さ・位置・配色を変えた時にゴールデンが赤くなる（#106）。
 PROG_CAPTURE = r"""()=>{
-  const rows = [...document.querySelectorAll('#progbody .prw')].map(r=>({
-    cls: [...r.classList].filter(c=>c!=='prw').join(' '),
-    bars: [...r.querySelectorAll('.pbar')].map(b=>({kind:b.className.replace('pbar','').trim(), left:b.style.left, width:b.style.width})),
-  }));
+  const geo = el => { const s = getComputedStyle(el); return {top: s.top, height: s.height, bg: s.backgroundColor}; };
+  const rows = [...document.querySelectorAll('#progbody .prw')].map(r=>{
+    const tr = r.querySelector('.ptrack');                                   // マイルストーン行(.msrow)にはトラックが無い
+    const t = tr ? geo(tr) : null;
+    return {
+      cls: [...r.classList].filter(c=>c!=='prw').join(' '),
+      track: t && {top: t.top, height: t.height},                            // 下地の高さもバーと一緒に動くので撮る
+      bars: [...r.querySelectorAll('.pbar')].map(b=>{
+        const g = geo(b);
+        return {kind: b.className.replace('pbar','').trim(), left: b.style.left, width: b.style.width,
+                top: g.top, height: g.height, bg: g.bg};
+      }),
+    };
+  });
   return {rows};
 }"""
 

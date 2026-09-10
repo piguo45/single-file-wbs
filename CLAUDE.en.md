@@ -198,12 +198,12 @@ Hand the fuzzy "roughly what %" to an AI. The steps are deterministic:
   "a person's/AI's judgment at a point in time", so it is stored as a `_` key (never recomputed) — consistent with the "no derived values in data" rule.
 - **Status column = behind / actual / planned** (slip / EV / PV, %). Behind=red, actual=blue, planned=black. **On-track rows show actual only** (quiet). No mental math (the delay is pre-computed).
 - **Planned-end turns red** when today > plan end and not done (deadline overrun; done rows are not reddened). Same "red = behind" as the time tab's Gantt/inazuma.
-- **The right pane toggles between "Time / Progress" tabs** (default = Time). Time = the Gantt (unchanged) / Progress = horizontal completion bars (blue=actual / red=shortfall to plan, whose right edge = planned PV / thick=leaf, thin=parent summary, same sizes as the time view).
+- **The right pane toggles between "Time / Progress" tabs** (default = Time). Time = the Gantt (unchanged) / Progress = horizontal completion bars (blue=actual / red=shortfall to plan, whose right edge = planned PV / leaf=10px, parent summary=6px — **thinner than the time view (14px/8px)** to shrink the colored area, #106).
   Only the active view is injected into the DOM (render cost = one view). The tab choice is remembered in localStorage.
 - **Telling the Progress view apart from Time**: (1) **square-cornered bars** (Time = rounded; distinguished by shape, CUD-safe) (2) a **blue-grey unfilled track** (`#eef1f7`, 0–100%) (3) **ruler-style ticks** =
   major (full-height dotted at 20/40/60/80%, `#555`) + minor (short solid from the top edge down ~60%, every 10%, same `#555`, drawn in front of the bars). Axis labels are 0/20/40/60/80/100%.
-  (4) **dedicated colors** = actual `--actual-soft` `#4a70db` / shortfall `--short-soft` `#d3394e`. **Same hue and same lightness (L\*) as the Time tab's `#2f6fed` / `#e11d48`, with only chroma (C\*) lowered by 15%** (#106).
-  Every row in the Progress tab is a full-width 0-100% bar, so the colored area is several times that of the Time tab and pure hues make the screen heavy. **Lightness is never raised** (washing the colors out would also weaken the sense of delay) — the semantic colors stay identical, only the visual pressure drops.
+  (4) **dedicated colors and thinner bars** = actual `--actual-soft` `#6872b1` / shortfall `--short-soft` `#b15a5d`. **Same hue and same lightness (L\*) as the Time tab's `#2f6fed` / `#e11d48`, with only chroma (C\*) lowered by 50%** (#106).
+  Every row in the Progress tab is a full-width 0-100% bar, so the colored area is several times that of the Time tab and pure hues make the screen heavy. The pressure comes from **both chroma and area**, so the bars are also slimmed from 14/8px to **10/6px** (the `.ptrack` backing and the minor ticks follow). **Lightness is never raised** (washing the colors out would also weaken the sense of delay) — the semantic colors stay identical, only the visual pressure drops.
 
 ## Display
 - **UI is Japanese/English switchable** (the "EN / 日本語" toolbar button). Default Japanese; the choice is stored in localStorage.
@@ -240,7 +240,7 @@ Hand the fuzzy "roughly what %" to an AI. The steps are deterministic:
 - **Parent (aggregate) = thin summary bar**: both plan outline and actual are thin (parent vs leaf by shape, not extra color = CUD-safe, keeps all info when collapsed).
   The actual's fill ratio matches leaves. **Bar color is identical across all levels** (parent vs leaf distinguished by bar thickness/shape, not hue or lightness).
 - **Colors (CUD-aware, #35)**: actual = blue / plan = blue outline / finish delay & inazuma = red (vivid while active / muted when done) / done = gray bar.
-  **Only the Progress tab uses dedicated bar colors** (`--actual-soft` / `--short-soft` — same hue and lightness as the Time tab, 15% less chroma, #106): the semantics stay shared while the area's visual pressure drops.
+  **Only the Progress tab uses dedicated bar colors** (`--actual-soft` / `--short-soft` — same hue and lightness as the Time tab, 50% less chroma, #106): the semantics stay shared while the area's visual pressure drops.
   Start delay uses no color — just the empty outline. Following the Okabe-Ito principle we avoid "blue vs purple" (milestone default = mauve `#cc79a7`) and never rely on color alone (shape, position, labels add redundancy).
   Verified by `tests/e2e/test_color_audit.py` (add the pair and re-run whenever you add/change a color).
 - Date columns show `5/11` style. Initial view centers near today.
