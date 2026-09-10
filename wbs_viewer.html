@@ -10,8 +10,9 @@
     --day-w:22px; --row-h:30px; --header-h:48px; --tab-h:22px; --pv-pad:14px;
     --border:#d7dbe0; --btn-border:#9aa2ad; --grid:#eceef1; --line:#c5cad3; --weekend:#fbeef1;  /* line=表の区切り（縦横共通・青帯と色相で区別できるグレー）。--grid はガント日グリッド用 */  /* btn-border=操作物の輪郭（罫線より濃く・WCAG非テキスト3:1寄り） */
     --text:#1f2430; --muted:#6b7280; --ym-fg:#11161f;  /* 年月ラベル: 日付の数字(--text)より一段濃い=月>日の階層 */
-    --actual-soft:#4a70db; --short-soft:#d3394e;  /* 進捗タブ専用の実績/不足色（#106）。進捗タブは全行が0-100%のフル幅バーで色の面積が時間タブの数倍あり、
-       原色のままだと画面が重い。色相と明度(L*)は --actual/#e11d48 と同値のまま彩度(C*)だけ15%落とす＝意味色は不変で圧だけ下げる（薄くすると弱く見えるので明度は動かさない） */
+    --actual-soft:#6872b1; --short-soft:#b15a5d;  /* 進捗タブ専用の実績/不足色（#106）。進捗タブは全行が0-100%のフル幅バーで色の面積が時間タブの数倍あり、
+       原色のままだと画面が重い。色相と明度(L*)は --actual/#e11d48 と同値のまま彩度(C*)だけ50%落とす＝意味色は不変で圧だけ下げる（薄くすると弱く見えるので明度は動かさない）。
+       圧の元は彩度と面積の両方なので、バー高も 14/8px→10/6px に細くして併せて減らす */
     --actual:#2f6fed;  /* 実績は全階層で同色（親もリーフも同じ＝何のバーか一目で分かる・#65）。階層は行背景＋左表で表現 */
     --proj:#93acdf; --proj-line:#3a5694; --lvl0:#b9cdf2; --lvl1:#e3ebfb;
     --done-bg:#d4dae1; --done-fg:#5f6772; --accent:#2563eb; --edit-on:#16a34a;
@@ -200,16 +201,16 @@
   .prw{height:var(--row-h);position:relative;border-bottom:1px solid var(--grid)}
   .prw.prow{background:var(--proj)} .prw.lvl0{background:var(--lvl0)} .prw.lvl1{background:var(--lvl1)}
   .prw.done{background:var(--done-bg)}                                           /* 完了=灰色（左の行と同じ・後勝ちで階層色に優先） */
-  .ptrack{position:absolute;left:0;width:100%;top:8px;height:14px;background:#eef1f7;border:1px solid #cdd8ea;z-index:0} /* 0-100%の青グレー下地（無地）。直角＝角丸の時間ビューと形でも区別 */
-  .ptick{position:absolute;left:0;width:100%;top:8px;height:8px;z-index:2;pointer-events:none;
+  .ptrack{position:absolute;left:0;width:100%;top:10px;height:10px;background:#eef1f7;border:1px solid #cdd8ea;z-index:0} /* 0-100%の青グレー下地（無地）。直角＝角丸の時間ビューと形でも区別 */
+  .ptick{position:absolute;left:0;width:100%;top:10px;height:6px;z-index:2;pointer-events:none;
          background:repeating-linear-gradient(to right,transparent 0,transparent calc(10% - 1px),#555 calc(10% - 1px),#555 10%,transparent 10%,transparent 20%)} /* 細目盛り＝主目盛り(20%点線)の中間 10/30/50/70/90% だけ（20%位置は点線と重ねない）。上端から6割の短い線・同色#555・バー前面 */
-  .prw.thin .ptick{top:11px;height:5px}
-  .prw.thin .ptrack{top:11px;height:8px}
-  .pbar{position:absolute;top:8px;height:14px;z-index:1}                         /* 子=太く（時間ビューの実績バーと同寸） */
+  .prw.thin .ptick{top:12px;height:4px}
+  .prw.thin .ptrack{top:12px;height:6px}
+  .pbar{position:absolute;top:10px;height:10px;z-index:1}                        /* 子=10px＝時間ビューの実績バー(14px)より細い（面積を減らす・#106） */
   .pbar.act{left:0;background:var(--actual-soft)}                                /* 進捗タブ専用色（#106）。直角＝角丸の時間ビューと形でも区別 */
   .pbar.short{background:var(--short-soft)}                                      /* 不足分=進捗タブ専用の赤（#106・時間タブの遅延赤と同じ色相/明度） */
   .prw.done .pbar.act{background:#8c98a6}                                        /* 完了=グレー（ガント実績バーと統一） */
-  .prw.thin .pbar{top:11px;height:8px}                                           /* 親=集計=細く（時間ビューの親サマリーバーと同寸） */
+  .prw.thin .pbar{top:12px;height:6px}                                           /* 親=集計=6px＝時間ビューの親サマリー(8px)より細い（#106） */
   #ganttBg{position:absolute;top:0;left:0;z-index:0}   /* 月の区切り線(.mline)用。土日/祝日の列塗りは行背景に隠れるためオーバーレイ(#overlay rect)で全高に出す */
   #ganttBg .mline{position:absolute;top:0;bottom:0;width:1px;background:#dfe2e6}
   #grows{position:relative;z-index:1}
