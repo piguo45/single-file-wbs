@@ -1179,7 +1179,7 @@
             {
               "id": "4.12",
               "name": "進捗タブの色の圧を下げる(#106)",
-              "note": "#106：https://github.com/piguo45/single-file-wbs/issues/106 案A＝淡色＋斜線ハッチ（色相は時間タブと同じ）。比較スクショ→ユーザー承認→マージ",
+              "note": "#106：https://github.com/piguo45/single-file-wbs/issues/106 D1b(彩度15%減)を実データで再判定→V4(彩度50%減＋細バー10/6px)に変更",
               "children": [
                 {
                   "id": "4.12.1",
@@ -1228,6 +1228,22 @@
                     "end": "2026-09-09"
                   },
                   "note": "D1b で承認（青#4a70db/赤#d3394e・明度と色相は時間タブと同じ）"
+                },
+                {
+                  "id": "4.12.4",
+                  "name": "実データ再判定→V4で再実装",
+                  "qty": 1,
+                  "hours": 3,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-10",
+                    "end": "2026-09-10"
+                  },
+                  "actual": {
+                    "start": "2026-09-10",
+                    "end": null
+                  },
+                  "note": "試作V0〜V4を実データで比較しV4決定。配色監査・ゴールデン/ピクセル撮り直し・CLAUDE.md ja/en"
                 }
               ]
             },
