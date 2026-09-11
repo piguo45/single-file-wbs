@@ -31,7 +31,7 @@
 
 ## 補遺：課題側の編集も同じ保存パスを使う（v2.0.0）
 
-**2026-09-11 追記。** 移植元 [single-file-issue](https://github.com/piguo45/single-file-issue) の ADR-0003（保存パスの無改変な流用）を、本 ADR に合流させた記録。
+**2026-09-11 追記。** 移植元 single-file-issue（非公開リポ） の ADR-0003（保存パスの無改変な流用）を、本 ADR に合流させた記録。
 
 課題側（`projects[].issues` の編集）は保存処理を**新しく書かず**、本 ADR の `ensureWritable` / `writeNow` / `queueSave` / `flushSaves` / `loadFromHandle` / `openPicker` / `refresh` を**そのまま使う**。理由は3つ。
 

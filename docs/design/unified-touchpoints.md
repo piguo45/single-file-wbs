@@ -2,11 +2,12 @@
 
 統合ビューアを本家へ移すための差し込み口の一覧（橋 `PM` の窓口・課題描画器の作り方・取り込み手順）。
 
-> 移植元 [single-file-issue](https://github.com/piguo45/single-file-issue) から。v2.0.0 の統合に至る**設計の履歴**として本家に置く（本文は当時の記録のまま。`issue.json` ／ `issue_viewer.html` は現在の `wbs.json` ／ `wbs_viewer.html`）。
+> 移植元 single-file-issue（非公開リポ） から。v2.0.0 の統合に至る**設計の履歴**として本家に置く（本文は当時の記録のまま。`issue.json` ／ `issue_viewer.html` は現在の `wbs.json` ／ `wbs_viewer.html`）。
 
 > 作成：2026-09-07（段階 B・実装ワーカー）。対象：`wbs_viewer.html`（**本家 main `ce833e1` を土台**）。
 > 土台の履歴：`763421f`（v1.4.0）→ **`ce833e1`**（2026-09-10 取り込み・#105 期間フィルタ「今月」／#106 進捗タブの専用色＋細バー）。
 > 版表記（`.ver`）は本家がまだ `v1.4.0` のままなので、以下の `v1.4.0` の記述はそのまま有効。
+> **（2026-09-11 追記）統合は完了し、本家の版表記は `v2.0.0` になった。以下に出てくる `v1.4.0` は、いずれも移植作業時点の土台を指す当時の記述である。**
 > **原則**：wbs の既存行は書き換えない。**加算のみ**（分岐の追加・末尾への連結・フック呼び出し 1 行）。
 > `issues` も `links` も無い JSON では、追記コードは DOM・CSS・localStorage・保存内容の**いずれにも痕跡を残さない**。
 > 証拠：`tests/wbs_e2e/test_golden.py`（49 スナップショット全一致）／`test_pixel.py`（8 枚とも 0/1,350,000 画素）。
@@ -187,7 +188,7 @@ hunk 数が §1 の**7 つ**（＝差し込み口 8 か所のうち #8 は JS �
 uv run python tests/wbs_e2e/run_all.py                       # 本家の回帰網（golden 49・pixel 8 枚）
 uv run python tests/e2e/run_all.py                           # 課題側 24 スイート（単体版）
 ISSUE_VIEWER=wbs_viewer.html uv run python tests/e2e/run_all.py   # 課題側 24 スイート（統合版）
-uv run python scripts/check.py issue_sample.json issue_dogfood.json
+uv run python scripts/check.py wbs_sample_issues.json wbs_roadmap.json
 ```
 
 pixel が 0 画素でないときは**撮り直さない**。原因は ①差し込みの影響 ②当て漏れ ③実行環境のフォント差 のどれかなので、

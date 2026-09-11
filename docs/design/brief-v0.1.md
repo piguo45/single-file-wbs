@@ -2,7 +2,7 @@
 
 課題管理表を「JSON 1枚＋単一HTMLビューア＋`CLAUDE.md`」で回す v0.1（MVP）の設計ブリーフ（一次記録）。
 
-> 移植元 [single-file-issue](https://github.com/piguo45/single-file-issue) から。v2.0.0 の統合に至る**設計の履歴**として本家に置く（本文は当時の記録のまま。`issue.json` ／ `issue_viewer.html` は現在の `wbs.json` ／ `wbs_viewer.html`）。
+> 移植元 single-file-issue（非公開リポ） から。v2.0.0 の統合に至る**設計の履歴**として本家に置く（本文は当時の記録のまま。`issue.json` ／ `issue_viewer.html` は現在の `wbs.json` ／ `wbs_viewer.html`）。
 
 > 作成：2026-09-06（PM＝Claude Fable 5.1）。実装ワーカーへの**指示書**であり、設計判断の一次記録。
 > 仕様の単一ソースは実装後の `CLAUDE.md` に移す。本書は「なぜそう決めたか」を残す。

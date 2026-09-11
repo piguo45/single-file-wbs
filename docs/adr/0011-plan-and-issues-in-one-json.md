@@ -1,6 +1,6 @@
 # ADR-0011: 計画と課題を1つの JSON に置く（案件＝project・リンク台帳は課題側だけ）
 
-> 移植元 [single-file-issue](https://github.com/piguo45/single-file-issue) の **ADR-0006** を v2.0.0 の統合で本家へ移した（本文は当時の記録のまま）。
+> 移植元 single-file-issue（非公開リポ） の **ADR-0006** を v2.0.0 の統合で本家へ移した（本文は当時の記録のまま）。
 > 移植元では課題データを `issue.json`、ビューアを `issue_viewer.html` と呼んでいた。v2.0.0 以降はどちらも **`wbs.json` ／ `wbs_viewer.html`** に統一されている。
 
 `projects[]` の中に 計画（`tasks`）と課題（`issues`）を並べ、つながりは課題の `links[]` にだけ書く。

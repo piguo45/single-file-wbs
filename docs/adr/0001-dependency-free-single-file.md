@@ -30,7 +30,7 @@ issue化以前の基盤決定。`README.md`（「HTTPサーバー不要・外部
 
 ## 補遺：課題管理（v2.0.0）でも同じ前提を採る
 
-**2026-09-11 追記。** 移植元 [single-file-issue](https://github.com/piguo45/single-file-issue) の ADR-0004（依存ゼロの単一HTML）を、本 ADR に合流させた記録。
+**2026-09-11 追記。** 移植元 single-file-issue（非公開リポ） の ADR-0004（依存ゼロの単一HTML）を、本 ADR に合流させた記録。
 
 課題管理を足すにあたって置き場を選び直したが、結論は本 ADR と同じ「**単一HTML ＋ 同じフォルダの JSON 1枚**」になった。
 

@@ -27,6 +27,7 @@ Issues: flip **Plan｜Issues** in the toolbar and the same file's issue table ap
 ## Start in 30 seconds
 
 1. Download `wbs_viewer.html` from [Releases](https://github.com/piguo45/single-file-wbs/releases/latest)
+   - **v2.0.0 is not released yet.** Until it is, `git clone` the repo or save `wbs_viewer.html` from the Raw view
 2. Open it in Chrome (plain `file://` is fine)
 3. Load `wbs_sample_issues.json` via **Open file** (or drag & drop onto that same button)
 
@@ -66,7 +67,7 @@ The conventions live in [`CLAUDE.en.md`](CLAUDE.en.md). An AI reads that before 
 - Running the regression suites → [`tests/e2e/README.md`](tests/e2e/README.md) (plan), [`tests/e2e_issue/README.md`](tests/e2e_issue/README.md) (issues)
 - Requirements → Google Chrome (latest) recommended; Edge and other Chromium browsers work. Firefox and Safari are not supported (no File System Access API)
 - Samples → [`wbs_sample.json`](wbs_sample.json) (plan only), [`wbs_sample_issues.json`](wbs_sample_issues.json) (plan + issues)
-- Legend of states and marks → the `?` on the issue toolbar
+- Legend of states and marks → the **Legend** button on the issue toolbar
 - Changelog → [Releases](https://github.com/piguo45/single-file-wbs/releases)
 
 ## License

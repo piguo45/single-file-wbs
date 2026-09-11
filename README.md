@@ -27,6 +27,7 @@
 ## 30秒で始める
 
 1. [Releases](https://github.com/piguo45/single-file-wbs/releases/latest) から `wbs_viewer.html` をダウンロードする
+   - **v2.0.0 はまだリリースされていない。** それまでは `git clone` するか、`wbs_viewer.html` を Raw で保存する
 2. Chrome で開く（`file://` のままでよい）
 3. **「ファイルを開く」** で `wbs_sample_issues.json` を読み込む（同じボタンへのドラッグ&ドロップでも可）
 
@@ -66,7 +67,7 @@
 - 回帰網の回し方 → [`tests/e2e/README.md`](tests/e2e/README.md)（計画）、[`tests/e2e_issue/README.md`](tests/e2e_issue/README.md)（課題）
 - 動作環境 → Google Chrome（最新版）推奨。Edge などのChromium系でも動く。Firefox/SafariはFile System Access API未対応のため不可
 - サンプル → [`wbs_sample.json`](wbs_sample.json)（計画だけ）、[`wbs_sample_issues.json`](wbs_sample_issues.json)（計画＋課題）
-- 状態と印の凡例 → 課題側の操作バーの `?`
+- 状態と印の凡例 → 課題側の操作バーの **「凡例」ボタン**
 - 更新履歴 → [Releases](https://github.com/piguo45/single-file-wbs/releases)
 
 ## ライセンス

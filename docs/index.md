@@ -25,7 +25,7 @@ single-file-wbs (WBS Viewer) の設計ドキュメント。
 | [ADR-0005: 配色はCUD配慮（色だけに意味を担わせない）](adr/0005-cud-color-design.md) | 色だけに意味を持たせず、形・位置・ラベルで冗長化する（色覚多様性への配慮）。 |
 | [ADR-0006: 回帰テストは headless Chromium（self-contained・uv）](adr/0006-e2e-headless-chromium.md) | 実ブラウザの描画が仕様なので、回帰テストは headless Chromium で実描画を検証する（uvで自己完結）。 |
 | [ADR-0007: ライセンスは MIT を継続（AGPL移行は却下）](adr/0007-license-mit.md) | クライアント完結でAGPLの前提と噛み合わないため、ライセンスは MIT を継続する。 |
-| [ADR-0008: 状態を持たず、事実から導出する](adr/0008-facts-only-derived-status.md) | `issue.json` は事実（決めた・止めた・閉じた・行動が済んだ）だけを持ち、状態（未着手／対応中／完了）と印はビューアが導出する。 |
+| [ADR-0008: 状態を持たず、事実から導出する](adr/0008-facts-only-derived-status.md) | `wbs.json` は事実（決めた・止めた・閉じた・行動が済んだ）だけを持ち、状態（未着手／対応中／完了）と印はビューアが導出する。 |
 | [ADR-0009: 「二つの問い」と「完了条件」を第一級フィールドにする](adr/0009-two-questions-and-close-condition.md) | 課題を載せる条件（放置するとどうなるか／やると何が生まれるか）と完了条件を、備考ではなく専用フィールドで持つ。 |
 | [ADR-0010: シート＝Excel の「1ブック＝複数シート」に倣う](adr/0010-sheets-as-excel-workbook.md) | 課題表のファイル1枚を「ブック」とし、案件ごとの「シート」をタブで切り替える。 |
 | [ADR-0011: 計画と課題を1つの JSON に置く（案件＝project・リンク台帳は課題側だけ）](adr/0011-plan-and-issues-in-one-json.md) | `projects[]` の中に 計画（`tasks`）と課題（`issues`）を並べ、つながりは課題の `links[]` にだけ書く。 |

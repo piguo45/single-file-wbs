@@ -1,6 +1,6 @@
 # ADR-0010: シート＝Excel の「1ブック＝複数シート」に倣う
 
-> 移植元 [single-file-issue](https://github.com/piguo45/single-file-issue) の **ADR-0005** を v2.0.0 の統合で本家へ移した（本文は当時の記録のまま）。
+> 移植元 single-file-issue（非公開リポ） の **ADR-0005** を v2.0.0 の統合で本家へ移した（本文は当時の記録のまま）。
 > 移植元では課題データを `issue.json`、ビューアを `issue_viewer.html` と呼んでいた。v2.0.0 以降はどちらも **`wbs.json` ／ `wbs_viewer.html`** に統一されている。
 
 課題表のファイル1枚を「ブック」とし、案件ごとの「シート」をタブで切り替える。

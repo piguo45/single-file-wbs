@@ -115,6 +115,13 @@ Connections are written **only in the issue's `links[]`**; the view builds the r
 19. **When an AI writes `_planLog` or `_progress`, `by` / `_progressBy` is its model name** (e.g. `"claude-sonnet-5"`), never `"manual"`. `"manual"` is **only for a human editing by hand**. Without a record of whose judgment it was, the assessment cannot be revisited later.
 20. **On a read-only request that spans the plan** ("what is due this month", "what is late", "assess the progress"), **if a project has no `tasks`, say so in one line: "no plan (WBS), so this cannot be judged"** (never silently omit it).
     When nothing matches, **state it explicitly** ("there are no late tasks"). These are read-only requests, so **never change the JSON** (→ 11).
+21. **A request that moves an `until` / `due` that is already set, in bulk** ("push all the open questions to next week", "add a week to every due date") → **list the targets and confirm before overwriting.**
+    Extending a deadline is **changing a promise**, not tidying a record. In particular, **anything currently overdue** loses its nudge mark the moment you push it, so **count how many are overdue**, list them, and then ask a two-way question: "move all of them, or hold the overdue ones and move only the rest?" (recommend the latter).
+    Example: "push every open question to next Friday" → "That is 5 entries, 2 of them already overdue (9/4 and 9/8). I would **hold those two** and move the other 3 to 9/18 — or shall I move all 5?"
+22. **A request to move a plan date (`plan`) splits in two, on whether a reason came with it.**
+    **With a reason it is a reschedule** — update `plan` to the new dates and **append one entry to `_planLog`** (when, from → to, ±N days, reason, `by`).
+    **With no reason it is a correction** — just fix `plan` and **record no history** (piling history onto typo fixes makes "why did this slip?" unreadable later).
+    **If it is unclear which, ask** ("give me one line of reason and I will log it as a reschedule; if it is a typo I will correct it with no history"). The shape of `_planLog` and the value of `by` are governed by 19 and "Plan (`tasks`) field definitions".
 **When in doubt, ask instead of editing. Offer two or three options and name the one you recommend.**
 
 ---
@@ -127,7 +134,7 @@ Connections are written **only in the issue's `links[]`**; the view builds the r
 ## Opening / reloading
 1. Open **`wbs_viewer.html`** in Chrome.
    The toolbar carries a **two-way Plan｜Issues switch** (the same idiom as the plan side's Time / Progress tabs — one side filled).
-   With only `tasks` in the JSON you get the plan alone; with only `issues`, the issues alone (**no switch is shown**). With both, the switch appears and defaults to **whichever side you were last on** (remembered in localStorage).
+   **The switch appears whenever issues could be shown**: any JSON that has `issues` (with or without `tasks`), and **before any file is loaded** (both sides are live). **A JSON with only `tasks` shows no switch** (the plan alone). **A JSON with only `issues` does show the switch, but the Plan side is disabled** (not clickable). With both, it defaults to **whichever side you were last on** (remembered in localStorage).
 2. Load `wbs.json` via **Open file** (drag & drop onto that same button also works).
 3. Edit and save `wbs.json`, then press **Reload** to re-read and re-render (no re-picking needed; File System Access API).
 4. Scroll position is **preserved across collapsing and reloads**; **only loading a new file re-centers on today and resets collapse state** (plan side).
@@ -153,7 +160,7 @@ How to read the screen (columns, tabs, collapsing, filters, links) is collected 
 - **Period filter**: a **single-select segment** of **Today / This week / This month / All** (default All; remembered in localStorage `wbsPeriod`). When set, only leaves whose **plan or actual period overlaps the target range** are shown (this week = Mon–Sun containing today; this month = the **calendar month** containing today, the 1st through the last day — fiscal months or a custom start day are out of scope). **The axis doesn't move — only rows are filtered** (bars don't shift a pixel). AND-combines with the other axes; summary unchanged and parent-retention shared. The selected segment is filled to signal single-select.
 - Collapsing: click a **◆project / L1 / L2 `▼/▶`–name**. The **`▼/▶` in the Task column header** expands/collapses everything (▼ = all open → click collapses all; ▶ = something closed → click expands all). An accidental header action can be **restored with Ctrl+Z** (inactive while an input has focus).
 - Column headers are centered. The left info table (No.–Notes) is fixed; **only the Gantt scrolls horizontally**.
-- **Column collapse (outline-style)**: a thin row above the column headers holds **+/−** toggles per **collapsible unit** —
+- **Column collapse (outline-style)**: a thin row above the column headers holds **+/−** toggles per **collapsible unit** — there are **8 groups**:
   `qty+hours` (the breakdown of effort), Effort, Progress, Status, Assignee, Plan, Actual, Notes (**No. and Task name are always shown**).
   Collapsed columns are **removed at 0 width (no leftover gap stub)**, the + sits at the boundary (absolute). State is
   saved in localStorage; scroll/tree-collapse are preserved; collapsing widens the Gantt. Implemented via the `COL_CG` map + `effCols` filter (draw cost = column count, not row-dependent).
@@ -220,7 +227,7 @@ How to read the screen (columns, tabs, collapsing, filters, links) is collected 
   **Six mark pills**: `Waiting` / `Frozen` / `Undecided` / `Overdue` / `Nudge` / `★ Updated`. **No "only" suffix** (`Overdue`, never `Overdue only`) — a pill being on already says "show just these". **The pills, the counts, the derived-values table and the request examples all use these same six names** — never a synonym.
  Owners are collected from **everyone appearing in the actions** (OR within the axis: an issue shows if any of its action owners is on). There is no Owner column, but filtering still works off the action owners. It is **display-only — `wbs.json` never changes**. Sorting: `No (data order) / due / priority`.
   The state, priority and mark filters and the sort order are **shared across the book**; the owner candidates and the collapse state are **per project**. The counts at the top right are for **the open project**.
-- Following a link (**issue → plan**): click an entry on the link line under the title (`WBS 2.3 · Issue #1 · Timesheet #2 · Spec`).
+- Following a link (**issue → plan**): click an entry on the link line under the title (**one link per line** — `WBS 2.3`, `Issue #1`, `Time-2`, `Spec` stacked vertically).
   **Every jump happens inside the same page** (no new tabs). Clicking `WBS 2.3` **flips to the plan**, selects the project, expands that row, scrolls to it and highlights it for about two seconds; `Issue #1` does the same within the issues view.
   The URL gains **`#wbs=<project name>/2.3`** or **`#issue=<project name>/<number>`** at the end, so the browser's **Back button returns you to where you were**. Hand that URL to someone and they land on the same row once they open the file (if nothing is loaded yet, they get "open the JSON to see …").
   Only external URLs (`{ title, url }`) open in a new tab. The link line shows **one link per line**, with **the `Note` marker at its end**.
@@ -280,6 +287,7 @@ Toggle the **Edit** button (green when on). Changes are auto-saved to `wbs.json`
 
 - **Autosave**: changes are written back to `wbs.json` after a ~0.4 s debounce (File System Access API). Writes are serialized through a single queue. **Only internal derived values are stripped** (`_calc`/`_leaf` etc.) — **user keys starting with `_` are preserved**. Save status (Unsaved changes… / Saved HH:MM:SS / Save failed) is **always visible at the top right**.
 - **External-change detection**: before each write the file's mtime is checked; if it changed outside the tool (e.g., AI editing), an **overwrite confirmation** is shown. When asking an AI to edit, it is safest to turn edit mode OFF first.
+  - **If you cancel that confirmation and then press Reload, the edits made on screen are discarded** (the file wins). **A confirmation is shown before Reload takes effect**, so if you want to keep the on-screen version, cancel it and either save a copy under another name first or fold the AI's change in by hand.
 - **Auto-retry on interference**: when a sync client (OneDrive, etc.) or antivirus touches the file at the same instant as a save, the browser may reject the write with `InvalidStateError` ("state had changed since it was read from disk"). In that case the tool **waits a beat and retries the save once** (the retry's `getFile()` refreshes the browser's internal snapshot, which almost always recovers). The write is rejected *before* touching disk, so **the original file stays intact**. If the retry also fails, it shows "Save failed" and **keeps the dirty flag** (re-saved on the next edit or on tab close; it does not auto-retry in a loop, to avoid alert spam).
 - **Permissions**: saving requires **write permission**. Only files opened with a handle (Open file or D&D) are editable. **`file://` pages cannot show write-permission prompts**, so when turning Edit ON you **re-select the same `wbs.json` in a save dialog** (the selection itself grants permission). ⚠ Chrome **truncates the file the moment it is picked**, so the current data is **written immediately after selection** (never left empty). If told to "press Edit again", do so (browser gesture limitation; the second click opens the dialog directly). The permission is **session-scoped** (after restarting Chrome, re-select once per Edit ON). **Loading a new file automatically turns edit mode OFF** (turn it ON again to grant permission for the new file). On a failed load the handle is not replaced (prevents overwriting the wrong file).
 - **Legacy formats** (the plan-only single-project shape `{ project, tasks }`): on Edit ON, after confirmation they are **converted to the `projects[]` format** before editing.
@@ -465,6 +473,7 @@ The article's **three reasons for pending** split like this in this tool (**the 
   - **`_progress`** (0/10/…/100) = the earned-value assessment, alongside **`_progressAt`** (assessment time, ISO) and **`_progressBy`** (`"manual"` or a model name).
   - **`_planLog`** = the history of schedule changes (append-only).
   - Both shapes are specified under "Plan (`tasks`) field definitions".
+- **`_calc` and `_leaf` are reserved internal names.** The viewer rebuilds them on every render, and they are **stripped on save at any depth** (project, task or issue). **Never use them as your own keys** — whatever you write there is discarded.
 
 ### Backward-compatibility promise
 
@@ -573,10 +582,10 @@ Hand the fuzzy "roughly what %" to an AI. The steps are deterministic:
 | Derived value | Rule |
 |---|---|
 | **State (three, exclusive)** | `closed` present → **Closed** (sub-label from `how`: resolved / won't fix / did not occur) / else **any completed action** (`done: true`) → **In progress** / else → **Not started**. **Holds and open questions are not states** (see the marks below) |
-| **Marks (six, orthogonal to state)** | ① **Waiting** (`pending.kind === "waiting"`, with `who` beside it) ② **Frozen** (`pending.kind === "frozen"`) ③ **Undecided N** (how many `decisions` entries have `decided: null`) ④ **⚠ Overdue** (today > `due`) ⑤ **⚠ Nudge** (waiting and **today > `pending.until`**) ⑥ **★ Updated** (moved during the reporting period). **Closed rows show none of ①–⑤** (nothing left to nudge). **Only ★ also appears on closed rows** — "we closed this one this week" is the substance of a report |
+| **Marks (six, orthogonal to state)** | ① **Waiting** (`pending.kind === "waiting"`, with `who` beside it) ② **Frozen** (`pending.kind === "frozen"`) ③ **Undecided N** (how many `decisions` entries have `decided: null`) ④ **⚠ Overdue** (today > `due`) ⑤ **⚠ Nudge** (any of three: **a wait past `pending.until`** / **an open question past `decisions[].until`** / **a wait whose `who` is an issue that is now closed** — the "⚠ Nudge" row below is authoritative) ⑥ **★ Updated** (moved during the reporting period). **Closed rows show none of ①–⑤** (nothing left to nudge). **Only ★ also appears on closed rows** — "we closed this one this week" is the substance of a report |
 | **⚠ Nudge** | Raised by any of: ① a **waiting** (`kind: "waiting"`) where **today > `pending.until`**; ② an **open question** (`decided: null`) where **today > `decisions[].until`**; ③ a wait **whose `who` is an issue reference and that issue is closed** (the reason to wait is gone but nothing was released). With `until: null`, ① and ② never fire. **Counts and filters include both waits and open questions** |
-| **Elapsed days** | A **Not started** row shows the days since `opened`; a **waiting** row the days since `pending.since`; each **open question** the days since its `decisions[].since`, small. The wording is **`N days open (since M/D)`** (e.g. `14 days open (since 8/26)`), and it is **the same in read mode and edit mode**. The tooltip spells it out: `N days since it was added on M/D`. **How long something has sat is a number**, so the oldest can be picked off first |
-| **Decision lines** (inside Summary) | Every `decisions` entry that **has a `decided` date** renders as "**Decision: a (M/D)**", **one per line** (several are fine, in array order). An entry with an empty `a` is not rendered |
+| **Elapsed days** | A **Not started** row shows the days since `opened`; a **waiting** row the days since `pending.since`; each **open question** the days since its `decisions[].since`, small. The wording depends on where it sits. **The marks in the State column read `Not started Nd` / `Waiting Nd`** (no start date on screen — the tooltip supplies it). **Only the rows in the "Decisions (open)" band use `N days open (since M/D)`** (e.g. `14 days open (since 8/26)`), whose tooltip spells it out: `N days since it was added on M/D`. Both are **the same in read mode and edit mode**. **How long something has sat is a number**, so the oldest can be picked off first |
+| **Decision lines** (inside Summary) | Every `decisions` entry that **has a `decided` date** renders as "**Decision: a (M/D)**", **one per line** (several are fine, in array order). **In read mode an entry with an empty `a` (or `q`) is not rendered**; **in edit mode it is**, so a broken entry can still be fixed from the screen |
 | **The "Decisions (open)" band** | Every `decisions` entry with **`decided: null`** is listed in a band under `Summary`, **bulleted with "·"**, each showing **how many days since `since`** as `N days open (since M/D)` (e.g. `· Build the converter in-house or use a library 14 days open (since 8/26)`). With none open, the band is not drawn at all |
 | **Overdue** | today > `due` and not closed → `due` in red plus a `⚠` mark (closed rows are never red and carry no mark) |
 | **★ Updated** (moved during the reporting period) | ★ on any action **completed** in the period (`done: true` with a `date` inside it; `date: null` never gets one), and on anything **decided** (`decisions[].decided`), **paused** (`pending.since` — waiting or frozen), or **closed** (`closed.at`) in the period. An issue with any ★ gets **a ★ on its title** (visible even when collapsed). The period comes from `star` (default: the last 7 days) and **includes both `from` and `to`** (activity on the `from` day and on the `to` day counts). On screen this is called "**Updated**" (tabs, titles and action rows show the bare ★ with an "Updated…" tooltip) |
@@ -585,7 +594,7 @@ Hand the fuzzy "roughly what %" to an AI. The steps are deterministic:
 | **Link line** | `links[]` renders **under the title**, small and faint, **one link per line** (`WBS 2.3`, `Issue #1`, `Time-2`, `Spec` each on their own line). **An issue in another project shows as the first two characters of the project name plus its number** (Timesheet system replacement #2 → `Time-2`). **The data never changes** — only the display shrinks (an AI still writes "Timesheet system replacement #2" in full), with **the `Note` marker at the end** when `note` is set. The hierarchy is **title > links** (weakened by weight and size; **no borders, no chips** — borders belong to the badges). **Shown even when collapsed.** Hover underlines and darkens it. A target that does not exist (missing task, issue or project) renders with **a faint strikethrough plus a tooltip explaining why** (no crash, **the data is never removed**) |
 | **Back-reference chips on the plan** (after the merge) | A plan task that issues link to gets a small `Issue #3` chip (`Issue #3 #7` for several). **Nothing is written on the plan side** — the reverse lookup is rebuilt from `links` on every render. Clicking a task name toggles collapse, so **the chip is the click target** for jumping to the issue |
 | **Unanswered warning** | Both `ifIgnored` and `ifDone` empty, or `closeWhen` empty → a faint warning mark on the row (**never an error**) |
-| **Counts summary** | The top right has **two rows**. Upper = **states** (`Not started N` / `In progress N` / `Closed N`); lower = **marks** (`Waiting N` / `Frozen N` / `Undecided N` / `⚠ Overdue N` / `⚠ Nudge N` / `★ Updated N`). **`Undecided N` counts open questions, not issues.** Closed rows are included so it never shifts — an honest view. The meta line shows **`Update period: 9/1–9/7`** (or `Update period last 7 days` when defaulted) |
+| **Counts summary** | The top right has **two rows**. Upper = **states** (`Not started N` / `In progress N` / `Closed N`); lower = **marks** (`Waiting N` / `Frozen N` / `Undecided N` / `⚠ Overdue N` / `⚠ Nudge N` / `★ Updated N`). **Every mark on the lower row counts issues**: `Undecided N` is **the number of issues that have an open question** (an issue with three open questions still counts as 1). **Only the row badge `Undecided N` counts the questions themselves** (the summary column and the tab badge also count issues). **Marks with a count of 0 are dropped** — that applies to the five (`Waiting` / `Frozen` / `Undecided` / `⚠ Overdue` / `⚠ Nudge`); **`★ Updated` is always shown, even at 0** ("nothing moved this period" is itself part of a report). **Only the upper row (the three states) is invariant** — it includes closed rows; marks ①–⑤ never appear on closed rows, so the lower row shrinks as you close things. The meta line shows **`Update period: 9/1–9/7`** (or `Update period last 7 days` when defaulted) |
 
 **Three states, exclusive** (the first matching rule wins). They say **only how far the work has moved**.
 
@@ -695,9 +704,66 @@ To keep the file from growing forever, **move old completed work (plan tasks and
 
 ---
 
+## Pull it out with jq first (never read the whole file)
+
+Once issues and the plan pile up in one file, the source-of-truth JSON runs to hundreds of KB.
+**For a read-only request, pull just the part you need with `jq` first — open the file only when you are going to write** (→ "What to do when a request is vague or self-contradictory", item 11).
+The examples use this repo's own source of truth, `wbs_roadmap.json`. **Nothing prints when nothing matches**, so answer "0" rather than going quiet.
+
+**① List the issues** (project, number, title, closed or not)
+
+```bash
+jq -r '.projects[] | .name as $p | .issues[]? | "\($p)\t#\(.id)\t\(.title)\t\(if .closed then "closed" else "open" end)"' wbs_roadmap.json
+```
+
+**② One issue by number** (narrow by project name first — numbers are unique only within a project)
+
+```bash
+jq '.projects[] | select(.name=="single-file-wbs 開発") | .issues[] | select(.id==37)' wbs_roadmap.json
+```
+
+**③ List the open questions** (entries with `decided: null`, and since when)
+
+```bash
+jq -r '.projects[] | .name as $p | .issues[]? | select(.closed==null) | .id as $i
+       | (.decisions//[])[] | select(.decided==null) | "\($p)\t#\($i)\t\(.q)\t\(.since)"' wbs_roadmap.json
+```
+
+**④ List the waits** (who, what, until)
+
+```bash
+jq -r '.projects[] | .name as $p | .issues[]? | select(.pending.kind=="waiting")
+       | "\($p)\t#\(.id)\t\(.pending.who|tostring)\t\(.pending.what)\t\(.pending.until//"no deadline")"' wbs_roadmap.json
+```
+
+**⑤ The plan leaf an issue links to** (look the `links[].wbs` id up recursively in `tasks` — you never need to know the nesting depth)
+
+```bash
+# which issue links to which leaf
+jq -r '.projects[] | .issues[]? | select((.links//[])|any(.wbs)) | "#\(.id) \((.links[]|select(.wbs)|.wbs))"' wbs_roadmap.json
+# pull that one leaf
+jq -r --arg w "4.14" '.projects[] | select(.name=="single-file-wbs 開発")
+       | [.tasks[]? | .. | objects | select(.id==$w)] | .[]
+       | "\(.id)\t\(.name)\tplan \(.plan.start//"—")–\(.plan.end//"—")\tactual \(.actual.start//"—")–\(.actual.end//"—")"' wbs_roadmap.json
+```
+
+**⑥ Plan leaves that have not started** (a leaf is anything with `plan`; `actual.start` is empty)
+
+```bash
+jq -r '.projects[] | .name as $p
+       | (.tasks[]? | .. | objects | select(has("plan") and (.actual.start//null)==null) | "\($p)\t\(.id)\t\(.name)")' wbs_roadmap.json
+```
+
+- The **`?`** in `.issues[]?` / `.tasks[]?` means "skip projects that lack the key". A book mixing plan-only and issues-only projects will not blow up.
+- `.. | objects` walks **every object at any depth** — the same expression works no matter how deep the WBS nests.
+- **A leaf is identified by `has("plan")`** (objects with `plan` are leaves; those without are roll-up nodes).
+- **jq is for reading only.** Never overwrite the file with jq output (key order and custom keys get mangled). **To write, open the JSON and edit just the spot that changes.**
+
+---
+
 ## Example requests to an AI (issue side — have it edit the JSON)
 
-> Requests about the plan (`tasks`) are under "Plan (`tasks`) — adding and updating". The before/after below are **fragments showing only the keys that change**. The ids match `wbs_sample_issues.json` (`#1` = the in-progress migration errors, `#2` = the paper forms with an open question, `#3` = the waiting spec request, `#4` = the row closed as did-not-occur). `#3` and `#4` ship in the sample **as the result of** these requests.
+> Requests about the plan (`tasks`) are under "Plan (`tasks`) — adding and updating". The before/after below are **fragments showing only the keys that change**. The ids match `wbs_sample_issues.json` (`#1` = the in-progress migration errors, `#2` = the paper forms with an open question, `#3` = the waiting spec request, `#4` = the row closed as did-not-occur, `#6` = the frozen nightly-batch issue, `#9` = the row closed as a duplicate). `#3`, `#4`, `#6` and `#9` ship in the sample **as the result of** these requests.
 
 ### ① Filing a new issue
 
@@ -707,7 +773,7 @@ Append one entry to `issues[]` (`id` = current max + 1):
 
 ```json
 {
-  "id": 9,
+  "id": 10,
   "title": "Mass character-encoding errors in the migration test",
   "priority": "high",
   "opened": "2026-09-05",
@@ -715,9 +781,10 @@ Append one entry to `issues[]` (`id` = current max + 1):
   "ifIgnored": "The same errors will hit the production cutover and the migration will fail. The impact lands on cutover day",
   "ifDone": "",
   "closeWhen": "A full rehearsal of the migration procedure runs with zero errors",
-  "decision": null,
+  "decisions": [],
   "pending": null,
   "closed": null,
+  "links": [],
   "actions": [ { "date": "2026-09-05", "text": "Incident occurred", "assignee": "", "done": true } ],
   "note": ""
 }
@@ -753,7 +820,7 @@ before → after (`pending` only):
 
 ### ②-2 Freeze it (parked on purpose)
 
-> "Freeze #2. Resume after the v0.1 release."
+> "Freeze #6. Resume once the production cutover is done — migration comes first."
 
 ```json
 "pending": null
@@ -761,9 +828,9 @@ before → after (`pending` only):
 ```json
 "pending": {
   "kind": "frozen",
-  "since": "2026-09-09",
-  "resumeWhen": "resume once v0.1 ships",
-  "detail": "parked on purpose to hold the v0.1 scope"
+  "since": "2026-08-27",
+  "resumeWhen": "resume once the production cutover is complete",
+  "detail": "parked on purpose so the migration work takes priority"
 }
 ```
 
@@ -948,9 +1015,9 @@ Append one entry to `actions[]`:
 ```
 ```json
 "closed": {
-  "at": "2026-09-05",
+  "at": "2026-08-31",
   "how": "not_occurred",
-  "note": "The 9/3 month-end batch finished on schedule and never overlapped the rehearsal slot"
+  "note": "The 8/31 month-end batch finished on schedule and never overlapped the rehearsal slot"
 }
 ```
 
@@ -1142,7 +1209,6 @@ Append one entry to the `projects` array (it may start empty):
 { "name": "Timesheet system replacement", "issues": [] }
 ```
 
-- **If the file is in the issues-only legacy shape** (`sheets` or `issues` at the top level), wrap it first: `sheets[i]` → `projects[i]`, or a bare `issues` → `projects[0] = { name, issues }`. Keep `star` **at the top** (it is shared by the book).
 - **Keep project names unique within the book** — cross-project links point at the name.
 - A project separates **bodies of work**, not kinds (incident / reminder / improvement) — those belong mixed in one table.
 - If the reporting unit differs (you want separate update periods), split the **file**, not the project.
@@ -1268,7 +1334,7 @@ Avoid the following when entering data (nothing crashes, but display degrades).
 | Input (broken) | What the viewer does |
 |---|---|
 | Invalid date (not `YYYY-MM-DD`, or **outside 1900–2099**) | **Ignored** (`plan` / `actual` / `due` / milestones / holidays alike). The date cell shows `—` |
-| `projects` not an array, empty, or elements not objects | **Falls back to the legacy shapes** (a plan-only `{ project, tasks }` / the issues-only `sheets`, `issues`); with neither, an empty view |
+| `projects` not an array, empty, or elements not objects | **Only the plan-only legacy shape `{ project, tasks }` is converted.** The **issues-only legacy shapes (`sheets`, a top-level `issues`) are not read** (see "The backward-compatibility promise"), so such a file renders as an **empty view** |
 | `projects[].name` missing or duplicated | Rendered as an unnamed tab. **Duplicates make links unresolvable**, so the checker reports them as errors |
 | **Duplicate `id`** within one project | Collapse keys collide (rows with the same id open and close together) |
 | Top level `null`, a number, or otherwise not an object | Empty view (no crash) |
@@ -1304,11 +1370,11 @@ Avoid the following when entering data (nothing crashes, but display degrades).
 | `closed.how` outside the known values | "Closed" with no sub-label |
 | Issue-level `assignee` (legacy data) | **Never read, ignored** (owners live only in `actions[].assignee`; there is no Owner column). Not stripped on save |
 | `decisions` not an array, or an element that is not an object | That element alone is **ignored** (the rest still render). The checker reports it as an error |
-| An empty `decisions[].q` | Rendered nowhere — neither in the band nor as a decision line (an entry with no question means nothing) |
+| An empty `decisions[].q` | **In read mode** it is rendered nowhere — neither in the band nor as a decision line (an entry with no question means nothing). **In edit mode it is shown**, so a blank entry added with `+ Decision` can be filled in on the spot. **The `Undecided N` count is unaffected** (facts are counted as they are) |
 | An invalid `decisions[].decided` date | **Treated as undecided** (the date shows as `—`) |
 | `links` not an array, or an element in none of the four forms | That element alone is **ignored** (the others still render). The checker reports it as an error |
 | A `links` target that does not exist (task, issue, project) | **Faint strikethrough plus a tooltip.** Never removed, never a crash |
-| A `links` `url` that is not `http(s)` | Not turned into a link (shown as text). Raw values never reach attributes |
+| A `links` `url` that is not `http(s)` | **Rendered as a broken link** (faint strikethrough plus a tooltip, **not clickable**). Raw values never reach attributes |
 | `star` malformed (not an object, bad dates, `from` > `to`) | **Ignored — falls back to the default last 7 days** (today included) |
 | `actions` not an array, or elements not objects | **Ignored** |
 
@@ -1363,10 +1429,12 @@ Which file is the source of truth is decided **once per repository** and declare
    - **Dedup is judged by "is the close condition (`closeWhen`) the same"** (→ "Checklist when filing", item 4). Even with the same words in the title, a different state to confirm is a different issue. If one already exists, ask whether to **file a new one or add an action to the existing one**. If you notice afterwards, close the new one with `closed.how: "duplicate"` and point `links` at the original (→ example ⑥-2).
    - **Add one issue**: append to `issues[]` with `id` (current max + 1), `title`, `priority`, `opened`, `due`, `ifIgnored` **or** `ifDone`, `closeWhen`, `decisions`, `pending: null`, `closed: null`, `links`, `actions`.
    - **AI starter memo (optional)**: write only **pointers that do not rot** into the issue's `note` (or `_ai`) so a later session starts fast — entry files, verification commands, constraints (what not to touch), out of scope. **Never write a step-by-step plan** (the HOW is assembled from the actual code at start time; prompts rot the moment they are written, problems and close conditions do not).
+   - **When transcribing from a GitHub Issue, always read the comments too**, not just the body (`gh issue view <N> --comments`). **Acceptance criteria, decisions and rejections the author added later usually live in the comments**, so copying the body alone leaves `closeWhen` stale. What was settled in comments goes into `decisions` (`decided` and `a`); acceptance criteria go into `closeWhen`.
+   - **Take `priority` from the value stated in the body** (never re-estimate it yourself). **For a range such as `mid–high`, take the upper end** (= `high`). If the body states no priority, use the default `mid` and add one line to your reply: "the body states no priority, so I used mid".
    - **Reflect into the plan**: if needed add **exactly one leaf** to `tasks` and write `{ "wbs": "<the new id>" }` into the issue's `links` (→ example ⑦-4). **Ask the user** for `qty` / `hours` / `plan` (never put in placeholder numbers).
-2. **Start** ("started it"): set **`actual.start` on the matching leaf to today** (→ "Plan (`tasks`) — adding and updating ①"). If no leaf exists yet, do ⑦-4 first.
+2. **Start** ("started it"): set **`actual.start` on the matching leaf to today** (→ "Plan (`tasks`) — adding and updating ①"). If no leaf exists yet, do ⑦-4 first. **Find which leaf with `jq`** (→ "Pull it out with jq first", recipe ⑤).
    - **Do not also record the start in the issue's `actions[]`** (never keep the same fact on both the plan and the issue side — the last bullet of "Handling principles"). That work started is visible from the plan's Actual column and its back-reference chip. `actions[]` is only for **steps inside the issue** ("held the meeting", "sent the questionnaire").
-3. **Done** ("finished", "close it"): **auto-verify** (never close on "should be fixed") → **`actual.end` on the leaf** (and `actual.start` too if empty) ＋ **close the issue** (`at` / `how` / `note` = **the fact you confirmed**, matching `closeWhen`). Reset `pending` to `null` if it is still set. **If unfinished actions or open questions remain, show the discrepancy and ask before closing** (→ "What to do when a request is vague or self-contradictory", item 14).
+3. **Done** ("finished", "close it"): **check what is still open (unfinished actions, open questions, waits) with `jq` before closing** (→ "Pull it out with jq first", recipes ②③④). **Auto-verify** (never close on "should be fixed") → **`actual.end` on the leaf** (and `actual.start` too if empty) ＋ **close the issue** (`at` / `how` / `note` = **the fact you confirmed**, matching `closeWhen`). Reset `pending` to `null` if it is still set. **If unfinished actions or open questions remain, show the discrepancy and ask before closing** (→ "What to do when a request is vague or self-contradictory", item 14).
 4. **Auto-file on failure** (test / CI failure): **dedup** (search existing unclosed issues by the error signature; judged by the same close condition) ＋ **threshold** (file only after N consecutive failures, to reject flakes) → append one issue to `issues[]` (repro / log / expectation = `closeWhen`). Add a leaf plus `links` if needed. ※ For a client-only tool (no telemetry), this covers **test failures only**.
 
 ### Done is auto-verified
@@ -1395,6 +1463,7 @@ Machine-checkable close conditions are **run** (never report or close on "should
 ### Guardrails (every time)
 - **PII grep before push** (usernames, e-mail, absolute paths, real names, internal names) / commit e-mail = **GitHub noreply** / `git push --force` is forbidden.
 - Samples and screenshots use **fictional names only**. Secrets such as `.env` are never edited by the AI — ask the user.
+- **Real data carries the same rule** (including `wbs_roadmap.json`). The source-of-truth JSON is committed to a public repo, so it needs the same discipline as the samples: never write an employer or customer name, an internal system name, a machine name, a username or an absolute path into an issue's `title`, `note`, `actions[].text` or `_ai`. Anything like that belongs in your local `wbs.json` (already gitignored).
 - **Never report or close on "should be fixed"** (always run the auto-verification). Keep the output short and **leave one line explaining the judgment**.
 - **When in doubt, don't edit — ask** (→ "What to do when a request is vague or self-contradictory"). Offer two or three options with one recommendation.
 
@@ -1422,7 +1491,7 @@ uv run python scripts/check.py wbs_roadmap.json wbs_sample_issues.json
 **The plan (WBS) and the issues are merged into one HTML page, one JSON and one `CLAUDE.md`** (2026-09-11, `v2.0.0`).
 Adding issue management **changes what the product is**, so the MAJOR version was raised (`v1.4` → `v2.0.0`; author's decision).
 
-- The data shape and the issue renderer were settled first in the sister repo [single-file-issue](https://github.com/piguo45/single-file-issue) as v0.1–v0.2 and then **moved here**. That repo is **frozen as the design record** (the primary records are [`docs/design/brief-v0.1.md`](docs/design/brief-v0.1.md), [`docs/design/brief-v0.2-unified.md`](docs/design/brief-v0.2-unified.md) and [`docs/design/unified-touchpoints.md`](docs/design/unified-touchpoints.md), all Japanese; the decisions are ADR 0008–0011 in [`docs/adr/`](docs/adr/)).
+- The data shape and the issue renderer were settled first in the sister repo single-file-issue (a private repo) as v0.1–v0.2 and then **moved here**. That repo is **frozen as the design record** (the primary records are [`docs/design/brief-v0.1.md`](docs/design/brief-v0.1.md), [`docs/design/brief-v0.2-unified.md`](docs/design/brief-v0.2-unified.md) and [`docs/design/unified-touchpoints.md`](docs/design/unified-touchpoints.md), all Japanese; the decisions are ADR 0008–0011 in [`docs/adr/`](docs/adr/)).
 - **The issues-only viewer (`issue_viewer.html`) has retired.** The product is the single `wbs_viewer.html`.
 - **A plan-only `wbs.json` keeps working as before** (with no `issues` the viewer shows the plan alone and no switch).
 - **Issue numbers are not aligned to WBS numbering (1.1.1).** Insertions would shift them, and issues that never reach the WBS could not have one. Numbers stay per-project counters; the WBS id is derived from `links` and shown next to the issue.

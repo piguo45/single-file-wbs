@@ -27,3 +27,10 @@ uv sync && uv run playwright install chromium && uv run python tests/e2e/run_all
 
 ## 根拠
 #53。実行手順の詳細は [`tests/e2e/README.md`](../../tests/e2e/README.md)。
+
+## v2.0.0 での扱い（2026-09-11 追記）
+
+**回帰網は2系統になった。** 計画側 **`tests/e2e/`**（[README](../../tests/e2e/README.md)）と課題側 **`tests/e2e_issue/`**（[README](../../tests/e2e_issue/README.md)）で、**完了の自動検証では両方を通す**。本文の「現在 23 スイート」は v1.4 時点の数で、いまは計画側・課題側それぞれが `run_all.py` の glob で自動収集する（数は増える）。
+- **本日固定（`CLOCK_PIN`）は系統ごとに別**：計画側 `tests/e2e/common.py` ＝ **2026-06-15**、課題側 `tests/e2e_issue/common.py` ＝ **2026-09-15**。期待値はそれぞれの固定日で書く。
+- 検査データも2か所：計画＝`tests/`（[INDEX](../../tests/INDEX.md)）、課題＝`tests/issue/`（[INDEX](../../tests/issue/INDEX.md)）。
+- ブラウザを使わない検査として **`scripts/check.py`**（番号の重複・日付・enum・`links` の指す先の存在・旧キーの残存）も完了条件に入る。

@@ -2,7 +2,7 @@
 
 「計画がある／ない」×「課題管理がある／ない」の 2×2 で、現場の行動と AI の答えられる問いがどう変わるかの研究ノート。
 
-> 移植元 [single-file-issue](https://github.com/piguo45/single-file-issue) から。v2.0.0 の統合に至る**設計の履歴**として本家に置く（本文は当時の記録のまま。`issue.json` ／ `issue_viewer.html` は現在の `wbs.json` ／ `wbs_viewer.html`）。
+> 移植元 single-file-issue（非公開リポ） から。v2.0.0 の統合に至る**設計の履歴**として本家に置く（本文は当時の記録のまま。`issue.json` ／ `issue_viewer.html` は現在の `wbs.json` ／ `wbs_viewer.html`）。
 
 > 記事のための研究ノート（2026-09-11・作者向け）。
 > 「計画がある／ない」「課題管理がある／ない」の 2×2 で、現場の行動、見えるもの、AI の答えられる問いがどう変わるかを整理する。
