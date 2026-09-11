@@ -1290,17 +1290,22 @@
               "id": "4.14",
               "name": "v2.0.0 統合（課題管理を取り込む）",
               "qty": 1,
-              "hours": 8,
-              "assignee": "ぴぐお",
+              "hours": 6,
+              "assignee": "Claude",
               "plan": {
                 "start": "2026-09-11",
                 "end": "2026-09-11"
               },
               "actual": {
                 "start": "2026-09-11",
-                "end": null
+                "end": "2026-09-11"
               },
-              "note": "single-file-issue の統合ビューア・説明書・課題を本家へ移す（段階C）。工数と予定は未確定（利用者に確認して更新する）"
+              "note": "single-file-issue の統合ビューア・説明書・回帰網・課題を本家へ移した（段階C）。PR #108 を main にマージ、転記した GitHub Issue 26 件をクローズ。版 v2.0.0",
+              "_ai": {
+                "tokens": 1750000,
+                "model": "claude-fable-5-1 (PM) + claude-opus-5 (実装)",
+                "memo": "A班=ビューア/回帰網、B班=説明書/README/課題移行。golden 49 全一致・pixel 差分は版表記の 48 画素のみを実測してから撮り直し。AI チェック 8 本全合格"
+              }
             }
           ]
         },
@@ -2435,7 +2440,12 @@
           ],
           "pending": null,
           "closed": null,
-          "links": [],
+          "links": [
+            {
+              "title": "研究ノート（計画×課題の四象限）",
+              "url": "https://github.com/piguo45/single-file-wbs/blob/main/docs/notes/study-wbs-x-issue.md"
+            }
+          ],
           "actions": [
             {
               "date": null,
