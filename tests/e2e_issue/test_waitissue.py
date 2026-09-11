@@ -50,6 +50,15 @@ with sync_playwright() as pw:
     # ===== 状態列：待ちの相手を添える =====
     check(mks(1)[0] == "待ち 課題 #2", f"状態列にも相手 -> {mks(1)}")
     check(mks(3)[0] == "待ち 勤怠-5", f"状態列も略称 -> {mks(3)}")
+    # 相手が居ない待ちは、印の側も links と同じ取り消し線＋「リンク先が見つかりません」
+    mbrk = pg.eval_on_selector(S("#tbody tr:nth-child(4) .mk-wait .mksub"),
+                               "e=>[e.className, e.title, getComputedStyle(e).textDecorationLine]")
+    check("lk-x" in mbrk[0] and mbrk[1] == "リンク先が見つかりません" and mbrk[2] == "line-through",
+          f"印の相手も壊れたリンク表示（待ち続ける理由が消えたのが見て分かる） -> {mbrk}")
+    mok = pg.eval_on_selector(S("#tbody tr:nth-child(1) .mk-wait .mksub"),
+                              "e=>[e.className, getComputedStyle(e).textDecorationLine]")
+    check("lk-x" not in mok[0] and mok[1] == "none",
+          f"相手が居る待ちには取り消し線を付けない -> {mok}")
 
     # ===== 相手が完了していたら催促 =====
     check(any("催促" in m for m in mks(3)), f"相手の課題が完了→催促 -> {mks(3)}")

@@ -1,0 +1,41 @@
+{
+  "name": "計画側の型崩れ（課題は読めること）",
+  "star": { "from": "2026-09-01", "to": "2026-09-07" },
+  "projects": [
+    {
+      "name": "milestones が非配列 / tasks が非配列",
+      "milestones": "壊れ",
+      "tasks": "壊れ",
+      "issues": [
+        { "id": 1, "title": "計画が壊れていても読める課題", "priority": "mid",
+          "opened": "2026-09-01", "due": "2026-09-30",
+          "ifIgnored": "放置すると困る", "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [], "pending": null, "closed": null,
+          "links": [{ "wbs": "1" }], "actions": [], "note": "" }
+      ]
+    },
+    {
+      "name": "要素が壊れている",
+      "milestones": ["2026-09-20", null, 42, { "date": "2026-09-25", "label": "節目" }],
+      "tasks": [
+        42,
+        { "id": "1", "name": "親", "children": "壊れ" },
+        { "id": "2", "name": "親2", "children": [42, { "id": "2.1", "name": "葉", "qty": 1, "hours": 8,
+          "assignee": "ぴぐお", "plan": { "start": "2026-09-01", "end": "2026-09-05" },
+          "actual": { "start": null, "end": null }, "note": "" }] },
+        { "id": "3", "name": { "a": 1 }, "qty": 1, "hours": { "h": 8 },
+          "plan": { "start": "2026-09-01", "end": "2026-09-05" },
+          "actual": { "start": null, "end": null }, "note": "" }
+      ],
+      "issues": [
+        { "id": 1, "title": "壊れた葉にリンクしている課題", "priority": "high",
+          "opened": "2026-09-01", "due": "2026-09-30",
+          "ifIgnored": "", "ifDone": "やると良いことがある",
+          "closeWhen": "確かめられること",
+          "decisions": [], "pending": null, "closed": null,
+          "links": [{ "wbs": "2.1" }, { "wbs": "9.9" }], "actions": [], "note": "" }
+      ]
+    }
+  ]
+}

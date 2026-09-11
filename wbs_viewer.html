@@ -438,6 +438,7 @@
   #isMain .lk .lk-i{display:block;color:inherit;text-decoration:none;cursor:pointer}
   /* 1行1リンク（縦並び） */
   #isMain .lk .lk-i:hover{color:#3a4658;text-decoration:underline}
+  #isMain .mksub.lk-x{text-decoration:line-through;cursor:help}
   #isMain .lk .lk-x{text-decoration:line-through;cursor:help}
   #isMain .lk .lk-x:hover{color:#8b94a3;text-decoration:line-through}
   #isMain .lk .lkdel{margin-left:6px;color:var(--is-muted);cursor:pointer}
@@ -676,6 +677,7 @@
       needHandle:"編集を保存するには、先に「ファイルを開く」か D&D で wbs.json を（ハンドル付きで）開いてください。",
       legacyConvert:"旧フォーマットのファイルです。編集を有効にすると新フォーマット（projects 配列）に変換して保存されます。続行しますか？",
       reloadErr:"更新失敗: ",loadFirst:"先に「ファイルを開く」または D&D で読み込んでください。",
+      reloadDiscard:"未保存の変更があります。ファイルを読み直すと、この変更は失われます。続行しますか？",
       dropFail:"ドロップされたファイルを読み取れませんでした。「ファイルを開く」をお試しください。",
     },
     en:{
@@ -719,6 +721,7 @@
       needHandle:'To save edits, first open wbs.json via "Open file" or drag & drop (with a file handle).',
       legacyConvert:"This file uses the legacy format. Enabling edit will convert it to the projects[] format on save. Continue?",
       reloadErr:"Reload failed: ",loadFirst:'Load a file first via "Open file" or drag & drop.',
+      reloadDiscard:"You have unsaved changes. Re-reading the file will discard them. Continue?",
       dropFail:'Could not read the dropped file. Try "Open file" instead.',
     },
   };
@@ -742,6 +745,7 @@
   const leafVisible=(c,today,asg)=>STATES.some(s=>stateOn.has(s.k)&&s.test(c))&&(!delayOnly||isDelayed(c,today))&&(!asgOff.size||!asgOff.has(asg||""))&&inPeriod(c);  // 状態(#91)×遅延(#92)×担当(#93)×期間(#94)＝軸内OR・軸間AND
   let leftColBounds=null;                                                  // 左表の列境界キャッシュ（render毎に無効化・mousemoveのreflow回避）
   let dirty=false, saveTimer=null, saveChain=Promise.resolve(), fileMtime=0;  // 保存キュー（直列化＋外部変更検知）
+  let savePending=false;   // 外部変更の確認をキャンセルして書けずに残っている編集（「更新」で黙って捨てない）
   let pickerNeeded=false;   // file://等：権限APIが使えず保存ピッカー方式が必要（セッション中記憶）
   let saveMsg="",curFileName="";           // 保存状態の表示文言（未保存/保存済/保存失敗）
   const collapsed=new Set();   // 折りたたみ状態（キー）
@@ -794,9 +798,9 @@
     {key:"no",min:36,label:"colNo",w:48,cls:"num"},
     {key:"name",min:120,label:"colTask",w:200,cls:"name"},
     {key:"qty",min:36,label:"colQty",w:40,cls:"r",
-     view:(c,n,x)=>x.leaf?esc(n.qty):"", field:"qty",edit:"number",get:(c,n)=>n.qty},
+     view:(c,n,x)=>x.leaf?esc(numOf(n.qty)):"", field:"qty",edit:"number",get:(c,n)=>numOf(n.qty)},
     {key:"hrs",min:42,label:"colHrs",w:50,cls:"r",
-     view:(c,n,x)=>x.leaf?esc(n.hours):"", field:"hours",edit:"number",get:(c,n)=>n.hours},
+     view:(c,n,x)=>x.leaf?esc(numOf(n.hours)):"", field:"hours",edit:"number",get:(c,n)=>numOf(n.hours)},
     {key:"work",min:56,label:"colWork",sub:"colWorkUnit",tip:"colWorkTip",w:56,cls:"r",
      view:c=>c.load?esc(fmtLoad(c.load)):""},                                  // 派生（編集不可）
     {key:"prog",min:80,label:"colProg",tip:"colProgTip",w:80,cls:"prog",             // 進捗ステッパー（編集=±10%／表示=集計%）。独自ウィジェット（◀N%▶=最小80px）
@@ -842,12 +846,33 @@
   if(Object.keys(colWidths).length&&totalCW()>maxTotalCW()){colWidths={};saveColWidths();}
 
   const isColor=s=>typeof s==="string"&&/^#[0-9a-fA-F]{3,8}$/.test(s);
+  // 壊れた型を「無視するが消さない」ための小道具。使うのは描画の読み取り側だけで、
+  // lastData（保存される実体）は一切書き換えない＝壊れた要素も保存でそのまま残る。
+  // 配列を作り直さないので、編集の data-path（配列の添字）もずれない。
+  const arrOf=v=>Array.isArray(v)?v:[];                                      // 配列でなければ「無い」扱い
+  const okNode=v=>!!v&&typeof v==="object"&&!Array.isArray(v);               // 非オブジェクト要素は描かない
+  const kidsOf=n=>arrOf(n&&n.children);                                      // children が配列でなければ葉
+  const hasKids=n=>kidsOf(n).some(okNode);                                   // 子が1つでも読めるか
+  const nmOf=v=>typeof v==="string"?v:"";                                    // 名前が文字列でなければ空文字
+  const numOf=v=>(v&&typeof v==="object")?"":v;                              // 数値欄にオブジェクトが来たら空欄
   function normalizeProjects(d){
     if(!d||typeof d!=="object")return [];                         // null等の非オブジェクト→空
-    if(Array.isArray(d.projects))return d.projects.filter(p=>p&&typeof p==="object");
+    if(Array.isArray(d.projects))return d.projects.filter(okNode);
     return [{name:d.project||"WBS",milestones:d.milestones||[],tasks:d.tasks||[]}];
   }
-  function leavesOf(tasks){const out=[];(function c(ns){for(const n of ns){if(n._leaf)out.push(n);else c(n.children);}})(tasks||[]);return out;}
+  // 旧フォーマット {project, milestones, tasks} → v0.2 {…元のトップレベルそのまま, projects:[…]}。
+  // 畳むのは project/milestones/tasks の3つだけ。name・holidays・star・`_`キー等の
+  // トップレベルは1つ残らず引き継ぐ（変換でブック名や祝日を落とさない）。
+  const LEGACY_TOP=["project","milestones","tasks"];
+  function foldLegacyTop(d){
+    const out={};
+    if(d&&typeof d==="object")for(const k in d)if(!LEGACY_TOP.includes(k))out[k]=d[k];
+    out.projects=normalizeProjects(d);
+    return out;
+  }
+  // 葉の集合。_calc を持たない節（computeNode が通っていない＝前の描画の _leaf が残っただけ）は
+  // 拾わない＝ここから先の集計・フィルタが undefined を触らない。
+  function leavesOf(tasks){const out=[];(function c(ns){for(const n of arrOf(ns)){if(!okNode(n))continue;if(n._leaf){if(n._calc)out.push(n);}else c(n.children);}})(tasks);return out;}
   const quantProg=v=>{const n=Number(v);return Number.isFinite(n)?clamp(Math.round(n/10)*10,0,100):null;};
   function bizDays(from,to,hol){if(!from||!to||to<from)return 0;let n=0;const tot=diff(from,to);for(let i=0;i<=tot;i++){const ds=addStr(from,i),w=parse(ds).getUTCDay();if(w!==0&&w!==6&&!(hol&&hol.has(ds)))n++;}return n;}  // 残り営業日＝土日＋祝日(hol)を除外(#75)  // _progress→0/10/…/100に量子化。未設定はnull
   function progStep(pct,editable,path){   // 進捗の ◀ N% ▶ ステッパー。editable=編集モードのリーフ（±10%）／親は読み取り（連続値pct）
@@ -872,8 +897,9 @@
     return `<div class="prw ${cls}${thin?" thin":""}${done?" done":""}"><div class="prw-bars">${inner}</div></div>`;
   }
   function computeNode(n,TODAY){
-    if(n.children&&n.children.length){
-      const cs=n.children.map(c=>computeNode(c,TODAY));
+    const kids=kidsOf(n).filter(okNode);                                     // children が非配列/壊れ要素でも落ちない
+    if(kids.length){
+      const cs=kids.map(c=>computeNode(c,TODAY));
       const load=cs.reduce((s,c)=>s+c.load,0);
       const progress=load?cs.reduce((s,c)=>s+c.progress*c.load,0)/load:0;
       const pv=load?cs.reduce((s,c)=>s+(c.pv||0)*c.load,0)/load:0;            // 親PV=子の加重平均・slipは集約値から（EVMのSVはネット）
@@ -920,30 +946,31 @@
     function buildRows(){
       const ms=[], rows=[];
       projects.forEach((proj,pi)=>{
-        (proj.tasks||[]).forEach(n=>computeNode(n,TODAY));
+        arrOf(proj.tasks).forEach(n=>{if(okNode(n))computeNode(n,TODAY);});
         const lv=leavesOf(proj.tasks);
         const load=lv.reduce((s,n)=>s+n._calc.load,0);
         const prog=load?lv.reduce((s,n)=>s+n._calc.progress*n._calc.load,0)/load:0;
         const pvAgg=load?lv.reduce((s,n)=>s+(n._calc.pv||0)*n._calc.load,0)/load:0;
-        const pkey="P|"+proj.name, pcol=collapsed.has(pkey);
+        const pkey="P|"+nmOf(proj.name), pcol=collapsed.has(pkey);
         const projHasVisible=lv.some(n=>leafVisible(n._calc,TODAY,n.assignee)); // フィルタ(#91/#92/#93)：配下に表示対象が1つも無ければPJごと隠す
         if(lv.length>0&&!projHasVisible)return;                                 // 表示専用＝行を間引くだけ。データ(wbs.json)は不変
         const taskRows=pcol?[]:(function build(ns,depth,prefix){const out=[];   // ボトムアップ：残る子がある親だけ残す（親残し判定）
           for(let ci=0;ci<ns.length;ci++){const n=ns[ci];const path=prefix+"/"+ci;
-            const hasCh=!!(n.children&&n.children.length), key="T|"+proj.name+"|"+n.id, col=hasCh&&collapsed.has(key);
-            if(hasCh){const kids=col?null:build(n.children,depth+1,path);
+            if(!okNode(n))continue;                                           // 壊れた要素は描かないが ci は進める（添字＝data-path を保つ）
+            const hasCh=hasKids(n), key="T|"+nmOf(proj.name)+"|"+n.id, col=hasCh&&collapsed.has(key);
+            if(hasCh){const kids=col?null:build(kidsOf(n),depth+1,path);
               const vis=col?leavesOf(n.children).some(x=>leafVisible(x._calc,TODAY,x.assignee)):kids.length>0;
               if(!vis)continue;
               out.push({kind:"task",node:n,depth,key,collapsible:true,collapsed:col,terminal:col,path});
               if(!col)out.push(...kids);
             }else{ if(!leafVisible(n._calc,TODAY,n.assignee))continue;
               out.push({kind:"task",node:n,depth,key,collapsible:false,collapsed:false,terminal:true,path});}
-          }return out;})(proj.tasks||[],0,String(pi));
-        rows.push({kind:"proj",name:proj.name,pi,load,prog,progress:prog,pv:pvAgg,slip:Math.max(pvAgg-prog,0),key:pkey,collapsible:true,collapsed:pcol,terminal:pcol,
+          }return out;})(arrOf(proj.tasks),0,String(pi));
+        rows.push({kind:"proj",name:nmOf(proj.name),pi,load,prog,progress:prog,pv:pvAgg,slip:Math.max(pvAgg-prog,0),key:pkey,collapsible:true,collapsed:pcol,terminal:pcol,
           planStart:minStr(lv.map(n=>n._calc.planStart)),planEnd:maxStr(lv.map(n=>n._calc.planEnd)),
           actualStart:minStr(lv.map(n=>n._calc.actualStart)),actualEnd:maxStr(lv.map(n=>n._calc.actualEnd)),
           allDone:lv.length>0&&lv.every(n=>n._calc.allDone)});                  // イナズマ線用（折りたたみ時の集約）
-        (proj.milestones||[]).forEach(m=>ms.push(m));
+        arrOf(proj.milestones).forEach(m=>{if(okNode(m))ms.push(m);});
         if(pcol)return;
         rows.push(...taskRows);
       });
@@ -957,7 +984,7 @@
       allLeaves.forEach(n=>{const c=n._calc;[c.planStart,c.planEnd,c.actualStart,c.actualEndEff].forEach(d=>d&&ds.push(d));
         const lg=planLogOf(n);                                                // リスケ履歴(#96)：直近トレイルの起点が軸外に切れないよう範囲に含める
         if(lg.length){const f=lg[lg.length-1].from;[f.start,f.end].forEach(d=>{if(isDate(d))ds.push(d);});}});
-      projects.forEach(p=>(p.milestones||[]).forEach(m=>isDate(m.date)&&ds.push(m.date)));
+      projects.forEach(p=>arrOf(p.milestones).forEach(m=>okNode(m)&&isDate(m.date)&&ds.push(m.date)));
       ds.push(TODAY);
       const rangeStart=minStr(ds)||TODAY, rangeEnd=maxStr(ds)||TODAY;
       const totalDays=diff(rangeStart,rangeEnd)+1, ganttW=totalDays*DAY_W;
@@ -1042,8 +1069,8 @@
           grows+=`<div class="grow prow">${span}</div>`;
           progRows+=progBarRow(r,true,r.allDone,"prow");
           if(editMode&&!r.collapsed){                                          // 編集モード:プロジェクト直下にMS編集行（GUIでMS追加/編集/削除）
-            const msArr=((curProjects[r.pi]||{}).milestones)||[]; extra=msArr.length*ROW_H;
-            msArr.forEach((m,mi)=>{const MP=r.pi+"/"+mi;
+            const msArr=arrOf((curProjects[r.pi]||{}).milestones); extra=msArr.filter(okNode).length*ROW_H;
+            msArr.forEach((m,mi)=>{if(!okNode(m))return;const MP=r.pi+"/"+mi;   // 壊れた要素は描かないが mi は元配列の添字のまま
               const cur=(isColor(m.color)?String(m.color):"#cc79a7").toLowerCase();
               const inSet=MS_COLORS.includes(cur);
               let sw=inSet?"":`<button class="ms-sw on" data-act="setmscolor" data-mpath="${MP}" data-color="${cur}" style="background:${cur}" title="${cur}"></button>`;  // 現在色がプリセット外でも先頭に「選択中」で表示
@@ -1083,9 +1110,9 @@
                   ?`<button class="donechk${done?" on":""}" data-act="done" data-path="${P}" title="${esc(t("doneTip"))}">${done?"✓":""}</button>`
                   :(done?'<span class="done-mark">✓</span>':"");
                 v=`<span class="nm-wrap" style="padding-left:${r.depth*15}px">${sym(r,true)}${move}${doneCtl}`
-                  +`<input class="nm-in" data-path="${P}" data-field="name" type="text" value="${esc(n.name)}" title="${esc(n.name)}">${bdg}${acts}</span>`;
+                  +`<input class="nm-in" data-path="${P}" data-field="name" type="text" value="${esc(nmOf(n.name))}" title="${esc(nmOf(n.name))}">${bdg}${acts}</span>`;
               }else{
-                const body=`${sym(r)}${done?"✓ ":""}<span class="nm">${esc(n.name)}</span>`;
+                const body=`${sym(r)}${done?"✓ ":""}<span class="nm">${esc(nmOf(n.name))}</span>`;
                 const pmb=PM.badge(r.key,n.id);                              // [統合] 逆引き札（links が無ければ ""）
                 v=r.collapsible
                   ?`<span style="padding-left:${r.depth*15}px"><span class="clk" data-collapse="${esc(r.key)}">${body}</span>${bdg}${pmb}</span>`
@@ -1097,7 +1124,7 @@
               if(editMode&&leaf&&col.field)v=inp(col.field,col.get(c,n),col.edit);
             }
             let tip="";
-            if(col.key==="name"&&!editMode)tip=` title="${esc(n.name)}"`;
+            if(col.key==="name"&&!editMode)tip=` title="${esc(nmOf(n.name))}"`;
             else if(col.key==="note"&&leaf&&n.note&&!editMode)tip=` title="${esc(n.note)}"`;
             const xc=(col.key==="pe"&&isOverdue(c,TODAY))?" overdue":"";        // 予定終了:本日超過かつ未完了=赤
             info+=`<div class="c ${col.cls}${xc}"${cwSty[col.key]}${tip}>${v}</div>`;});
@@ -1341,7 +1368,7 @@
     if(e.target.id!=="allCaret"||!lastData)return;
     collapseSnapshot=new Set(collapsed);
     if(collapsed.size)collapsed.clear();                                     // どこか閉じている → 全展開
-    else normalizeProjects(lastData).forEach(p=>collapsed.add("P|"+p.name)); // 全部開いている → 全たたみ
+    else normalizeProjects(lastData).forEach(p=>collapsed.add("P|"+nmOf(p.name))); // 全部開いている → 全たたみ
     render(lastData);
   });
   window.addEventListener("keydown",e=>{
@@ -1361,8 +1388,8 @@
   const mintId=(arr,prefix)=>{const ids=new Set(arr.map(x=>String(x.id)));let nn=arr.length+1;while(ids.has(prefix+nn))nn++;return prefix+nn;};
   function resolvePath(path){
     const parts=path.split("/").map(Number), proj=curProjects&&curProjects[parts[0]];
-    if(!proj)return {}; let arr=proj.tasks||[], node=null;
-    for(let k=1;k<parts.length;k++){node=arr[parts[k]]; if(!node)return {proj}; if(k<parts.length-1)arr=node.children||[];}
+    if(!proj)return {}; let arr=arrOf(proj.tasks), node=null;
+    for(let k=1;k<parts.length;k++){node=arr[parts[k]]; if(!okNode(node))return {proj}; if(k<parts.length-1)arr=kidsOf(node);}
     return {proj,parentArray:arr,index:parts[parts.length-1],node};
   }
   function applyField(n,f,val){
@@ -1437,11 +1464,13 @@
       const cur=await fileHandle.getFile();                                  // 外部変更（AI編集等）の検知
       if(fileMtime&&cur.lastModified!==fileMtime&&
          !confirm(t("extChange"))){
+        savePending=true;                                                    // 書けなかった編集が lastData に残っている
         setSaveMsg(t("savePending"));return;
       }
       const json=JSON.stringify(lastData,(k,v)=>(k==="_calc"||k==="_leaf")?undefined:v,2);  // 内部派生値のみ除外
       const w=await fileHandle.createWritable(); await w.write(json); await w.close();
       fileMtime=(await fileHandle.getFile()).lastModified;
+      savePending=false;
       setSaveMsg(t("savedAt")+new Date().toLocaleTimeString(t("locale")));
     }catch(e){
       // InvalidStateError＝同期/AV等の横入りでブラウザのスナップショットが陳腐化。1拍おいて1回だけ再試行（再getFileで更新）。createWritableが弾く＝書込前なので原本は無傷
@@ -1469,7 +1498,7 @@
       if(!await ensureWritable())return;
       if(lastData&&!Array.isArray(lastData.projects)){                       // 旧フォーマット → 変換してから編集（#3）
         if(!confirm(t("legacyConvert")))return;
-        lastData={projects:normalizeProjects(lastData)};
+        lastData=foldLegacyTop(lastData);                                    // トップレベルの鍵は全部引き継ぐ
       }
       editMode=true;
     }else{flushSaves();editMode=false;}
@@ -1593,7 +1622,7 @@
     const f=await h.getFile(), txt=await f.text();
     let data; try{data=JSON.parse(txt);}
     catch(e){alert(t("jsonFail")(t("fileLabel")(f.name,f.size),e.message));return;}  // 失敗時はハンドルを差し替えない（#1：別ファイル上書き破壊の防止）
-    fileHandle=h; fileMtime=f.lastModified; curFileName=f.name; applyData(data,isNew);
+    fileHandle=h; fileMtime=f.lastModified; curFileName=f.name; savePending=false; applyData(data,isNew);
   }
   async function openPicker(){
     if(window.showOpenFilePicker){
@@ -1602,8 +1631,10 @@
     }else $("fallbackInput").click();
   }
   async function refresh(){
-    if(fileHandle){try{await flushSaves();await loadFromHandle(fileHandle,false);}catch(e){alert(t("reloadErr")+e.message);}}  // 保存を流してから再読込（#6）。折りたたみ/位置は維持
-    else alert(t("loadFirst"));
+    if(!fileHandle){alert(t("loadFirst"));return;}
+    // 未保存の編集（とくに外部変更の確認をキャンセルして書けずに残っているもの）を黙って捨てない
+    if((dirty||savePending)&&!confirm(t("reloadDiscard")))return;
+    try{await flushSaves();await loadFromHandle(fileHandle,false);}catch(e){alert(t("reloadErr")+e.message);}  // 保存を流してから再読込（#6）。折りたたみ/位置は維持
   }
   $("openBtn").addEventListener("click",openPicker);
   $("refreshBtn").addEventListener("click",refresh);
@@ -1834,12 +1865,12 @@
     add:'<svg class="is-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 3.3v9.4M3.3 8h9.4"/></svg>',
     del:'<svg class="is-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4.2 4.2 11.8 11.8M11.8 4.2 4.2 11.8"/></svg>'
   };
-  // ===== i18n（UI文言の単一ソース。データ(issue.json)は翻訳しない） =====
+  // ===== i18n（UI文言の単一ソース。データ（JSON）は翻訳しない） =====
+  // 保存・権限・編集ボタン・外部変更の文言は wbs 側の1本が正（ここには置かない）。
   const I18N={
     ja:{
       open:"ファイルを開く",openSub:"（ドラッグ&ドロップ）",reload:"更新",edit:"編集",langBtn:"EN",
-      editTitle:"インライン編集（自動保存）。ONにする時、書き込み許可のため保存ダイアログで issue.json を選び直します",
-      notLoaded:"未読み込み",empty:"「ファイルを開く」または D&D で <b>issue.json</b> を読み込んでください（Chrome）。",
+      notLoaded:"未読み込み",empty:"「ファイルを開く」または D&D で <b>wbs.json</b> を読み込んでください（Chrome）。",
       colNo:"No.",colPrio:"優先度",colTitle:"タイトル",colState:"状態",colDetail:"詳細",colDue:"期限",
       colDetailTip:"たたむと「次の一手」（未の最初の行動）だけを1行で表示します。完了した課題は空欄",
       lbActAsg:"担当：",
@@ -1941,15 +1972,10 @@
       fileLabel:(name,size)=>`${name}・${size} byte`,
       jsonFail:(label,msg)=>`JSON読み込み失敗${label?`（${label}）`:""}: ${msg}`,
       cantSave:"保存できません。『ファイルを開く』で開き直してください。",
-      extChange:"issue.json がツール外で変更されています。画面の内容で上書きしますか？\n（キャンセル後は「更新」で再読込できます）",
       saveErr:"保存に失敗: ",permDenied:"書き込み権限が許可されませんでした。",
       permUnavailable:"この環境では書き込み権限を取得できませんでした。",permErr:"書き込み権限を取得できませんでした: ",
-      pickerGuide:"📂 保存ダイアログが開きます。いま開いている issue.json をそのまま選んで「保存（置換）」してください（編集の書き込み許可のため・Chrome 再起動ごとに1回）。",
-      pickerRetryCancel:"編集を有効にするには、もう一度「編集」を押してダイアログで issue.json を選んでください。",
-      pickerRetryGesture:"もう一度「編集」ボタンを押してください。保存ダイアログが開くので、いま開いている issue.json を選んで「保存（置換）」してください。",
       diffFile:"選択されたファイルは現在開いているファイルと異なります。今後の保存先をそちらに切り替えますか？",
       truncWarn:"注意：いま選択したファイルは Chrome の仕様で空にされている可能性があります。中身を確認してください。",
-      needHandle:"編集を保存するには、先に「ファイルを開く」か D&D で issue.json を（ハンドル付きで）開いてください。",
       openErr:"読み込み失敗: ",reloadErr:"更新失敗: ",loadFirst:"先に「ファイルを開く」または D&D で読み込んでください。",
       dropFail:"ドロップされたファイルを読み取れませんでした。「ファイルを開く」をお試しください。",
       fileTip:"開いているファイル",todayTip:"本日（期限超過の基準日）",updTip:"最後に更新（読込）した時刻",saveTip:"最後に保存した時刻（自動保存）",
@@ -1957,8 +1983,7 @@
     },
     en:{
       open:"Open file",openSub:"(drag & drop)",reload:"Reload",edit:"Edit",langBtn:"日本語",
-      editTitle:"Inline editing (autosave). When turning ON, re-select issue.json in the save dialog to grant write permission",
-      notLoaded:"No file loaded",empty:"Load <b>issue.json</b> via \"Open file\" or drag &amp; drop (Chrome).",
+      notLoaded:"No file loaded",empty:"Load <b>wbs.json</b> via \"Open file\" or drag &amp; drop (Chrome).",
       colNo:"No.",colPrio:"Priority",colTitle:"Title",colState:"State",colDetail:"Detail",colDue:"Due",
       colDetailTip:"When collapsed, only the next action (first not-done) is shown on one line. Closed issues stay empty",
       lbActAsg:"Owner: ",
@@ -2060,15 +2085,10 @@
       fileLabel:(name,size)=>`${name}, ${size} bytes`,
       jsonFail:(label,msg)=>`Failed to load JSON${label?` (${label})`:""}: ${msg}`,
       cantSave:'Cannot save. Re-open the file via "Open file".',
-      extChange:"issue.json was modified outside this tool. Overwrite it with the current view?\n(After cancel, press Reload to re-read.)",
       saveErr:"Save failed: ",permDenied:"Write permission was not granted.",
       permUnavailable:"Could not obtain write permission in this environment.",permErr:"Could not obtain write permission: ",
-      pickerGuide:"📂 A save dialog will open. Select the currently open issue.json and press Save (replace) - needed once per Chrome session to grant write permission.",
-      pickerRetryCancel:'To enable editing, press "Edit" again and select issue.json in the dialog.',
-      pickerRetryGesture:'Press "Edit" once more - the save dialog will open; select the currently open issue.json and press Save (replace).',
       diffFile:"The selected file differs from the currently open file. Switch future saves to it?",
       truncWarn:"Warning: the file you just selected may have been emptied by Chrome. Please check its contents.",
-      needHandle:'To save edits, first open issue.json via "Open file" or drag & drop (with a file handle).',
       openErr:"Failed to open: ",reloadErr:"Reload failed: ",loadFirst:'Load a file first via "Open file" or drag & drop.',
       dropFail:'Could not read the dropped file. Try "Open file" instead.',
       fileTip:"Open file",todayTip:"Today (reference date for overdue)",updTip:"Last refreshed",saveTip:"Last saved (autosave)",
@@ -2111,7 +2131,8 @@
   }
   function pendOf(is,SN){
     const p=obj(is&&is.pending); if(!p)return null;
-    const kind=str(p.kind)==="frozen"?"frozen":"waiting";  // kind 以外は「待ち」に落とす（壊れた値でも落とさない）
+    const kind=str(p.kind);
+    if(kind!=="waiting"&&kind!=="frozen")return null;      // 既知値以外＝印を出さない（pending は無いものとして描く）
     return {kind, since:isDate(p.since)?p.since:null, who:whoOf(p.who,SN), what:str(p.what),
             until:isDate(p.until)?p.until:null, resumeWhen:str(p.resumeWhen)};
   }
@@ -2120,11 +2141,11 @@
   const PRIO_RANK={high:0,mid:1,low:2};
   const SORTS=[{k:"no",l:"sortNo"},{k:"due",l:"sortDue"},{k:"prio",l:"sortPrio"}];
 
-  // ===== 表示状態（すべて表示専用。データ(issue.json)には一切書かない） =====
-  let fileHandle=null, lastData=null, curIssues=[];
+  // ===== 表示状態（すべて表示専用。データ（JSON）には一切書かない） =====
+  // 保存・権限・外部変更の検知は wbs 側の1本（PM.queueSave）に集約している。
+  // ここに fileHandle / dirty / saveTimer を持たない＝検知が2系統に割れないようにする。
+  let lastData=null, curIssues=[];
   let editMode=false, refreshTimer=null;
-  let dirty=false, saveTimer=null, saveChain=Promise.resolve(), fileMtime=0;  // 保存キュー（直列化＋外部変更検知）
-  let pickerNeeded=false;  // file://等：権限APIが使えず保存ピッカー方式が必要（セッション中記憶）
   let saveMsg="",curFileName="",updAt="";
   const stateOn=new Set(STATE_ORDER);  // 既定=全ON（既定の見た目＝絞らない）
   try{const s=JSON.parse(lsGet("issStateFilter")||"null");if(Array.isArray(s)){stateOn.clear();s.forEach(k=>STATE_ORDER.includes(k)&&stateOn.add(k));}}catch(_){}
@@ -2287,9 +2308,12 @@
     const mk=[];
     if(c.marks.has("wait")){
       const w=c.pd.who;
-      const nm=w.kind==="issue"?refFull(issueRef(w.pj,w.id,c.pn)):w.name;
+      const r=w.kind==="issue"?issueRef(w.pj,w.id,c.pn):null;
+      const brk=!!r&&!hasIssue(r.pj,r.id);   // 待っている相手の課題が無い＝links と同じ壊れたリンク表示
+      const nm=r?refFull(r):w.name;
       const sub=[nm,c.pd.until?"（"+mdSlash(c.pd.until)+"）":""].filter(Boolean).join("");
-      mk.push(`<span class="mk mk-wait">${esc(t("mkWait"))}${sub?` <span class="mksub">${esc(sub)}</span>`:""}</span>`);}
+      const sh=sub?` <span class="mksub${brk?" lk-x":""}"${brk?` title="${esc(t("lkBroken"))}"`:""}>${esc(sub)}</span>`:"";
+      mk.push(`<span class="mk mk-wait">${esc(t("mkWait"))}${sh}</span>`);}
     if(c.marks.has("wait")&&c.waitDays!==null)   // 完了した課題には印を付けない（経過日数も同じ扱い）
       mk.push(`<span class="mk mk-days" title="${esc(t("mkWaitDaysTip"))}">${esc(t("mkWaitDays")(c.waitDays))}</span>`);
     if(c.marks.has("frozen"))
@@ -2388,9 +2412,12 @@
   // 概要の「方針：」＝決まった項目（decided あり）ごとに1行。1件も無ければ「方針：未定」
   const decDelX=(c,di)=>editMode?`<span class="decdel" data-decdel="${c.i}:${di}" title="${esc(t("del"))}">✕</span>`:"";
   function decidedLines(c){
-    if(!c.decDone.length)
+    // `a`（方針）が空／`q`（決めるべきこと）が空の項目は行にしない（中身を持てないため）。
+    // 編集モードでは全部出す＝壊れた項目を画面から直せなくしない。
+    const lines=editMode?c.decDone:c.decDone.filter(e=>str(e.d.a)&&str(e.d.q));
+    if(!lines.length)
       return `<div class="ln"><span class="lb"${lbTip("lbDecision")}>${esc(t("lbDecision"))}</span>${esc(t("decTbd"))}</div>`;
-    return c.decDone.map(e=>`<div class="ln">${c.starDecs.has(e.i)?STAR("starActTip"):""}`
+    return lines.map(e=>`<div class="ln">${c.starDecs.has(e.i)?STAR("starActTip"):""}`
       +`<span class="lb"${lbTip("lbDecision")}>${esc(t("lbDecision"))}</span>`
       +`${esc(str(e.d.a)+(isDate(e.d.decided)?`（${mdSlash(e.d.decided)}）`:""))}${decDelX(c,e.i)}</div>`).join("");
   }
@@ -2425,7 +2452,10 @@
   }
   // 「方針（未決）」の帯＝decided:null の項目だけ。行頭「・」・（起票日〜）・経過日数
   function openDecBlock(c){
-    if(!c.decOpen.length)return "";
+    // `q`（決めるべきこと）が空の項目は帯に出さない（件数＝未決 N は事実のまま数える）。
+    // 編集モードでは全部出す＝「＋方針」で足した空の1件をその場で書けるようにする。
+    const items=editMode?c.decOpen:c.decOpen.filter(e=>str(e.d.q));
+    if(!items.length)return "";
     const row=e=>{
       const untilTxt=e.until?t("decUntil")(mdSlash(e.until)):"";      // 「いつまでに決めるか」
       // 経過は「N日経過（M/D〜）」の1組。表示モードは 本文 → 期限 → 経過 の順
@@ -2443,7 +2473,7 @@
         +`${metaH}${nd}`
         +`<span class="decdel" data-decdel="${c.i}:${e.i}" title="${esc(t("del"))}">✕</span></div>`;
     };
-    return `<div class="sec">${esc(t("secOpenDec"))}</div>`+c.decOpen.map(row).join("");
+    return `<div class="sec">${esc(t("secOpenDec"))}</div>`+items.map(row).join("");
   }
   const ln=(k,v,link,st)=>`<div class="ln">${st?STAR("starActTip"):""}<span class="lb"${lbTip(k)}>${esc(t(k))}</span>${link?linkify(v):esc(v)}</div>`;
   // 行動1件の中身＝ 済/未 日付 本文 担当：○○（詳細の行と、たたんだ時の次の一手で共用）
@@ -3050,7 +3080,8 @@
     else{const a=Array.isArray(is.actions)?is.actions[+ai]:null; if(!a||typeof a!=="object")return; setField(a,f,el.value);}
     queueSave(); deferRender();
   });
-  const gotoTab=v=>{tabSel=v;lsSet("issProj",v);if(lastData)render(lastData);};
+  const gotoTab=v=>{if(v===tabSel)return;   // 同じタブなら何も変わらない＝描き直さない
+    tabSel=v;lsSet("issProj",v);if(lastData)render(lastData);};
   // リンクの飛び先へ：案件タブを合わせ→たたんでいれば開き→スクロール→2秒強調。URL の #issue= で「戻る」も効く
   const rowByKey=k=>[...document.querySelectorAll("#isTbody tr")].find(tr=>tr.getAttribute("data-key")===k)||null;
   let jumpTimer=null;
@@ -3168,7 +3199,18 @@
   // projects が無いファイル（空の器）でも ＋案件 から書き始められるように配列だけ用意する
   function ensureProjects(){
     if(!okObj(lastData))return false;
-    if(!Array.isArray(lastData.projects))lastData.projects=[];
+    if(!Array.isArray(lastData.projects)){
+      // 旧フォーマット {project, milestones, tasks} は projects[0] に畳む
+      // （そのまま projects:[] を足すと、計画側が旧形式を読まなくなって表から消えるため）。
+      // 畳むのはこの3つだけ。name・holidays・star・`_`キーはトップレベルに残す。
+      if(Array.isArray(lastData.tasks)||Array.isArray(lastData.milestones)||typeof lastData.project==="string"){
+        const p={name:str(lastData.project)||"WBS"};
+        if(Array.isArray(lastData.milestones))p.milestones=lastData.milestones;
+        if(Array.isArray(lastData.tasks))p.tasks=lastData.tasks;
+        delete lastData.project; delete lastData.milestones; delete lastData.tasks;
+        lastData.projects=[p];
+      }else lastData.projects=[];
+    }
     return true;
   }
   $("isTabBar").addEventListener("click",e=>{
@@ -3192,18 +3234,23 @@
     }
     const tb=e.target.closest(".stab"); if(!tb)return;
     gotoTab(tb.hasAttribute("data-summary")?SUMMARY:tb.getAttribute("data-tab"));
+    if(e.detail===2)renameTab(tb);            // 2発目のクリック＝ダブルクリック
   });
-  $("isTabBar").addEventListener("dblclick",e=>{  // タブのダブルクリックで名前変更
+  let renameLock=0;
+  function renameTab(tb){                      // タブのダブルクリックで案件名を変更
     if(!editMode)return;
-    const tb=e.target.closest(".stab[data-tab]"); if(!tb)return;
+    if(Date.now()-renameLock<400)return;        // click(detail=2) と dblclick の二重発火を抑える
+    if(!tb||!tb.hasAttribute("data-tab"))return;
     const i=+tb.getAttribute("data-si"), sh=curProjs[i]; if(!sh)return;
+    renameLock=Date.now();
     const nm=prompt(t("promptRename"),projName(sh));
     if(nm===null)return;
     if(!ensureProjects())return;
     sh.name=str(nm);
     tabSel=sh.name; lsSet("issProj",tabSel);
     queueSave(); render(lastData);
-  });
+  }
+  $("isTabBar").addEventListener("dblclick",e=>{renameTab(e.target.closest(".stab[data-tab]"));});
   $("isStat").addEventListener("click",e=>{calBtnClick(e);});
   $("isStat").addEventListener("change",e=>{  // ★の対象期間を直す（from が空になったら既定に戻す＝キーごと削除）
     const el=e.target;

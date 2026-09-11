@@ -2,7 +2,7 @@
    正常_=正しく描画・異常_=崩れてもクラッシュしない。非オブジェクトトップは inline でも併検。"""
 import json
 from playwright.sync_api import sync_playwright
-from common import ROOT, UNIFIED, VIEWER, check, finish, new_page
+from common import ROOT, VIEWER, check, finish, new_page
 
 CORPUS = ROOT / "tests" / "issue"    # 課題側のコーパス（wbs 本家の tests/*.json とは別ディレクトリ）
 FIXTURES = sorted(CORPUS.glob("正常_*.json")) + sorted(CORPUS.glob("異常_*.json"))
@@ -48,15 +48,9 @@ with sync_playwright() as p:
 
     for fx in FIXTURES:
         render_no_crash(fx.name, json.loads(fx.read_text(encoding="utf-8")))
-    # 壊れた tasks/children/milestones で落ちる、wbs 側（計画の描画）の既知の脆さ
-    # （docs/design/unified-touchpoints.md §4）。統合版では wbs 側が先に描くので、
-    # 課題側のコーパス回帰では対象外にする（計画側の課題として別途起票）。
-    WBS_FRAGILE = ("children が数値", "children が文字列", "children がオブジェクト",
-                   "tasks の要素が非オブジェクト", "tasks が非配列", "milestones が非配列")
+    # 壊れた tasks/children/milestones（かつて wbs 側の描画が落ちた形）も対象。
+    # 計画側を描画の読み取り時に graceful へ直したので、恒久スキップは解除した。
     for label, val in INLINE:
-        if UNIFIED and label in WBS_FRAGILE:
-            print(f"SKIP {label}（wbs 本家の既知の脆さ・段階Cで起票）")
-            continue
         render_no_crash(f"inline:{label}", val)
 
     check(len(FIXTURES) >= 15, f"fixture が15件以上ある -> {len(FIXTURES)}")

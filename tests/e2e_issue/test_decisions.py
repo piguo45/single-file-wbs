@@ -134,5 +134,31 @@ with sync_playwright() as pw:
     check(all(sorted(d) == ["a", "decided", "q", "since"] for d in saved()[0]["decisions"]),
           f"1件の鍵は q / since / decided / a の4つ -> {saved()[0]['decisions']}")
     check(not errors, f"JS エラーが出ない -> {errors[:2]}")
+
+    # ===== 異常系：中身を持てない項目は表示モードでは出さない（件数は事実のまま） =====
+    # a（方針）が空＝方針の行にしない／q（決めるべきこと）が空＝帯に出さない
+    BAD = book([
+        issue(1, "a が空の決まった項目", due="2026-09-20",
+              decisions=[{"q": "どの方式で直すか", "since": "2026-09-02",
+                          "decided": "2026-09-14", "a": ""}]),
+        issue(2, "q が空の未決", due="2026-09-20",
+              decisions=[{"q": "", "since": "2026-09-02", "decided": None, "a": ""},
+                         {"q": "こちらは出る", "since": "2026-09-02", "decided": None, "a": ""}]),
+        issue(3, "未決は q が空の1件だけ", due="2026-09-20",
+              decisions=[{"q": "", "since": "2026-09-02", "decided": None, "a": ""}]),
+    ], star={"from": "2026-09-10", "to": "2026-09-15"})
+    n0 = len(errors)
+    pg.evaluate("d=>window.renderData(d)", BAD); pg.wait_for_timeout(250)
+    check(len(errors) == n0, f"壊れた decisions で JS エラーを出さない -> {errors[n0:]}")
+    check(dl(1) == ["方針：未定"],
+          f"a（方針）が空なら方針の行を出さない（方針：未定 に落ちる） -> {dl(1)}")
+    odec = lambda n: pg.eval_on_selector_all(
+        S(f"#tbody tr:nth-child({n}) .ln.odec"), "e=>e.map(x=>x.innerText)")
+    check(len(odec(2)) == 1 and "こちらは出る" in odec(2)[0],
+          f"q（決めるべきこと）が空の項目は帯に出さない -> {odec(2)}")
+    check(odec(3) == [], f"未決が q 空の1件だけなら帯ごと出さない -> {odec(3)}")
+    cnt = pg.inner_text(S("#counts")).replace("\n", " ")
+    check("未決 2" in cnt,
+          f"件数は事実のまま数える（q が空でも未決＝#2 と #3 の2件） -> {cnt!r}")
     b.close()
 finish(errors)

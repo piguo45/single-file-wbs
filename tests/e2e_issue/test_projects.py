@@ -181,9 +181,8 @@ with sync_playwright() as p:
     check(saved()["projects"][0]["issues"][-1]["id"] == 5,
           f"既存案件の＋課題はその案件の最大id+1 -> {saved()['projects'][0]['issues'][-1]['id']}")
 
-    # 名前変更（ダブルクリック）
-    # dblclick は前置のクリックでタブが再描画されるため、イベントを直接投げて委譲ハンドラを検査する
-    pg2.dispatch_event(S("#tabBar .stab[data-si='0']"), "dblclick"); flush()
+    # 名前変更（ダブルクリック）＝実マウス。開いているタブを作り直さなくしたので dblclick が届く
+    pg2.dblclick(S("#tabBar .stab[data-si='0']")); flush()
     check(saved()["projects"][0]["name"] == "新案件", f"ダブルクリックで名前変更 -> {saved()['projects'][0]['name']}")
     check(saved()["projects"][0].get("_memo") == "案件のカスタムキー（保存で保持）", "案件の `_` キーは保持される")
     check("sheets" not in saved(), "保存 JSON に sheets キーは出ない")

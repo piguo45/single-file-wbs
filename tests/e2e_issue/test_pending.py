@@ -14,6 +14,7 @@ D = book([
     issue(4, "完了した課題", pending=waiting("X", "回答", "2026-09-01", "2026-09-02"),
           closed={"at": "2026-09-14", "how": "resolved", "note": "直った"},
           actions=[action("2026-09-14", "直した", "", True)]),
+    # 異常系：kind が既知値（waiting/frozen）以外 → pending は「無いもの」として描く（印を出さない）
     issue(5, "kind が壊れている", pending={"kind": "???", "since": "2026-09-06"}),
 ])
 
@@ -39,7 +40,8 @@ with sync_playwright() as pw:
           f"期限内なら催促は付かない -> {mks(2)}")
     check(mks(3)[0] == ["mk-frozen", "凍結 v0.1 をリリースしたら"], f"凍結は再開条件を添える -> {mks(3)}")
     check(mks(4) == [], f"完了した課題には印を付けない（待ち・催促・経過日数とも） -> {mks(4)}")
-    check(mks(5)[0] == ["mk-wait", "待ち"], f"kind が壊れていても落とさず「待ち」に寄せる -> {mks(5)}")
+    check([m for m in mks(5) if m[0].split()[0] in ("mk-wait", "mk-frozen", "mk-nudge")] == [],
+          f"kind が既知値以外なら印を出さない（pending は無いものとして描く） -> {mks(5)}")
     # 経過日数（待ち＝since から・未着手＝opened から）
     check(["待ち 9日"] == [m[1] for m in mks(1) if m[0] == "mk-days" and m[1].startswith("待ち")],
           f"待ちは「待ち N 日」（since から） -> {mks(1)}")
@@ -59,8 +61,8 @@ with sync_playwright() as pw:
 
     # ===== 右上の件数・サマリ =====
     cnt = pg.inner_text(S("#counts")).replace("\n", " ")
-    check("待ち 3" in cnt and "凍結 1" in cnt and "催促 1" in cnt,
-          f"件数＝待ち3（完了は除く）・凍結1・催促1 -> {cnt!r}")
+    check("待ち 2" in cnt and "凍結 1" in cnt and "催促 1" in cnt,
+          f"件数＝待ち2（完了と kind 不正は除く）・凍結1・催促1 -> {cnt!r}")
 
     # ===== 編集：待ち／凍結の2ボタン =====
     pg.click(S("#editBtn")); pg.wait_for_timeout(400)

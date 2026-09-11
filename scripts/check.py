@@ -461,8 +461,10 @@ def check_document(rep: Report, doc: Any) -> None:
 def check_file(path: str) -> Report:
     """ファイルを読んで検査し、結果を返す。"""
     rep = Report(path)
+    # 読めない入力（BOM・別の文字コード・ディレクトリ・権限なし・深すぎる入れ子）は
+    # traceback を出さず「読めない」エラー 1 件にする（検査は他のファイルへ続ける）。
     try:
-        with open(path, encoding="utf-8") as handle:
+        with open(path, encoding="utf-8-sig") as handle:   # BOM 付き UTF-8 も読む
             doc = json.load(handle)
     except FileNotFoundError:
         rep.error("（全体）", "ファイルが見つからない")
@@ -470,7 +472,25 @@ def check_file(path: str) -> Report:
     except json.JSONDecodeError as exc:
         rep.error("（全体）", f"JSON として読めない: {exc}")
         return rep
-    check_document(rep, doc)
+    except UnicodeDecodeError as exc:
+        rep.error("（全体）", f"読めない（文字コードが UTF-8 ではない: {exc.reason}）")
+        return rep
+    except RecursionError:
+        rep.error("（全体）", "読めない（入れ子が深すぎる）")
+        return rep
+    except IsADirectoryError:
+        rep.error("（全体）", "読めない（ディレクトリ）")
+        return rep
+    except PermissionError:
+        rep.error("（全体）", "読めない（権限がない）")
+        return rep
+    except OSError as exc:
+        rep.error("（全体）", f"読めない（{exc.strerror or exc}）")
+        return rep
+    try:
+        check_document(rep, doc)
+    except RecursionError:
+        rep.error("（全体）", "読めない（入れ子が深すぎる）")
     return rep
 
 

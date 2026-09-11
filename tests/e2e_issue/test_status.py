@@ -78,8 +78,8 @@ with sync_playwright() as p:
     check(st2 == [["未着手", ""], ["未着手", ""], ["未着手", ""], ["完了", ""]],
           f"how が不正ならサブ表示なし・kind が不正でも状態は落ちない -> {st2}")
     mk2 = pg.eval_on_selector_all(S("#tbody tr:nth-child(3) td.state .mk"), "e=>e.map(x=>x.innerText)")
-    check([m for m in mk2 if not m.endswith("日")] == ["待ち"],
-          f"kind が既知値でなければ「待ち」に寄せる（相手が空なら添え字なし） -> {mk2}")
+    check([m for m in mk2 if not m.endswith("日")] == [],
+          f"kind が既知値でなければ印を出さない（pending は無いものとして描く） -> {mk2}")
     pr = pg.eval_on_selector_all(S("#tbody td.prio .bdg"), "e=>e.map(x=>[x.className, x.innerText])")
     check(pr[0] == ["bdg p-mid", "中"] and pr[1] == ["bdg p-mid", "中"],
           f"priority が3値以外 / 数値 → mid 扱い -> {pr}")

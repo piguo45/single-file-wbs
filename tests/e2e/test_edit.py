@@ -1,4 +1,5 @@
-"""編集モード回帰: 保存・_キー保持・id採番・自動展開・同期render・旧形式変換・誤上書き防止・外部変更検知"""
+"""編集モード回帰: 保存・_キー保持・id採番・自動展開・同期render・旧形式変換・誤上書き防止・外部変更検知
+   ＋外部変更をキャンセルした後の「更新」で未保存の編集を黙って捨てないこと"""
 import json
 from playwright.sync_api import sync_playwright
 from common import VIEWER, check, finish, leaf, new_page
@@ -29,11 +30,12 @@ window.showOpenFilePicker = async () => [mkHandle(window.__pick)];
 """
 
 errors, dialogs = [], []
+ACCEPT = [True]      # ダイアログを受けるか取り消すか（外部変更／読み直しの確認を切り替える）
 with sync_playwright() as p:
     b = p.chromium.launch()
     pg = new_page(b, viewport={"width": 1500, "height": 600})
     pg.on("pageerror", lambda e: errors.append(str(e)))
-    pg.on("dialog", lambda d: (dialogs.append(d.message), d.accept()))
+    pg.on("dialog", lambda d: (dialogs.append(d.message), d.accept() if ACCEPT[0] else d.dismiss()))
     pg.add_init_script(INIT)
     pg.goto(VIEWER)
 
@@ -109,5 +111,22 @@ with sync_playwright() as p:
     pg.dispatch_event('input[data-pname="0"]', "change")
     flush(); pg.wait_for_timeout(300)
     check(any("ツール外" in d for d in dialogs[n:]), "外部変更の上書き確認が出る")
+
+    # ===== 外部変更をキャンセル → 「更新」で未保存の編集を黙って捨てない =====
+    ACCEPT[0] = False                                   # 以降の確認はすべてキャンセル
+    pg.evaluate("() => {window.__mtimes['B'] += 100;}")
+    pg.fill('input[data-pname="0"]', "捨てられては困る編集")
+    pg.dispatch_event('input[data-pname="0"]', "change")
+    flush(); pg.wait_for_timeout(300)                   # 外部変更の確認をキャンセル＝書けずに残る
+    n = len(dialogs)
+    pg.click("#refreshBtn"); pg.wait_for_timeout(400)
+    check(any("未保存" in d for d in dialogs[n:]),
+          f"未保存のまま「更新」を押すと確認が出る -> {dialogs[n:]}")
+    check(pg.input_value('input[data-pname="0"]') == "捨てられては困る編集",
+          "確認をキャンセルすれば読み直さない（編集は画面に残る）")
+    ACCEPT[0] = True
+    pg.click("#refreshBtn"); pg.wait_for_timeout(500)
+    check(pg.input_value('input[data-pname="0"]') == "競合テスト",
+          f"確認をOKすれば読み直す -> {pg.input_value('input[data-pname=\'0\']')!r}")
     b.close()
 finish(errors)
