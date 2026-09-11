@@ -2442,14 +2442,25 @@
           "closeWhen": "`milestones` が非配列でも落ちず、マイルストーン無しとして描けること（回帰テストで固定）",
           "decisions": [],
           "pending": null,
-          "closed": null,
+          "closed": {
+            "at": "2026-09-11",
+            "how": "resolved",
+            "note": "敵対検証の修正 第1弾（ef016e0）で確認：milestones が非配列・要素が非オブジェクトでも捨てて描く。golden 49 全一致・pixel 0 画素・課題 24 本 GREEN"
+          },
           "links": [
             {
               "title": "統合ビューアの差し込み口 §4",
               "url": "https://github.com/piguo45/single-file-wbs/blob/main/docs/design/unified-touchpoints.md"
             }
           ],
-          "actions": [],
+          "actions": [
+            {
+              "date": "2026-09-11",
+              "text": "読み取り側で 1 件ずつ守る正規化を実装（保存データは不変）。tests/e2e_issue の恒久スキップ 6 件を復活・test_broken_plan.py 追加",
+              "assignee": "Claude",
+              "done": true
+            }
+          ],
           "note": "移植元 single-file-issue の設計書「統合ビューアの差し込み口」§4 から起票（2026-09-11）"
         },
         {
@@ -2463,14 +2474,25 @@
           "closeWhen": "`children` が非配列でも落ちず、「子なし」（リーフ）として描けること（回帰テストで固定）",
           "decisions": [],
           "pending": null,
-          "closed": null,
+          "closed": {
+            "at": "2026-09-11",
+            "how": "resolved",
+            "note": "敵対検証の修正 第1弾（ef016e0）で確認：children が非配列なら葉として扱う。golden 49 全一致・pixel 0 画素・課題 24 本 GREEN"
+          },
           "links": [
             {
               "title": "統合ビューアの差し込み口 §4",
               "url": "https://github.com/piguo45/single-file-wbs/blob/main/docs/design/unified-touchpoints.md"
             }
           ],
-          "actions": [],
+          "actions": [
+            {
+              "date": "2026-09-11",
+              "text": "読み取り側で 1 件ずつ守る正規化を実装（保存データは不変）。tests/e2e_issue の恒久スキップ 6 件を復活・test_broken_plan.py 追加",
+              "assignee": "Claude",
+              "done": true
+            }
+          ],
           "note": "移植元 single-file-issue の設計書「統合ビューアの差し込み口」§4 から起票（2026-09-11）"
         },
         {
@@ -2484,14 +2506,25 @@
           "closeWhen": "`tasks[]` にオブジェクト以外が混じっても落ちず、その要素だけ無視して描けること（回帰テストで固定）",
           "decisions": [],
           "pending": null,
-          "closed": null,
+          "closed": {
+            "at": "2026-09-11",
+            "how": "resolved",
+            "note": "敵対検証の修正 第1弾（ef016e0）で確認：tasks/children の要素が非オブジェクトなら捨てて描く（tasks 自体が非配列も同様）。golden 49 全一致・pixel 0 画素・課題 24 本 GREEN"
+          },
           "links": [
             {
               "title": "統合ビューアの差し込み口 §4",
               "url": "https://github.com/piguo45/single-file-wbs/blob/main/docs/design/unified-touchpoints.md"
             }
           ],
-          "actions": [],
+          "actions": [
+            {
+              "date": "2026-09-11",
+              "text": "読み取り側で 1 件ずつ守る正規化を実装（保存データは不変）。tests/e2e_issue の恒久スキップ 6 件を復活・test_broken_plan.py 追加",
+              "assignee": "Claude",
+              "done": true
+            }
+          ],
           "note": "移植元 single-file-issue の設計書「統合ビューアの差し込み口」§4 から起票（2026-09-11）"
         },
         {
@@ -2505,14 +2538,25 @@
           "closeWhen": "`name` がオブジェクトでも `[object Object]` を出さず、空として描けること（回帰テストで固定）",
           "decisions": [],
           "pending": null,
-          "closed": null,
+          "closed": {
+            "at": "2026-09-11",
+            "how": "resolved",
+            "note": "敵対検証の修正 第1弾（ef016e0）で確認：name が非文字列なら空欄・hours/qty が非数値なら空欄。golden 49 全一致・pixel 0 画素・課題 24 本 GREEN"
+          },
           "links": [
             {
               "title": "統合ビューアの差し込み口 §4",
               "url": "https://github.com/piguo45/single-file-wbs/blob/main/docs/design/unified-touchpoints.md"
             }
           ],
-          "actions": [],
+          "actions": [
+            {
+              "date": "2026-09-11",
+              "text": "読み取り側で 1 件ずつ守る正規化を実装（保存データは不変）。tests/e2e_issue の恒久スキップ 6 件を復活・test_broken_plan.py 追加",
+              "assignee": "Claude",
+              "done": true
+            }
+          ],
           "note": "移植元 single-file-issue の設計書「統合ビューアの差し込み口」§4 から起票（2026-09-11）"
         },
         {
