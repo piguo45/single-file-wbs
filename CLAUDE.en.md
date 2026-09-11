@@ -436,6 +436,7 @@ The article's **three reasons for pending** split like this in this tool (**the 
   _anyName                      "_"-prefixed = custom key (optional, ignored by viewer, preserved on save)
   ```
   - **`id` is a string** (`"2.3"`); an issue number is an integer (`3`), and the key name (`wbs` / `issue`) tells them apart. Keep it **unique within the project**.
+  - **`qty` is a repeat count** (e.g. 5 screens × `hours` 4h = 20h). **Leave it at `1` for one-off work.** If you never use it, collapse the "qty+hours" columns in the viewer (column collapsing, #64).
   - **Keep `name` a short label** (about 14 full-width characters; put detail and history in `note`) — longer values do not break anything but get clipped in the Task column (the full text shows on hover).
 - **Effort and progress are not stored in the data** (all derived; computed by the viewer → "Computation").
 - **Holidays (optional, top-level)**: `holidays: ["YYYY-MM-DD", { date, name }]` (string form = no name / object form = `name` as tooltip).
