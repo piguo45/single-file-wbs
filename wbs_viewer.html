@@ -265,6 +265,7 @@
   #pmSwitch .pm-b.on{background:var(--accent);color:#fff}  /* 選択中＝#openBtn.primary と同じ塗り */
   #pmSwitch .pm-b[disabled]{opacity:.45;cursor:default}    /* 中身が無い側は薄く（押しても切り替わらない） */
   /* 計画側の逆引き札：課題の links[].wbs から作る。links が無いファイルでは1つも DOM を作らない */
+  .pmb-w{margin-left:.4em}                                 /* 作業項目名と札の間を空ける（「結合A課題 #1」と詰まるのを防ぐ・空白文字ではなくCSSで） */
   .pmb{margin-left:6px;font-size:10px;color:#8b94a3;cursor:pointer;white-space:nowrap}
   .pmb:hover{color:#2563eb;text-decoration:underline}
   .grow.pmjump,.lrow.pmjump{box-shadow:inset 0 0 0 999px rgba(255,213,79,.45)}  /* リンクで飛んだ先を2秒強調 */
