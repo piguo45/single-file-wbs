@@ -240,6 +240,54 @@ with sync_playwright() as p:
     check("_calc" not in pg2.evaluate("()=>window.__file"), "派生値は保存されない")
     pg2.close()
 
+    # ===== 課題ビューでは編集の ON/OFF によらず計画側の絞り込みバーを出さない =====
+    # wbs の render()（updateSummaryAndScroll）が #filterBar に style.display="flex" を直に書くため、
+    # 編集トグルの render で計画側のバーが復活し、課題側のバーが 32px 押し下げられていた（v2.0.0 の不具合）。
+    pg5 = new_page(b2, issue_view=False, viewport={"width": 1500, "height": 900})
+    pg5.on("pageerror", lambda e: errors.append(str(e).split("\n")[0]))
+    pg5.on("dialog", lambda d: (dialogs.append(d.message), d.accept()))
+    pg5.add_init_script(granted_handle_init(D))
+    pg5.goto(VIEWER)
+    # 高さ・表示・課題側バーの上端をまとめて採る（押し下げは高さでなく上端に出る）
+    bars = lambda: pg5.evaluate("""()=>{const g=id=>{const e=document.getElementById(id);
+        return [e.offsetHeight, getComputedStyle(e).display];};
+        return {plan:g('filterBar'), issue:g('isFilterBar'), topbar:g('topbar')[0],
+                tabbar:g('isTabBar')[0], isMain:g('isMain')[0],
+                isMainTop:Math.round(document.getElementById('isMain').getBoundingClientRect().top)};}""")
+    pg5.click("#openBtn"); pg5.wait_for_timeout(400)
+    pg5.click("#pmSwitch .pm-b[data-pmv='issue']"); pg5.wait_for_timeout(350)
+    off = bars()
+    check(off["plan"][0] == 0 and off["plan"][1] == "none",
+          f"課題ビュー（編集OFF）：計画側の絞り込みバーは 0px -> {off['plan']}")
+    check(off["issue"][0] > 0, f"課題ビュー（編集OFF）：課題側の絞り込みバーは出る -> {off['issue']}")
+    pg5.click("#editBtn"); pg5.wait_for_timeout(500)
+    on = bars()
+    check(on["plan"][0] == 0 and on["plan"][1] == "none",
+          f"課題ビュー（編集ON）：計画側の絞り込みバーを出さない -> {on['plan']}")
+    check(on["issue"][0] > 0, f"課題ビュー（編集ON）：課題側の絞り込みバーは出たまま -> {on['issue']}")
+    check((on["topbar"], on["tabbar"]) == (off["topbar"], off["tabbar"]),
+          f"編集ONで操作バー・タブの高さが変わらない -> {(on['topbar'], on['tabbar'])} vs {(off['topbar'], off['tabbar'])}")
+    # 押し下げの証拠は課題側の板の位置と高さ（不具合時は 79→111 / 852→820 になっていた）。
+    # 件数表（#isStat）は編集中だけ 4px 伸びる＝これは本来の挙動なので、断言は #isMain で取る。
+    check(on["isMain"] == off["isMain"] and on["isMainTop"] == off["isMainTop"],
+          f"編集ONで課題側が押し下げられない -> 高さ {on['isMain']} vs {off['isMain']} / 上端 {on['isMainTop']} vs {off['isMainTop']}")
+    pg5.click("#editBtn"); pg5.wait_for_timeout(500)
+    back = bars()
+    check(back["plan"][0] == 0 and back["issue"][0] > 0 and back["isMain"] == off["isMain"]
+          and back["isMainTop"] == off["isMainTop"],
+          f"編集を OFF に戻しても課題側のバーだけ（残留しない） -> {back}")
+    pg5.click("#pmSwitch .pm-b[data-pmv='plan']"); pg5.wait_for_timeout(350)
+    pl = bars()
+    check(pl["plan"][0] > 0 and pl["plan"][1] == "flex",
+          f"計画ビューに戻すと計画側の絞り込みバーが出る -> {pl['plan']}")
+    check(pl["issue"][0] == 0, f"計画ビューでは課題側のバーは出ない -> {pl['issue']}")
+    pg5.click("#editBtn"); pg5.wait_for_timeout(500)
+    pe = bars()
+    check(pe["plan"][0] > 0 and pe["plan"][1] == "flex",
+          f"計画ビューは従来どおり編集ONでも絞り込みバーが出る -> {pe['plan']}")
+    check(pe["issue"][0] == 0, f"計画ビュー（編集ON）でも課題側のバーは出ない -> {pe['issue']}")
+    pg5.close()
+
     # ===== 性能（1000課題＋225タスク行・実ポインタ） =====
     pg3 = new_page(b2, issue_view=False, viewport={"width": 1500, "height": 900})
     perr = []

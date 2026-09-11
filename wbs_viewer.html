@@ -274,6 +274,9 @@
   /* 課題ビューでは wbs の集計を消す。visibility:hidden では多段の高さが残り操作バーが伸びるので display:none。
      右寄せは #stat の margin-left:auto を失うぶん、区切りと言語ボタンを右へ送って補う */
   body.pm-issue #stat{display:none}
+  /* 計画側の絞り込みバーは課題ビューでは出さない。wbs の render()（updateSummaryAndScroll）が
+     毎回 style.display="flex" を直に書くので、CSS 側で !important にしないと編集ON→render で復活する */
+  body.pm-issue #filterBar{display:none!important}
   #legendBtn{display:none}                       /* 凡例は課題ビューだけ（計画ビューは 0 画素＝pixel 不変） */
   body.pm-issue #legendBtn{display:inline-block;font:inherit;font-size:11px;padding:5px 10px;
     border:1px solid transparent;background:transparent;color:var(--muted);border-radius:6px;
@@ -2984,7 +2987,7 @@
     document.body.classList.toggle("pm-issue",on);             // 課題ビューだけ wbs の右上集計を隠す
     document.getElementById("isMain").hidden=!on;
     const m=document.getElementById("main"); if(m)m.style.display=on?"none":"";
-    const wf=document.getElementById("filterBar"); if(wf&&on)wf.style.display="none";
+    // 計画側の絞り込みバーは CSS（body.pm-issue #filterBar）で消す＝inline style を書かない
   }
   function setView(v){
     pmView=v; lsSet("pmView",v);
