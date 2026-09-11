@@ -1285,6 +1285,22 @@
                   "note": ""
                 }
               ]
+            },
+            {
+              "id": "4.14",
+              "name": "v2.0.0 統合（課題管理を取り込む）",
+              "qty": 1,
+              "hours": 8,
+              "assignee": "ぴぐお",
+              "plan": {
+                "start": "2026-09-11",
+                "end": "2026-09-11"
+              },
+              "actual": {
+                "start": "2026-09-11",
+                "end": null
+              },
+              "note": "single-file-issue の統合ビューア・説明書・課題を本家へ移す（段階C）。工数と予定は未確定（利用者に確認して更新する）"
             }
           ]
         },
@@ -1666,6 +1682,811 @@
               "note": "4.9(#96)として実装・完了済み（重複登録）。 #96：https://github.com/piguo45/single-file-wbs/issues/96 遅延で後続を後ろ倒した経緯を残す。_planLog（at/from/to/reason・先頭=当初）を_キーで記録（事実記録＝_progress/_aiと同思想・round-trip保持）。まずデータ規約のみ＝ビューア改修ゼロで運用可、後で表示(ホバー履歴/当初ゴーストバー)。#66依存の下地"
             }
           ]
+        }
+      ],
+      "issues": [
+        {
+          "id": 35,
+          "title": "【検討】カラーユニバーサルデザイン（色覚多様性への配慮）の検証と調整",
+          "priority": "mid",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "色だけに意味を担わせていないかを全要素で検証でき、4種の色覚エミュレーション（P型・D型・T型・グレースケール）でも遅延・完了・予実・土日が判別できると確かめられる",
+          "closeWhen": "グレースケールで全情報が読めること（本文の最終基準）を確認済みであること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #35",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/35"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 36,
+          "title": "【HIG】編集のUndo/Redo（Ctrl+Z）— 確認ダイアログ依存からの転換",
+          "priority": "high",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "Undo/Redo が無く、0.4秒デバウンスの自動保存が実ファイルへ直行するため、誤編集・誤削除・誤移動がほぼ即座に確定して不可逆のまま残る",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #36",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/36"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 37,
+          "title": "【HIG】「今日着手」「今日完了」ワンクリックボタン",
+          "priority": "high",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "日々の中核操作（着手した／完了した）の記録が1クリックになる（値はほぼ常に「今日」で、ツールは今日を知っている）",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #37",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/37"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 38,
+          "title": "【HIG】検索・ジャンプ（名前/担当/No.のフィルタ）",
+          "priority": "high",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "検索・フィルタ・ジャンプが無く、大量リストで特定タスクを探すのが手動スクロールと折りたたみ位置の記憶頼みのまま残る",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #38",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/38"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 39,
+          "title": "【HIG】ダークモード＋OS表示設定への追従（prefers-color-scheme / prefers-contrast）",
+          "priority": "high",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "ライト固定のまま prefers-color-scheme / prefers-contrast に対応せず、OS の表示設定を無視し続ける",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #39",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/39"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 40,
+          "title": "【HIG】ガントの凡例＋ヘッダに行動可能なサマリ「遅延N件」",
+          "priority": "high",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "ガントの5つの意味（枠=予定／塗り=実績／赤折れ線=遅延／縦線=MS／グレー✓=完了）が視覚のみで運ばれ、ページ内に凡例が無いまま（初見は README 頼み）。ヘッダの集計も構造量だけで「今どこがまずいか」が出ない",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #40",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/40"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 41,
+          "title": "【HIG】無効入力の可視化（捨てる前に赤枠＋未保存ヒント）",
+          "priority": "mid",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "範囲外（1900〜2099外）や不正な日付が黙って破棄され、入力者に何の信号も出ない（本プロジェクトの「無言の失敗禁止」とも不整合）",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #41",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/41"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 42,
+          "title": "【HIG】保存失敗の警告強化（受動テキスト→目立つ赤状態＋クリック再試行）",
+          "priority": "mid",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "「保存失敗」が「保存済 HH:MM:SS」と同じ受動的なヘッダ文字のままで、保存されたと思い込んで編集を続けたりタブを閉じたりするデータ損失の恐れが残る",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #42",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/42"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 43,
+          "title": "【HIG】キーボード基本操作（折りたたみのフォーカス可能化・focus-visible・主要ショートカット）",
+          "priority": "mid",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "中核操作の折りたたみがフォーカス不能な span（マウス専用）のままで、:focus-visible のスタイルも無い",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #43",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/43"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 44,
+          "title": "【HIG】文字サイズ追従（px→rem）とENロケール・拡大時のレイアウト耐性",
+          "priority": "mid",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "全フォントが px 固定（曜日9px・日付セル10px は最小可読サイズの床下）で、ブラウザの既定文字サイズ変更に追従しない。EN ロケールや125〜150%設定でのクリップ挙動も未検証のまま",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #44",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/44"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 45,
+          "title": "【HIG】エラーメッセージに回復手順を添える（Writing原則）",
+          "priority": "low",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "JSON 読み込み失敗は生の e.message のみ、保存失敗は次の行動を示さないまま（回復手順が添えられていない）",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #45",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/45"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 48,
+          "title": "【HIG】行のハイライト2種（操作後のフェード・左右ペイン同期ホバー）",
+          "priority": "low",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "編集の追加・上下移動の後にどの行が変わったかの手掛かりが無く、左の9列と横スクロールのガントで「このバーはどの行か」の照合が目視頼みのまま",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #48",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/48"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 49,
+          "title": "【HIG】アイコンの一貫性（▼の二義性解消・📅の描画統一・✕の破壊的ホバー）",
+          "priority": "low",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "▼ が「展開中ノード」と「行を下へ移動」の2義のまま、📅 絵文字の見た目がプラットフォームで変わり、削除 ✕ の破壊的な性質がホバーで見えない",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #49",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/49"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 50,
+          "title": "【HIG】大量行の描画中フィードバック「描画中…」",
+          "priority": "low",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "大量行の初期描画中にページが無反応でフィードバックが無く、「未読み込み」から完成画面へ突然ジャンプする",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #50",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/50"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 51,
+          "title": "【docs】ブラウザ標準機能の活用ガイドをREADMEに追記（Ctrl+F検索・ズーム・印刷）",
+          "priority": "mid",
+          "opened": "2026-06-11",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "Chrome/Edge に既にある機能（Ctrl+F 検索・Ctrl +/− ズーム・Ctrl+P 印刷/PDF化）で足りるものを、実装せずに README（日英）で案内できる",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #51",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/51"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 55,
+          "title": "【運用実験】AI担当タスクの実績を _ai キー（トークン・実時間・モデル）で記録する",
+          "priority": "mid",
+          "opened": "2026-06-12",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "AI 担当タスクの原価（消費トークン・実時間・モデル）が `_ai` キーに記録され、類似機能の実測ベース見積として流用でき、コストの透明性も上がる",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #55",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/55"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 57,
+          "title": "【大物】ガントを直接操作して予定/実績を入力（クリック=実績・ドラッグ=予定）",
+          "priority": "mid",
+          "opened": "2026-06-13",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "ガント上の直接操作（クリック＝実績・ドラッグ＝予定）で予定／実績を入力できる。他の WBS／ガントツールに対する差別化の目玉",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #57",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/57"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 58,
+          "title": "外部変更の自動反映トグル＋編集中の衝突警告（mtimeポーリング）",
+          "priority": "mid",
+          "opened": "2026-06-13",
+          "due": null,
+          "ifIgnored": "wbs.json を外部（AI 編集・テキストエディタ保存）で変えても「更新」ボタンを押すまで反映されず、AI が wbs_roadmap.json を編集する運用と相性が悪いまま",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #58",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/58"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 61,
+          "title": "起動時に前回開いた wbs.json を自動で開き直す（IndexedDBにハンドル保存）",
+          "priority": "mid",
+          "opened": "2026-06-13",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "前回開いたファイルを起動時にワンクリックで開き直せる（「ファイルを開く」自体が初回以外は実質不要になる）",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #61",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/61"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 62,
+          "title": "縦スクロールの左右同期ズレを単一スクロール化で根本解消",
+          "priority": "mid",
+          "opened": "2026-06-14",
+          "due": null,
+          "ifIgnored": "慣性スクロールで左ペインとガントが一瞬わずかに上下へずれる（止めれば即揃う）。左右を別スクロールにして JS で同期する構造の1フレーム遅延として残り続ける",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #62",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/62"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 66,
+          "title": "依存関係/クリティカルパス・ビュー（4つ目の軸・構造）※要・依存データ",
+          "priority": "low",
+          "opened": "2026-06-15",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "「どのタスクが遅れるとプロジェクト全体が遅れるか」を示すクリティカルパスを、時間／進捗に続く4つ目の軸（構造）として見られる。※依存エッジのデータ（`_deps`）が前提",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #66",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/66"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 72,
+          "title": "【コンセプト/利用用途】組織ズーム — wbs.jsonを高度ごとに分け、AIで抽象/具象を行き来する",
+          "priority": "mid",
+          "opened": "2026-06-16",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "個別の wbs.json を AI が集約／展開して組織の高度（個人→チーム→部署→部門）を行き来でき、`_` 始まりのキーでファイル間を相互に紐づけられる（北極星・実装は遠くてよい）",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #72",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/72"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 76,
+          "title": "【docs】ドキュメント整備で判明した設計理由(why)の要確認事項",
+          "priority": "mid",
+          "opened": "2026-06-21",
+          "due": null,
+          "ifIgnored": "「なぜその値・その上限にしたか（why）」が記録されていない設計判断（3階層のネスト上限・進捗10%刻み・1人日=8時間／1人月=20稼働日・保存デバウンス400ms）が、記録の無いまま残る",
+          "ifDone": "",
+          "closeWhen": "各項目について確定した why を ADR（docs/adr/）または CLAUDE.md の該当節に1行で追記し、「設定可能にすべき」と判断したものは別途 enhancement として切り出していること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #76",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/76"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 85,
+          "title": "【HIG】ツールチップの細部：マイルストーン線のホバー＋ダイアログ系ボタンの「…」省略記号",
+          "priority": "low",
+          "opened": "2026-06-23",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "マイルストーン線のホバーで「ラベル＋日付」が出て、ダイアログを開くボタンの末尾にHIG 慣習の「…」が付く（#46 のクローズ時に残した些末2件）",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #85",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/85"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 90,
+          "title": "【編集】Zennフィードバック: GUIのタスク構造編集（追加ボタン集約・上下/親またぎ移動・インデント・No.自動採番）",
+          "priority": "mid",
+          "opened": "2026-06-26",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "",
+          "closeWhen": "各提案について「実装する／GUI 代替で十分として却下」を判断し、采否を記録していること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #90",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/90"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 107,
+          "title": "【保存】wbs.json の 0 バイト化が再発（2026-06-29/30 に2件・原因未特定）＋0バイト読込時の復旧案内",
+          "priority": "high",
+          "opened": "2026-09-09",
+          "due": null,
+          "ifIgnored": "`wbs.json` が 0 バイトになりデータが失われる（2026-06-29・06-30 に2件の実害）。0 バイトを読んだ時のエラーが「Unexpected end of JSON input」で、何が起きたか・どう戻すかが分からない",
+          "ifDone": "",
+          "closeWhen": "原因を1つ以上再現または除外して記録し、0 バイト読込時のメッセージに復旧手順を表示（ja/en）、空データでの編集ON→書込の経路を塞いで e2e で固定し、e2e 全スイート GREEN・CLAUDE.md（ja/en）の異常系表と編集モード節を更新していること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub #107",
+              "url": "https://github.com/piguo45/single-file-wbs/issues/107"
+            }
+          ],
+          "actions": [],
+          "note": "GitHub Issue から移行（2026-09-11）"
+        },
+        {
+          "id": 201,
+          "title": "マイルストーンが非配列だと描画が落ちる（forEach is not a function）",
+          "priority": "mid",
+          "opened": "2026-09-11",
+          "due": null,
+          "ifIgnored": "`projects[].milestones` が非配列の JSON を読むと `forEach is not a function` で描画が落ち、「壊れた入力でもクラッシュさせない」方針から外れる",
+          "ifDone": "",
+          "closeWhen": "`milestones` が非配列でも落ちず、マイルストーン無しとして描けること（回帰テストで固定）",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "統合ビューアの差し込み口 §4",
+              "url": "https://github.com/piguo45/single-file-wbs/blob/main/docs/design/unified-touchpoints.md"
+            }
+          ],
+          "actions": [],
+          "note": "移植元 single-file-issue の設計書「統合ビューアの差し込み口」§4 から起票（2026-09-11）"
+        },
+        {
+          "id": 202,
+          "title": "children が非配列だと描画が落ちる（map is not a function）",
+          "priority": "mid",
+          "opened": "2026-09-11",
+          "due": null,
+          "ifIgnored": "`tasks[].children` が非配列の JSON を読むと `n.children.map is not a function` で描画が落ちる",
+          "ifDone": "",
+          "closeWhen": "`children` が非配列でも落ちず、「子なし」（リーフ）として描けること（回帰テストで固定）",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "統合ビューアの差し込み口 §4",
+              "url": "https://github.com/piguo45/single-file-wbs/blob/main/docs/design/unified-touchpoints.md"
+            }
+          ],
+          "actions": [],
+          "note": "移植元 single-file-issue の設計書「統合ビューアの差し込み口」§4 から起票（2026-09-11）"
+        },
+        {
+          "id": 203,
+          "title": "tasks の要素が数値・文字列だと描画が落ちる（Cannot create property '_calc'）",
+          "priority": "mid",
+          "opened": "2026-09-11",
+          "due": null,
+          "ifIgnored": "`tasks[]` の要素がオブジェクトでない（数値・文字列）JSON を読むと `Cannot create property '_calc'` で描画が落ちる",
+          "ifDone": "",
+          "closeWhen": "`tasks[]` にオブジェクト以外が混じっても落ちず、その要素だけ無視して描けること（回帰テストで固定）",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "統合ビューアの差し込み口 §4",
+              "url": "https://github.com/piguo45/single-file-wbs/blob/main/docs/design/unified-touchpoints.md"
+            }
+          ],
+          "actions": [],
+          "note": "移植元 single-file-issue の設計書「統合ビューアの差し込み口」§4 から起票（2026-09-11）"
+        },
+        {
+          "id": 204,
+          "title": "タスク名がオブジェクトだと画面に [object Object] が出る",
+          "priority": "mid",
+          "opened": "2026-09-11",
+          "due": null,
+          "ifIgnored": "`tasks[].name` がオブジェクトの JSON を読むと、作業項目セルに `[object Object]` がそのまま出る",
+          "ifDone": "",
+          "closeWhen": "`name` がオブジェクトでも `[object Object]` を出さず、空として描けること（回帰テストで固定）",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "統合ビューアの差し込み口 §4",
+              "url": "https://github.com/piguo45/single-file-wbs/blob/main/docs/design/unified-touchpoints.md"
+            }
+          ],
+          "actions": [],
+          "note": "移植元 single-file-issue の設計書「統合ビューアの差し込み口」§4 から起票（2026-09-11）"
+        },
+        {
+          "id": 205,
+          "title": "開いたリスケフォームが約0.4秒後に消える（deferRender にフォームの見張りが無い）",
+          "priority": "mid",
+          "opened": "2026-09-11",
+          "due": null,
+          "ifIgnored": "編集モードで左表の入力欄に文字を入れ、確定せずに ↷（リスケ）を押すと、遅延していた再描画が走って `closeRsUI()` がフォームを消す（`deferRender` にフォームの見張りが無い）",
+          "ifDone": "",
+          "closeWhen": "入力直後に ↷ を押しても、開いたリスケフォームが消えないこと（フォームを開いている間は遅延再描画を待たせる）",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "統合ビューアの差し込み口 §4",
+              "url": "https://github.com/piguo45/single-file-wbs/blob/main/docs/design/unified-touchpoints.md"
+            }
+          ],
+          "actions": [],
+          "note": "移植元 single-file-issue の設計書「統合ビューアの差し込み口」§4 から起票（2026-09-11）"
+        },
+        {
+          "id": 206,
+          "title": "優先度を「影響の大きさ×期限の近さ」で自動提案するか",
+          "priority": "mid",
+          "opened": "2026-09-06",
+          "due": "2026-11-30",
+          "ifIgnored": "",
+          "ifDone": "優先度の付け方が人・AIごとにぶれなくなり、並べ替えの根拠を説明できる。価値を受け取りたいのは v0.2 の設計に入る時（11/30）",
+          "closeWhen": "「自動提案する／人とAIの判断のまま持つ」のどちらかに決まり、CLAUDE.md に書かれていること",
+          "decisions": [
+            {
+              "q": "優先度を自動提案するか、人とAIの判断のまま持つか",
+              "since": "2026-09-06",
+              "decided": null,
+              "a": ""
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-06",
+              "text": "v0.1 は事実として持つ（計算式なし）と整理",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "計算式の案を作って v0.2 で判断",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": "決めるべきことを未決のまま積んでおく。未決を隠さないのが仕様。https://knowledge.piguo.org/notes/what-is-issue-management/／single-file-issue #1 から移行（2026-09-11）"
+        },
+        {
+          "id": 207,
+          "title": "WBS と課題を画面上で相互リンクする",
+          "priority": "low",
+          "opened": "2026-09-06",
+          "due": "2026-12-28",
+          "ifIgnored": "",
+          "ifDone": "課題からWBSの作業へ、WBSから課題へ画面上で行き来でき、「何を・なぜ」と「いつ・誰が」を突き合わせる手間が消える。価値を受け取りたいのは v0.2",
+          "closeWhen": "課題の WBS タグから wbs_viewer.html の該当タスクへ移動でき、逆方向も動くこと",
+          "decisions": [
+            {
+              "q": "v0.1 でどこまでやるか",
+              "since": "2026-09-06",
+              "decided": "2026-09-06",
+              "a": "v0.2 で扱う。段階Aでは課題側の links に WBS の id を持つところまで（画面の相互リンクは統合ビューアで）"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-11",
+            "how": "resolved",
+            "note": "v2.0.0 の統合ビューアで、課題の links から計画へ、計画の逆引き札から課題へ同じページの中で行き来できることを確認"
+          },
+          "links": [
+            {
+              "title": "v0.2 設計ブリーフ",
+              "url": "https://github.com/piguo45/single-file-wbs/blob/main/docs/design/brief-v0.2-unified.md"
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-06",
+              "text": "v0.1 のスコープを「タグ表示まで」と確定",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "相互リンクの方式を設計（v0.1 リリース後）",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": "止めている理由と再開条件を書いた例（frozen）／single-file-issue #2 から移行（2026-09-11）"
+        },
+        {
+          "id": 208,
+          "title": "Zenn 記事で課題管理の考え方とツールを公開する",
+          "priority": "low",
+          "opened": "2026-09-06",
+          "due": "2026-12-28",
+          "ifIgnored": "",
+          "ifDone": "考え方（載せる・決める・組み込む・閉じる）とツールが同時に伝わり、使ってもらえる入口ができる。価値を受け取りたいのは v0.1 公開の直後（12/28）",
+          "closeWhen": "Zenn に記事が公開され、README と相互にリンクされていること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-06",
+              "decided": "2026-09-06",
+              "a": "実施する。v0.1 リリース後に書く"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "links": [],
+          "actions": [
+            {
+              "date": null,
+              "text": "構成の下書き（GitHub Issue の使いにくさ→課題管理論→ツール）",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": "実行が終わったら閉じる型（TODO的な行）。載せた時点で decision を書く／single-file-issue #4 から移行（2026-09-11）。移行時に壊れるリンク（single-file-issue の課題 #3・WBS 3.2）を外した"
+        },
+        {
+          "id": 209,
+          "title": "サマリタブを残すか消すか（パイロット後に判断）",
+          "priority": "low",
+          "opened": "2026-09-09",
+          "due": null,
+          "ifIgnored": "使われない画面とその回帰テストを保守し続け、段階Cで wbs 本家へ持ち込む量が増える",
+          "ifDone": "",
+          "closeWhen": "パイロットで「サマリを開いたか」を確かめ、残す／消すのどちらかを決めて反映済みであること",
+          "decisions": [
+            {
+              "q": "サマリタブを残すか消すか（パイロットで開いた回数で判断）",
+              "since": "2026-09-09",
+              "until": null,
+              "decided": null,
+              "a": ""
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "v0.2 設計ブリーフ §6",
+              "url": "https://github.com/piguo45/single-file-wbs/blob/main/docs/design/brief-v0.2-unified.md"
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-09",
+              "text": "A案（残してパイロットで判断）を裁定",
+              "assignee": "作者",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "パイロット中にサマリを開いた回数を記録",
+              "assignee": "作者",
+              "done": false
+            }
+          ],
+          "note": "タブの ★N ⚠N で代替できる部分と、横並び比較・合計行というサマリだけの部分を整理済み（設計ブリーフ §6）／single-file-issue #5 から移行（2026-09-11）"
         }
       ]
     }
