@@ -27,7 +27,6 @@ Issues: flip **Plan｜Issues** in the toolbar and the same file's issue table ap
 ## Start in 30 seconds
 
 1. Download `wbs_viewer.html` from [Releases](https://github.com/piguo45/single-file-wbs/releases/latest)
-   - **v2.0.0 is not released yet.** Until it is, `git clone` the repo or save `wbs_viewer.html` from the Raw view
 2. Open it in Chrome (plain `file://` is fine)
 3. Load `wbs_sample_issues.json` via **Open file** (or drag & drop onto that same button)
 

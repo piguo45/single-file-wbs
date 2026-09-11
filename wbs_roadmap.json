@@ -1300,7 +1300,7 @@
                 "start": "2026-09-11",
                 "end": "2026-09-11"
               },
-              "note": "single-file-issue の統合ビューア・説明書・回帰網・課題を本家へ移した（段階C）。PR #108 を main にマージ、転記した GitHub Issue 26 件をクローズ。版 v2.0.0",
+              "note": "single-file-issue の統合ビューア・説明書・回帰網・課題を本家へ移した（段階C）。PR #108 を main にマージ、転記した GitHub Issue 26 件をクローズ。版 v2.0.0。GitHub Release v2.0.0 を公開（2026-09-11 20 時台・同梱 3 ファイル）",
               "_ai": {
                 "tokens": 1750000,
                 "model": "claude-fable-5-1 (PM) + claude-opus-5 (実装)",

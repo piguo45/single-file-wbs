@@ -27,7 +27,6 @@
 ## 30秒で始める
 
 1. [Releases](https://github.com/piguo45/single-file-wbs/releases/latest) から `wbs_viewer.html` をダウンロードする
-   - **v2.0.0 はまだリリースされていない。** それまでは `git clone` するか、`wbs_viewer.html` を Raw で保存する
 2. Chrome で開く（`file://` のままでよい）
 3. **「ファイルを開く」** で `wbs_sample_issues.json` を読み込む（同じボタンへのドラッグ&ドロップでも可）
 
