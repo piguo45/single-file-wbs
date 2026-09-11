@@ -412,7 +412,7 @@
                 "start": "2026-06-18",
                 "end": "2026-06-19"
               },
-              "note": "#74：https://github.com/piguo45/single-file-wbs/issues/74 保存時のInvalidStateError(同期/AV横入り)を250ms後1回だけ自動リトライ。createWritableが書込前に弾く＝原本無傷。再失敗はdirty保持で抱え落ち防止。e2e(test_save_retry)で固定。実機スモークOK(会社=Edge/OneDriveでエラー消失)→v1.1.1リリース。保存パス聖域=ブランチ運用。関連#42(失敗UI強化)",
+              "note": "#74：https://github.com/piguo45/single-file-wbs/issues/74 保存時のInvalidStateError(同期/AV横入り)を250ms後1回だけ自動リトライ。createWritableが書込前に弾く＝原本無傷。再失敗はdirty保持で抱え落ち防止。e2e(test_save_retry)で固定。実機スモークOK(別環境（Edge／OneDrive）でエラー消失)→v1.1.1リリース。保存パス聖域=ブランチ運用。関連#42(失敗UI強化)",
               "_ai": {
                 "tokens": 130000,
                 "model": "opus-4-8",
@@ -1699,17 +1699,27 @@
           "ifIgnored": "",
           "ifDone": "色だけに意味を担わせていないかを全要素で検証でき、4種の色覚エミュレーション（P型・D型・T型・グレースケール）でも遅延・完了・予実・土日が判別できると確かめられる",
           "closeWhen": "グレースケールで全情報が読めること（本文の最終基準）を確認済みであること",
-          "decisions": [],
+          "decisions": [
+            {
+              "q": "カラーユニバーサルデザインの検証をいつのスコープで実施するか",
+              "since": "2026-06-11",
+              "decided": "2026-06-11",
+              "a": "v1.0.0 はリリース済みのため、本検証は v1.1 のスコープとして実施する（ユーザー判断）"
+            }
+          ],
           "pending": null,
           "closed": null,
           "links": [
             {
               "title": "GitHub #35",
               "url": "https://github.com/piguo45/single-file-wbs/issues/35"
+            },
+            {
+              "wbs": "2.1"
             }
           ],
           "actions": [],
-          "note": "GitHub Issue から移行（2026-09-11）"
+          "note": "GitHub Issue から移行（2026-09-11）。転記の根拠＝本文と 2026-06-11 のコメント"
         },
         {
           "id": 36,
@@ -1717,20 +1727,30 @@
           "priority": "high",
           "opened": "2026-06-11",
           "due": null,
-          "ifIgnored": "Undo/Redo が無く、0.4秒デバウンスの自動保存が実ファイルへ直行するため、誤編集・誤削除・誤移動がほぼ即座に確定して不可逆のまま残る",
+          "ifIgnored": "0.4秒デバウンスの自動保存が実ファイルへ直行するため、誤編集・誤削除・誤移動がほぼ即座に確定し、取り消せない",
           "ifDone": "",
-          "closeWhen": "",
-          "decisions": [],
+          "closeWhen": "スナップショットをディープクローンでなく JSON.stringify 文字列で保持している／スタック上限20〜50件＋新規読込でクリアし、巨大ファイル（>1MB）でも数十MBに達しない／スナップショット取得はユーザーの編集操作時のみで描画パスに一切載せていない／描画性能への影響がゼロであること",
+          "decisions": [
+            {
+              "q": "Ctrl+Z の捕捉範囲とスナップショットの持ち方",
+              "since": "2026-06-11",
+              "decided": "2026-06-11",
+              "a": "Ctrl+Z の捕捉は編集モードON中のみにスコープし、テキスト入力にフォーカスがある間はブラウザ標準の入力 undo を妨げない（preventDefault しない）。スナップショットはメモリのみ・外部送信なし・新たな権限要求なし"
+            }
+          ],
           "pending": null,
           "closed": null,
           "links": [
             {
               "title": "GitHub #36",
               "url": "https://github.com/piguo45/single-file-wbs/issues/36"
+            },
+            {
+              "wbs": "6.10"
             }
           ],
           "actions": [],
-          "note": "GitHub Issue から移行（2026-09-11）"
+          "note": "GitHub Issue から移行（2026-09-11）。転記の根拠＝本文と 2026-06-11 のコメント2件"
         },
         {
           "id": 37,
@@ -1748,10 +1768,26 @@
             {
               "title": "GitHub #37",
               "url": "https://github.com/piguo45/single-file-wbs/issues/37"
+            },
+            {
+              "wbs": "1.12"
             }
           ],
-          "actions": [],
-          "note": "GitHub Issue から移行（2026-09-11）"
+          "actions": [
+            {
+              "date": "2026-06-15",
+              "text": "完了チェックボックスを実装し main マージ（編集中リーフ先頭の✓トグルで実績終了＝今日・未着手なら actual.start も今日に補完／解除で null。集計ノードは読み取り✓）。test_done 追加・全 e2e GREEN・実機スモーク済み",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "着手ワンクリックは未（ガント直接編集 #57 で扱う可能性）",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": "GitHub Issue から移行（2026-09-11）。転記の根拠＝本文と 2026-06-15 のコメント"
         },
         {
           "id": 38,
@@ -1759,20 +1795,30 @@
           "priority": "high",
           "opened": "2026-06-11",
           "due": null,
-          "ifIgnored": "検索・フィルタ・ジャンプが無く、大量リストで特定タスクを探すのが手動スクロールと折りたたみ位置の記憶頼みのまま残る",
+          "ifIgnored": "大量リストで特定タスクを探すのが手動スクロールと折りたたみ位置の記憶頼みになる",
           "ifDone": "",
-          "closeWhen": "",
-          "decisions": [],
+          "closeWhen": "照合が文字列の線形走査のみで数千行でも数ms／再描画はデバウンス後（200〜300ms）に1回で、キー入力ごとの全再構築をしない／検索非使用時のコストが完全にゼロ（リスナー1個のみ）／既知の制限（数千行で重い）を悪化させないこと",
+          "decisions": [
+            {
+              "q": "独自の検索UIを作るか、ブラウザ標準（Ctrl+F）に寄せるか",
+              "since": "2026-06-11",
+              "decided": "2026-06-11",
+              "a": "Phase 0＝README に「全展開→Ctrl+F」の標準機能活用を記載（#51）。Phase 1＝必要になった場合のみ、折りたたまれた行も対象に祖先を自動展開する最小機能に限定し、フィルタ表示・ハイライト等の独自UIは作らない"
+            }
+          ],
           "pending": null,
           "closed": null,
           "links": [
             {
               "title": "GitHub #38",
               "url": "https://github.com/piguo45/single-file-wbs/issues/38"
+            },
+            {
+              "wbs": "6.11"
             }
           ],
           "actions": [],
-          "note": "GitHub Issue から移行（2026-09-11）"
+          "note": "GitHub Issue から移行（2026-09-11）。転記の根拠＝本文と 2026-06-11 のコメント2件"
         },
         {
           "id": 39,
@@ -1780,20 +1826,30 @@
           "priority": "high",
           "opened": "2026-06-11",
           "due": null,
-          "ifIgnored": "ライト固定のまま prefers-color-scheme / prefers-contrast に対応せず、OS の表示設定を無視し続ける",
+          "ifIgnored": "ライト固定で、OS の表示設定（prefers-color-scheme / prefers-contrast）が反映されない",
           "ifDone": "",
           "closeWhen": "",
-          "decisions": [],
+          "decisions": [
+            {
+              "q": "prefers-contrast に対応するか（採用 API の安定度）",
+              "since": "2026-06-11",
+              "decided": "2026-06-11",
+              "a": "prefers-color-scheme（Chrome 76〜・Baseline）を主対象として採用し、prefers-contrast（Chrome 96〜）は任意の Phase 2 に降格する（ダークモード安定後に必要なら）"
+            }
+          ],
           "pending": null,
           "closed": null,
           "links": [
             {
               "title": "GitHub #39",
               "url": "https://github.com/piguo45/single-file-wbs/issues/39"
+            },
+            {
+              "wbs": "6.13"
             }
           ],
           "actions": [],
-          "note": "GitHub Issue から移行（2026-09-11）"
+          "note": "GitHub Issue から移行（2026-09-11）。転記の根拠＝本文と 2026-06-11 のコメント"
         },
         {
           "id": 40,
@@ -1801,7 +1857,7 @@
           "priority": "high",
           "opened": "2026-06-11",
           "due": null,
-          "ifIgnored": "ガントの5つの意味（枠=予定／塗り=実績／赤折れ線=遅延／縦線=MS／グレー✓=完了）が視覚のみで運ばれ、ページ内に凡例が無いまま（初見は README 頼み）。ヘッダの集計も構造量だけで「今どこがまずいか」が出ない",
+          "ifIgnored": "ガントの5つの意味（枠=予定／塗り=実績／赤折れ線=遅延／縦線=MS／グレー✓=完了）が視覚のみで運ばれ、初見の読み手は README を頼るほかない。ヘッダの集計も構造量だけで「今どこがまずいか」が出ない",
           "ifDone": "",
           "closeWhen": "",
           "decisions": [],
@@ -1811,6 +1867,9 @@
             {
               "title": "GitHub #40",
               "url": "https://github.com/piguo45/single-file-wbs/issues/40"
+            },
+            {
+              "wbs": "6.6"
             }
           ],
           "actions": [],
@@ -1832,6 +1891,9 @@
             {
               "title": "GitHub #41",
               "url": "https://github.com/piguo45/single-file-wbs/issues/41"
+            },
+            {
+              "wbs": "6.4"
             }
           ],
           "actions": [],
@@ -1843,7 +1905,7 @@
           "priority": "mid",
           "opened": "2026-06-11",
           "due": null,
-          "ifIgnored": "「保存失敗」が「保存済 HH:MM:SS」と同じ受動的なヘッダ文字のままで、保存されたと思い込んで編集を続けたりタブを閉じたりするデータ損失の恐れが残る",
+          "ifIgnored": "「保存失敗」が「保存済 HH:MM:SS」と同じ受動的なヘッダ文字で、保存されたと思い込んで編集を続けたりタブを閉じたりするデータ損失の恐れがある",
           "ifDone": "",
           "closeWhen": "",
           "decisions": [],
@@ -1853,6 +1915,9 @@
             {
               "title": "GitHub #42",
               "url": "https://github.com/piguo45/single-file-wbs/issues/42"
+            },
+            {
+              "wbs": "6.5"
             }
           ],
           "actions": [],
@@ -1864,20 +1929,30 @@
           "priority": "mid",
           "opened": "2026-06-11",
           "due": null,
-          "ifIgnored": "中核操作の折りたたみがフォーカス不能な span（マウス専用）のままで、:focus-visible のスタイルも無い",
+          "ifIgnored": "中核操作の折りたたみがフォーカス不能な span（マウス専用）で、:focus-visible のスタイルも無く、キーボードだけでは操作できない",
           "ifDone": "",
           "closeWhen": "",
-          "decisions": [],
+          "decisions": [
+            {
+              "q": "キーボード対応をどこまで自作するか（ショートカットを採用するか）",
+              "since": "2026-06-11",
+              "decided": "2026-06-11",
+              "a": "tabindex / role / :focus-visible はブラウザ標準のフォーカス機構を有効化する対応にとどめ、独自フォーカス管理は作らない。ショートカットはブラウザ予約キー（Ctrl+F/P/S 等）を奪わず、無修飾キー（R/E 等）か、採用しない判断も可"
+            }
+          ],
           "pending": null,
           "closed": null,
           "links": [
             {
               "title": "GitHub #43",
               "url": "https://github.com/piguo45/single-file-wbs/issues/43"
+            },
+            {
+              "wbs": "6.7"
             }
           ],
           "actions": [],
-          "note": "GitHub Issue から移行（2026-09-11）"
+          "note": "GitHub Issue から移行（2026-09-11）。転記の根拠＝本文と 2026-06-11 のコメント"
         },
         {
           "id": 44,
@@ -1885,20 +1960,30 @@
           "priority": "mid",
           "opened": "2026-06-11",
           "due": null,
-          "ifIgnored": "全フォントが px 固定（曜日9px・日付セル10px は最小可読サイズの床下）で、ブラウザの既定文字サイズ変更に追従しない。EN ロケールや125〜150%設定でのクリップ挙動も未検証のまま",
+          "ifIgnored": "全フォントが px 固定（曜日9px・日付セル10px は最小可読サイズの床下）で、ブラウザの既定文字サイズ変更に追従しない。EN ロケールや125〜150%設定でのクリップ挙動も未検証",
           "ifDone": "",
           "closeWhen": "",
-          "decisions": [],
+          "decisions": [
+            {
+              "q": "rem 化を新機能として作るか、ブラウザ標準の案内で済ませるか",
+              "since": "2026-06-11",
+              "decided": "2026-06-11",
+              "a": "拡大ニーズの第一案内は全画面ズーム（Ctrl + +/−・現状でも完全動作）とし README に記載する（#51）。本件の rem 化は新機能ではなく、ブラウザ標準の文字サイズ設定（chrome://settings/fonts）を効かせるための対応として実施する"
+            }
+          ],
           "pending": null,
           "closed": null,
           "links": [
             {
               "title": "GitHub #44",
               "url": "https://github.com/piguo45/single-file-wbs/issues/44"
+            },
+            {
+              "wbs": "6.12"
             }
           ],
           "actions": [],
-          "note": "GitHub Issue から移行（2026-09-11）"
+          "note": "GitHub Issue から移行（2026-09-11）。転記の根拠＝本文と 2026-06-11 のコメント"
         },
         {
           "id": 45,
@@ -1906,7 +1991,7 @@
           "priority": "low",
           "opened": "2026-06-11",
           "due": null,
-          "ifIgnored": "JSON 読み込み失敗は生の e.message のみ、保存失敗は次の行動を示さないまま（回復手順が添えられていない）",
+          "ifIgnored": "JSON 読み込み失敗は生の e.message のみ、保存失敗は次の行動を示さず、回復手順が添えられていない",
           "ifDone": "",
           "closeWhen": "",
           "decisions": [],
@@ -1916,6 +2001,9 @@
             {
               "title": "GitHub #45",
               "url": "https://github.com/piguo45/single-file-wbs/issues/45"
+            },
+            {
+              "wbs": "6.1"
             }
           ],
           "actions": [],
@@ -1927,7 +2015,7 @@
           "priority": "low",
           "opened": "2026-06-11",
           "due": null,
-          "ifIgnored": "編集の追加・上下移動の後にどの行が変わったかの手掛かりが無く、左の9列と横スクロールのガントで「このバーはどの行か」の照合が目視頼みのまま",
+          "ifIgnored": "編集の追加・上下移動の後にどの行が変わったかの手掛かりが無く、左の9列と横スクロールのガントで「このバーはどの行か」の照合が目視頼みになる",
           "ifDone": "",
           "closeWhen": "",
           "decisions": [],
@@ -1937,10 +2025,26 @@
             {
               "title": "GitHub #48",
               "url": "https://github.com/piguo45/single-file-wbs/issues/48"
+            },
+            {
+              "wbs": "1.14"
             }
           ],
-          "actions": [],
-          "note": "GitHub Issue から移行（2026-09-11）"
+          "actions": [
+            {
+              "date": "2026-06-15",
+              "text": "「左右同期ホバー」をガント十字ハイライトとして実装し main マージ（横=左表＋ガント連続の薄い帯・左右どちらのホバーでも発火／縦=今いるペインの列。列境界を render 毎にキャッシュし mousemove の reflow を回避）",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "「操作後フェード」（追加・移動した行の一回性フェード）は未実装",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": "GitHub Issue から移行（2026-09-11）。転記の根拠＝本文と 2026-06-15 のコメント"
         },
         {
           "id": 49,
@@ -1948,20 +2052,43 @@
           "priority": "low",
           "opened": "2026-06-11",
           "due": null,
-          "ifIgnored": "▼ が「展開中ノード」と「行を下へ移動」の2義のまま、📅 絵文字の見た目がプラットフォームで変わり、削除 ✕ の破壊的な性質がホバーで見えない",
+          "ifIgnored": "▼ が「展開中ノード」と「行を下へ移動」の2義で、📅 絵文字の見た目がプラットフォームで変わり、削除 ✕ の破壊的な性質がホバーで見えない",
           "ifDone": "",
           "closeWhen": "",
-          "decisions": [],
+          "decisions": [
+            {
+              "q": "アイコンの見た目をどう揃えるか",
+              "since": "2026-06-23",
+              "decided": "2026-06-23",
+              "a": "ロゴと同じ幾何学トーンの単色 currentColor インライン SVG に統一し、ICN 定数に集約する（依存ゼロ＝インライン・単色でグラデ/影なし）。▼▶ カラットは全行常時描画のためテキストのまま維持（描画負荷回避）"
+            }
+          ],
           "pending": null,
           "closed": null,
           "links": [
             {
               "title": "GitHub #49",
               "url": "https://github.com/piguo45/single-file-wbs/issues/49"
+            },
+            {
+              "wbs": "1.11"
             }
           ],
-          "actions": [],
-          "note": "GitHub Issue から移行（2026-09-11）"
+          "actions": [
+            {
+              "date": "2026-06-15",
+              "text": "移動ボタンを ▲▼→⬆⬇（太矢印・U+FE0E でテキスト字形を強制）に変更して caret の ▼▶ と記号を分離。横並び独立・チェックの前へ移動・右は acts の ＋✕ のみに。実機スモークで穂先の視認性も確認し main マージ",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "ヘッダメタの 📄📅🔄💾・編集モードの📅・行内アクション ＋✕⬆⬇・＋子 を単色インライン SVG に統一（ICN 定数に集約・ゴールデン/ピクセル撮り直し）",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": "GitHub Issue から移行（2026-09-11）。転記の根拠＝本文と 2026-06-15・2026-06-23 のコメント"
         },
         {
           "id": 50,
@@ -1979,6 +2106,9 @@
             {
               "title": "GitHub #50",
               "url": "https://github.com/piguo45/single-file-wbs/issues/50"
+            },
+            {
+              "wbs": "6.2"
             }
           ],
           "actions": [],
@@ -2000,6 +2130,9 @@
             {
               "title": "GitHub #51",
               "url": "https://github.com/piguo45/single-file-wbs/issues/51"
+            },
+            {
+              "wbs": "6.3"
             }
           ],
           "actions": [],
@@ -2021,15 +2154,25 @@
             {
               "title": "GitHub #55",
               "url": "https://github.com/piguo45/single-file-wbs/issues/55"
+            },
+            {
+              "wbs": "6.17"
             }
           ],
-          "actions": [],
-          "note": "GitHub Issue から移行（2026-09-11）"
+          "actions": [
+            {
+              "date": "2026-06-12",
+              "text": "2026-06-12 分の _ai 記録（3.3 ツールバー区切り ~60k/~20分、4.9 ロゴ・ファビコン ~150k/~50分、4.10 表示磨き込み一式 ~300k/~90分。いずれも概算）。所感＝デザイン探索（候補生成→比較画像→選定）はコーディングよりトークン消費が大きい",
+              "assignee": "ぴぐお",
+              "done": true
+            }
+          ],
+          "note": "GitHub Issue から移行（2026-09-11）。転記の根拠＝本文と 2026-06-12 のコメント"
         },
         {
           "id": 57,
           "title": "【大物】ガントを直接操作して予定/実績を入力（クリック=実績・ドラッグ=予定）",
-          "priority": "mid",
+          "priority": "high",
           "opened": "2026-06-13",
           "due": null,
           "ifIgnored": "",
@@ -2042,6 +2185,9 @@
             {
               "title": "GitHub #57",
               "url": "https://github.com/piguo45/single-file-wbs/issues/57"
+            },
+            {
+              "wbs": "6.14"
             }
           ],
           "actions": [],
@@ -2053,7 +2199,7 @@
           "priority": "mid",
           "opened": "2026-06-13",
           "due": null,
-          "ifIgnored": "wbs.json を外部（AI 編集・テキストエディタ保存）で変えても「更新」ボタンを押すまで反映されず、AI が wbs_roadmap.json を編集する運用と相性が悪いまま",
+          "ifIgnored": "wbs.json を外部（AI 編集・テキストエディタ保存）で変えても「更新」ボタンを押すまで反映されず、AI が wbs_roadmap.json を編集する運用と相性が悪い",
           "ifDone": "",
           "closeWhen": "",
           "decisions": [],
@@ -2063,6 +2209,9 @@
             {
               "title": "GitHub #58",
               "url": "https://github.com/piguo45/single-file-wbs/issues/58"
+            },
+            {
+              "wbs": "6.8"
             }
           ],
           "actions": [],
@@ -2077,17 +2226,27 @@
           "ifIgnored": "",
           "ifDone": "前回開いたファイルを起動時にワンクリックで開き直せる（「ファイルを開く」自体が初回以外は実質不要になる）",
           "closeWhen": "",
-          "decisions": [],
+          "decisions": [
+            {
+              "q": "file:// で IndexedDB にファイルハンドルを保存できるか（#60 の opaque origin 問題の影響を受けるか）",
+              "since": "2026-06-13",
+              "decided": "2026-06-13",
+              "a": "localStorage/IndexedDB は file:// でも Chrome が許可するため、ハンドル保存自体は動く見込み（#60 の origin 索引の問題とは別）。引っかかるのはストレージ永続ではなく権限で、ブラウザ再起動後は読み取り権限が prompt に戻る＝「ワンクリック復帰」が現実的な最良形"
+            }
+          ],
           "pending": null,
           "closed": null,
           "links": [
             {
               "title": "GitHub #61",
               "url": "https://github.com/piguo45/single-file-wbs/issues/61"
+            },
+            {
+              "wbs": "6.9"
             }
           ],
           "actions": [],
-          "note": "GitHub Issue から移行（2026-09-11）"
+          "note": "GitHub Issue から移行（2026-09-11）。転記の根拠＝本文と 2026-06-13 のコメント2件（訂正コメント込み）"
         },
         {
           "id": 62,
@@ -2095,7 +2254,7 @@
           "priority": "mid",
           "opened": "2026-06-14",
           "due": null,
-          "ifIgnored": "慣性スクロールで左ペインとガントが一瞬わずかに上下へずれる（止めれば即揃う）。左右を別スクロールにして JS で同期する構造の1フレーム遅延として残り続ける",
+          "ifIgnored": "慣性スクロールで左ペインとガントが一瞬わずかに上下へずれる（止めれば即揃う）。左右を別スクロールにして JS で同期する構造の1フレーム遅延に由来する",
           "ifDone": "",
           "closeWhen": "",
           "decisions": [],
@@ -2105,6 +2264,9 @@
             {
               "title": "GitHub #62",
               "url": "https://github.com/piguo45/single-file-wbs/issues/62"
+            },
+            {
+              "wbs": "6.15"
             }
           ],
           "actions": [],
@@ -2117,7 +2279,7 @@
           "opened": "2026-06-15",
           "due": null,
           "ifIgnored": "",
-          "ifDone": "「どのタスクが遅れるとプロジェクト全体が遅れるか」を示すクリティカルパスを、時間／進捗に続く4つ目の軸（構造）として見られる。※依存エッジのデータ（`_deps`）が前提",
+          "ifDone": "「どのタスクが遅れるとプロジェクト全体が遅れるか」を示すクリティカルパスを、時間／進捗／コストに続く4つ目の軸（構造）として見られる。※依存エッジのデータ（`_deps`）が前提",
           "closeWhen": "",
           "decisions": [],
           "pending": null,
@@ -2126,6 +2288,9 @@
             {
               "title": "GitHub #66",
               "url": "https://github.com/piguo45/single-file-wbs/issues/66"
+            },
+            {
+              "wbs": "5.1"
             }
           ],
           "actions": [],
@@ -2147,6 +2312,9 @@
             {
               "title": "GitHub #72",
               "url": "https://github.com/piguo45/single-file-wbs/issues/72"
+            },
+            {
+              "wbs": "6.18"
             }
           ],
           "actions": [],
@@ -2158,7 +2326,7 @@
           "priority": "mid",
           "opened": "2026-06-21",
           "due": null,
-          "ifIgnored": "「なぜその値・その上限にしたか（why）」が記録されていない設計判断（3階層のネスト上限・進捗10%刻み・1人日=8時間／1人月=20稼働日・保存デバウンス400ms）が、記録の無いまま残る",
+          "ifIgnored": "「なぜその値・その上限にしたか（why）」が記録されていない設計判断（3階層のネスト上限・進捗10%刻み・1人日=8時間／1人月=20稼働日・保存デバウンス400ms）について、後から理由をたどれない",
           "ifDone": "",
           "closeWhen": "各項目について確定した why を ADR（docs/adr/）または CLAUDE.md の該当節に1行で追記し、「設定可能にすべき」と判断したものは別途 enhancement として切り出していること",
           "decisions": [],
@@ -2168,6 +2336,9 @@
             {
               "title": "GitHub #76",
               "url": "https://github.com/piguo45/single-file-wbs/issues/76"
+            },
+            {
+              "wbs": "4.3"
             }
           ],
           "actions": [],
@@ -2201,19 +2372,29 @@
           "opened": "2026-06-26",
           "due": null,
           "ifIgnored": "",
-          "ifDone": "",
+          "ifDone": "Zenn で寄せられた4つの提案（タスク追加ボタンの集約・親をまたぐ移動/インデントでの階層変更・「下に作業を追加」の整理・No. 列の自動採番）について、実装するか GUI 代替で十分として却下するかの采否が記録される",
           "closeWhen": "各提案について「実装する／GUI 代替で十分として却下」を判断し、采否を記録していること",
-          "decisions": [],
+          "decisions": [
+            {
+              "q": "Zenn で寄せられた GUI のタスク構造編集の提案を実装するか",
+              "since": "2026-06-26",
+              "decided": "2026-06-26",
+              "a": "いずれも CLAUDE.md「範囲外（やらないこと）：ドラッグ&ドロップ／親をまたぐ移動／自動リナンバー」に該当する意図的な非対象で、GUI の代替操作（▲▼・＋子・JSON/AI 編集）で目的自体は達成できるため、一旦は現状維持。使い込む中で「一発でやりたい」明確な不便が出たら個別に切り出して再検討する"
+            }
+          ],
           "pending": null,
           "closed": null,
           "links": [
             {
               "title": "GitHub #90",
               "url": "https://github.com/piguo45/single-file-wbs/issues/90"
+            },
+            {
+              "wbs": "6.19"
             }
           ],
           "actions": [],
-          "note": "GitHub Issue から移行（2026-09-11）"
+          "note": "GitHub Issue から移行（2026-09-11）。転記の根拠＝本文の「方針（現時点）」（日付の記載が無いため起票日で記録）"
         },
         {
           "id": 107,
@@ -2231,6 +2412,9 @@
             {
               "title": "GitHub #107",
               "url": "https://github.com/piguo45/single-file-wbs/issues/107"
+            },
+            {
+              "wbs": "4.13"
             }
           ],
           "actions": [],
@@ -2486,17 +2670,462 @@
             {
               "date": "2026-09-09",
               "text": "A案（残してパイロットで判断）を裁定",
-              "assignee": "作者",
+              "assignee": "ぴぐお",
               "done": true
             },
             {
               "date": null,
               "text": "パイロット中にサマリを開いた回数を記録",
-              "assignee": "作者",
+              "assignee": "ぴぐお",
               "done": false
             }
           ],
           "note": "タブの ★N ⚠N で代替できる部分と、横並び比較・合計行というサマリだけの部分を整理済み（設計ブリーフ §6）／single-file-issue #5 から移行（2026-09-11）"
+        }
+      ]
+    },
+    {
+      "name": "single-file-issue（v0.1〜v0.2・履歴）",
+      "milestones": [
+        {
+          "date": "2026-11-30",
+          "label": "MVP",
+          "color": "#ef4444"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "1",
+          "name": "フェーズ1 設計",
+          "children": [
+            {
+              "id": "1.1",
+              "name": "課題管理論の整理",
+              "qty": 1,
+              "hours": 8,
+              "assignee": "ぴぐお",
+              "plan": {
+                "start": "2026-09-05",
+                "end": "2026-09-30"
+              },
+              "actual": {
+                "start": "2026-09-05",
+                "end": null
+              },
+              "note": "課題の区切り方・問題との違い・Todoとの違い（ナレッジで整理中）→ スキーマ設計の入力。https://github.com/piguo45/life-os/issues/96"
+            },
+            {
+              "id": "1.2",
+              "name": "issue.json スキーマ設計",
+              "qty": 1,
+              "hours": 8,
+              "assignee": "Claude",
+              "plan": {
+                "start": "2026-10-01",
+                "end": "2026-10-15"
+              },
+              "actual": {
+                "start": "2026-09-06",
+                "end": "2026-09-06"
+              },
+              "note": "wbs.json と同思想（JSON正本・_キー・後方互換）／前倒し実施 2026-09-06：Fable(PM)が設計ブリーフ→Opusワーカーが CLAUDE.md/サンプル/ADR。docs/design/brief-v0.1.md",
+              "_ai": {
+                "tokens": 141000,
+                "minutes": 20,
+                "model": "claude-opus-5 (worker) + claude-fable-5-1 (PM)",
+                "memo": "概算・ワーカー分のみ計上"
+              }
+            },
+            {
+              "id": "1.3",
+              "name": "v0.2 統合設計＋段階A",
+              "qty": 1,
+              "hours": 16,
+              "assignee": "Claude",
+              "plan": {
+                "start": "2026-09-07",
+                "end": "2026-09-07"
+              },
+              "actual": {
+                "start": "2026-09-07",
+                "end": "2026-09-07"
+              },
+              "note": "飛び込み。壁打ちで統合（B）を裁定→ brief v0.2 → 段階A（projects[].issues・links・課題間ジャンプ・check.py）。AIチェック（Sonnet 20本）で説明書の穴を修正。docs/design/brief-v0.2-unified.md",
+              "_ai": {
+                "tokens": 2500000,
+                "minutes": 180,
+                "model": "claude-opus-5 ×2 (worker) + claude-sonnet-5 ×20 (AI check) + claude-fable-5-1 (PM)",
+                "memo": "概算・ワーカーとAIチェック分"
+              }
+            },
+            {
+              "id": "1.4",
+              "name": "v0.2 段階B 統合ビューア",
+              "qty": 1,
+              "hours": 24,
+              "assignee": "Claude",
+              "plan": {
+                "start": "2026-09-07",
+                "end": "2026-09-07"
+              },
+              "actual": {
+                "start": "2026-09-07",
+                "end": "2026-09-07"
+              },
+              "note": "飛び込み。wbs v1.4.0 に課題描画器を同居（計画｜課題スイッチ・逆引き札・同一ページの行き来）。wbs 回帰 golden/pixel 差分ゼロ。docs/design/unified-touchpoints.md",
+              "_ai": {
+                "tokens": 1400000,
+                "minutes": 150,
+                "model": "claude-opus-5 ×2 (worker) + claude-sonnet-5 ×6 (AI check) + claude-fable-5-1 (PM)",
+                "memo": "概算"
+              }
+            },
+            {
+              "id": "1.5",
+              "name": "v0.2 仕上げ第1・2弾",
+              "qty": 1,
+              "hours": 24,
+              "assignee": "Claude",
+              "plan": {
+                "start": "2026-09-09",
+                "end": "2026-09-09"
+              },
+              "actual": {
+                "start": "2026-09-09",
+                "end": "2026-09-09"
+              },
+              "note": "飛び込み。作者の実機確認から：方針を decisions[] に一本化・状態3＋印6（待ち/凍結/未決/催促）・支障/価値・クローズ・リンクGUI・旧形式の読み替え全廃。AI チェック第4弾 8本全合格",
+              "_ai": {
+                "tokens": 2600000,
+                "minutes": 240,
+                "model": "claude-opus-5 ×2 (worker) + claude-sonnet-5 ×8 (AI check) + claude-fable-5-1 (PM)",
+                "memo": "概算"
+              }
+            },
+            {
+              "id": "1.6",
+              "name": "v0.2 仕上げ第3弾",
+              "qty": 1,
+              "hours": 16,
+              "assignee": "Claude",
+              "plan": {
+                "start": "2026-09-09",
+                "end": "2026-09-09"
+              },
+              "actual": {
+                "start": "2026-09-09",
+                "end": "2026-09-09"
+              },
+              "note": "飛び込み。未決の until（催促）・重複クローズ・待ちの相手に課題・経過日数・呼び名・凡例・README 5分。Backlog/Jira から取り入れた要素",
+              "_ai": {
+                "tokens": 1500000,
+                "minutes": 120,
+                "model": "claude-opus-5 ×2 (worker) + claude-sonnet-5 ×4 (AI check) + claude-fable-5-1 (PM)",
+                "memo": "概算"
+              }
+            }
+          ]
+        },
+        {
+          "id": "2",
+          "name": "フェーズ2 ビューアMVP",
+          "children": [
+            {
+              "id": "2.1",
+              "name": "issue_viewer.html 初版",
+              "qty": 1,
+              "hours": 24,
+              "assignee": "Claude",
+              "plan": {
+                "start": "2026-11-01",
+                "end": "2026-11-20"
+              },
+              "actual": {
+                "start": "2026-09-06",
+                "end": "2026-09-06"
+              },
+              "note": "wbs_viewer.html の資産流用／前倒し実施 2026-09-06：Opusワーカーが issue_viewer.html（71KB・依存ゼロ）＋e2e 11スイート。保存パスは wbs から無改変移植",
+              "_ai": {
+                "tokens": 257000,
+                "minutes": 31,
+                "model": "claude-opus-5 (worker) + claude-fable-5-1 (PM)",
+                "memo": "概算・ワーカー分のみ計上"
+              }
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "name": "フェーズ3 実運用テスト",
+          "children": [
+            {
+              "id": "3.1",
+              "name": "AIチームのパイロットリポで運用",
+              "qty": 1,
+              "hours": 8,
+              "assignee": "ぴぐお",
+              "plan": {
+                "start": "2026-11-21",
+                "end": "2026-12-15"
+              },
+              "actual": {
+                "start": null,
+                "end": null
+              },
+              "note": "正本ルール＝リポ単位宣言の実地検証"
+            },
+            {
+              "id": "3.2",
+              "name": "Zenn 記事",
+              "qty": 1,
+              "hours": 8,
+              "assignee": "ぴぐお",
+              "plan": {
+                "start": "2026-12-01",
+                "end": "2026-12-28"
+              },
+              "actual": {
+                "start": null,
+                "end": null
+              },
+              "note": "GitHubの問題点・非構造・ghコマンド・共有・コラボ（work/blog-ideas.md）"
+            }
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "id": 1,
+          "title": "優先度を「影響の大きさ×期限の近さ」で自動提案するか",
+          "priority": "mid",
+          "opened": "2026-09-06",
+          "due": "2026-11-30",
+          "ifIgnored": "",
+          "ifDone": "優先度の付け方が人・AIごとにぶれなくなり、並べ替えの根拠を説明できる。価値を受け取りたいのは v0.2 の設計に入る時（11/30）",
+          "closeWhen": "「自動提案する／人とAIの判断のまま持つ」のどちらかに決まり、CLAUDE.md に書かれていること",
+          "decisions": [
+            {
+              "q": "優先度を自動提案するか、人とAIの判断のまま持つか",
+              "since": "2026-09-06",
+              "decided": null,
+              "a": ""
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-11",
+            "how": "duplicate",
+            "note": "本家（single-file-wbs 開発）#206 へ移行"
+          },
+          "links": [
+            {
+              "project": "single-file-wbs 開発",
+              "issue": 206
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-06",
+              "text": "v0.1 は事実として持つ（計算式なし）と整理",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "計算式の案を作って v0.2 で判断",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": "決めるべきことを未決のまま積んでおく。未決を隠さないのが仕様。https://knowledge.piguo.org/notes/what-is-issue-management/／本家 #206 へ移行済み"
+        },
+        {
+          "id": 2,
+          "title": "WBS と課題を画面上で相互リンクする",
+          "priority": "low",
+          "opened": "2026-09-06",
+          "due": "2026-12-28",
+          "ifIgnored": "",
+          "ifDone": "課題からWBSの作業へ、WBSから課題へ画面上で行き来でき、「何を・なぜ」と「いつ・誰が」を突き合わせる手間が消える。価値を受け取りたいのは v0.2",
+          "closeWhen": "課題の WBS タグから wbs_viewer.html の該当タスクへ移動でき、逆方向も動くこと",
+          "decisions": [
+            {
+              "q": "v0.1 でどこまでやるか",
+              "since": "2026-09-06",
+              "decided": "2026-09-06",
+              "a": "v0.2 で扱う。段階Aでは課題側の links に WBS の id を持つところまで（画面の相互リンクは統合ビューアで）"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-11",
+            "how": "duplicate",
+            "note": "本家（single-file-wbs 開発）#207 へ移行"
+          },
+          "links": [
+            {
+              "title": "v0.2 設計ブリーフ",
+              "url": "https://github.com/piguo45/single-file-issue/blob/main/docs/design/brief-v0.2-unified.md"
+            },
+            {
+              "project": "single-file-wbs 開発",
+              "issue": 207
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-06",
+              "text": "v0.1 のスコープを「タグ表示まで」と確定",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "相互リンクの方式を設計（v0.1 リリース後）",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": "止めている理由と再開条件を書いた例（frozen）／本家 #207 へ移行済み（本家で解決クローズ）"
+        },
+        {
+          "id": 3,
+          "title": "README のスクリーンショットが未整備",
+          "priority": "mid",
+          "opened": "2026-09-06",
+          "due": "2026-11-30",
+          "ifIgnored": "画面が無いままだと何ができるツールか伝わらず、公開しても読まれない。影響が出るのは v0.1 公開日（11/30）",
+          "ifDone": "",
+          "closeWhen": "README.md と README.en.md に、サンプルを開いた画面の画像が載っていること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-06",
+              "decided": "2026-09-06",
+              "a": "ビューア完成後に撮影し docs/screenshot.png に置く"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-06",
+            "how": "resolved",
+            "note": "README.md に docs/screenshot.png、README.en.md に docs/screenshot.en.png（サンプル8件を開いた画面・ja/en）が載っていることを確認"
+          },
+          "links": [
+            {
+              "wbs": "2.1"
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-06",
+              "text": "README に掲載位置と想定ファイル名を決めた",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": "2026-09-06",
+              "text": "issue_sample.json を開いて撮影",
+              "assignee": "ぴぐお",
+              "done": true
+            }
+          ],
+          "note": "画像は docs/screenshot.png（ja）／docs/screenshot.en.png（en）を予定"
+        },
+        {
+          "id": 4,
+          "title": "Zenn 記事で課題管理の考え方とツールを公開する",
+          "priority": "low",
+          "opened": "2026-09-06",
+          "due": "2026-12-28",
+          "ifIgnored": "",
+          "ifDone": "考え方（載せる・決める・組み込む・閉じる）とツールが同時に伝わり、使ってもらえる入口ができる。価値を受け取りたいのは v0.1 公開の直後（12/28）",
+          "closeWhen": "Zenn に記事が公開され、README と相互にリンクされていること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-06",
+              "decided": "2026-09-06",
+              "a": "実施する。v0.1 リリース後に書く"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-11",
+            "how": "duplicate",
+            "note": "本家（single-file-wbs 開発）#208 へ移行"
+          },
+          "links": [
+            {
+              "issue": 3
+            },
+            {
+              "wbs": "3.2"
+            },
+            {
+              "project": "single-file-wbs 開発",
+              "issue": 208
+            }
+          ],
+          "actions": [
+            {
+              "date": null,
+              "text": "構成の下書き（GitHub Issue の使いにくさ→課題管理論→ツール）",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": "実行が終わったら閉じる型（TODO的な行）。載せた時点で decision を書く／本家 #208 へ移行済み"
+        },
+        {
+          "id": 5,
+          "title": "サマリタブを残すか消すか（パイロット後に判断）",
+          "priority": "low",
+          "opened": "2026-09-09",
+          "due": null,
+          "ifIgnored": "使われない画面とその回帰テストを保守し続け、段階Cで wbs 本家へ持ち込む量が増える",
+          "ifDone": "",
+          "closeWhen": "パイロットで「サマリを開いたか」を確かめ、残す／消すのどちらかを決めて反映済みであること",
+          "decisions": [
+            {
+              "q": "サマリタブを残すか消すか（パイロットで開いた回数で判断）",
+              "since": "2026-09-09",
+              "until": null,
+              "decided": null,
+              "a": ""
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-11",
+            "how": "duplicate",
+            "note": "本家（single-file-wbs 開発）#209 へ移行"
+          },
+          "links": [
+            {
+              "title": "v0.2 設計ブリーフ §6",
+              "url": "https://github.com/piguo45/single-file-issue/blob/main/docs/design/brief-v0.2-unified.md"
+            },
+            {
+              "project": "single-file-wbs 開発",
+              "issue": 209
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-09",
+              "text": "A案（残してパイロットで判断）を裁定",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "パイロット中にサマリを開いた回数を記録",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": "タブの ★N ⚠N で代替できる部分と、横並び比較・合計行というサマリだけの部分を整理済み（設計ブリーフ §6）／本家 #209 へ移行済み"
         }
       ]
     }
