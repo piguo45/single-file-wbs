@@ -1,0 +1,167 @@
+{
+  "name": "リンク不正",
+  "projects": [
+    {
+      "name": "案件A",
+      "tasks": [
+        {
+          "id": "1",
+          "name": "設計"
+        }
+      ],
+      "issues": [
+        {
+          "id": 1,
+          "title": "存在しないWBS",
+          "priority": "mid",
+          "opened": "2026-09-01",
+          "due": null,
+          "ifIgnored": "x",
+          "ifDone": "",
+          "closeWhen": "y",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "wbs": "9.9"
+            }
+          ],
+          "actions": [],
+          "note": ""
+        },
+        {
+          "id": 2,
+          "title": "存在しない課題",
+          "priority": "mid",
+          "opened": "2026-09-01",
+          "due": null,
+          "ifIgnored": "x",
+          "ifDone": "",
+          "closeWhen": "y",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "issue": 99
+            }
+          ],
+          "actions": [],
+          "note": ""
+        },
+        {
+          "id": 3,
+          "title": "存在しない案件",
+          "priority": "mid",
+          "opened": "2026-09-01",
+          "due": null,
+          "ifIgnored": "x",
+          "ifDone": "",
+          "closeWhen": "y",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "project": "無い案件",
+              "issue": 1
+            }
+          ],
+          "actions": [],
+          "note": ""
+        },
+        {
+          "id": 4,
+          "title": "http(s)でないURL",
+          "priority": "mid",
+          "opened": "2026-09-01",
+          "due": null,
+          "ifIgnored": "x",
+          "ifDone": "",
+          "closeWhen": "y",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "危険",
+              "url": "javascript:alert(1)"
+            }
+          ],
+          "actions": [],
+          "note": ""
+        },
+        {
+          "id": 5,
+          "title": "links が非配列",
+          "priority": "mid",
+          "opened": "2026-09-01",
+          "due": null,
+          "ifIgnored": "x",
+          "ifDone": "",
+          "closeWhen": "y",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": "（配列ではない）",
+          "actions": [],
+          "note": ""
+        },
+        {
+          "id": 6,
+          "title": "要素が壊れている",
+          "priority": "mid",
+          "opened": "2026-09-01",
+          "due": null,
+          "ifIgnored": "x",
+          "ifDone": "",
+          "closeWhen": "y",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            null,
+            3,
+            "文字列",
+            [
+              1,
+              2
+            ],
+            {},
+            {
+              "unknown": "x"
+            }
+          ],
+          "actions": [],
+          "note": ""
+        },
+        {
+          "id": 7,
+          "title": "属性インジェクション",
+          "priority": "mid",
+          "opened": "2026-09-01",
+          "due": null,
+          "ifIgnored": "x",
+          "ifDone": "",
+          "closeWhen": "y",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "\"><img src=x onerror=alert(1)>",
+              "url": "https://example.com/a?x=1&y=2"
+            },
+            {
+              "project": "\"><script>alert(2)</script>",
+              "issue": 1
+            }
+          ],
+          "actions": [],
+          "note": ""
+        }
+      ]
+    }
+  ]
+}

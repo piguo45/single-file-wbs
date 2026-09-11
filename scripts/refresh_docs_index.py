@@ -19,10 +19,11 @@ DIR_LABELS = {
     "": "プロジェクト全体",
     "design": "設計書",
     "adr": "設計決定記録 (ADR)",
+    "notes": "研究ノート",
 }
 
 # 表示順序
-DIR_ORDER = ["", "design", "adr"]
+DIR_ORDER = ["", "design", "adr", "notes"]
 
 
 def get_title_and_desc(filepath: Path) -> tuple[str, str]:

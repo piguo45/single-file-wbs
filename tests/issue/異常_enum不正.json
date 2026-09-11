@@ -1,0 +1,59 @@
+{
+  "name": "enum不正",
+  "projects": [
+    {
+      "name": "enum不正",
+      "issues": [
+        {
+          "id": 1,
+          "title": "priority が既知3値以外 → mid 扱い",
+          "priority": "urgent",
+          "due": "2026-09-20",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "actions": []
+        },
+        {
+          "id": 2,
+          "title": "priority が数値 → mid 扱い",
+          "priority": 5,
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "actions": []
+        },
+        {
+          "id": 3,
+          "title": "pending.reason が既知値以外 → バッジ無しの保留",
+          "priority": "low",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "pending": {
+            "kind": "なんとなく",
+            "since": "2026-09-01",
+            "who": "",
+            "what": "理由が既知値でない",
+            "until": null
+          },
+          "actions": []
+        },
+        {
+          "id": 4,
+          "title": "closed.how が既知値以外 → バッジ無しの完了",
+          "priority": "high",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "closed": {
+            "at": "2026-09-02",
+            "how": "maybe",
+            "note": "閉じ方が既知値でない"
+          },
+          "actions": []
+        }
+      ]
+    }
+  ]
+}

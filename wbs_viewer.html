@@ -254,15 +254,291 @@
   #empty{padding:40px;color:var(--muted);text-align:center;width:100%}
   #notice{display:none;padding:6px 12px;background:#fff7d6;border-bottom:1px solid #e3d9a8;color:#6b5d1f;font-size:12px}
   #notice.show{display:block}
+  /* ===== ここから統合（課題）用の追記。新規セレクタのみ・wbs の既存規則には触れない ===== */
+  /* 計画｜課題 の2択スイッチ（右ペインの時間/進捗タブと同じ作法）。課題が無いファイルでは hidden＝0px */
+  #pmSwitch{display:inline-flex;align-self:center;height:40px;border:1px solid var(--btn-border);
+            border-radius:6px;overflow:hidden}  /* 高さ・枠・角は #openBtn/#refreshBtn/#editBtn と同じ */
+  #pmSwitch[hidden]{display:none}
+  #pmSwitch .pm-b{font:inherit;height:100%;padding:0 10px;border:none;border-left:1px solid var(--btn-border);
+                  border-radius:0;background:#fff;color:var(--text);cursor:pointer}
+  #pmSwitch .pm-b:first-child{border-left:none}
+  #pmSwitch .pm-b.on{background:var(--accent);color:#fff}  /* 選択中＝#openBtn.primary と同じ塗り */
+  #pmSwitch .pm-b[disabled]{opacity:.45;cursor:default}    /* 中身が無い側は薄く（押しても切り替わらない） */
+  /* 計画側の逆引き札：課題の links[].wbs から作る。links が無いファイルでは1つも DOM を作らない */
+  .pmb{margin-left:6px;font-size:10px;color:#8b94a3;cursor:pointer;white-space:nowrap}
+  .pmb:hover{color:#2563eb;text-decoration:underline}
+  .grow.pmjump,.lrow.pmjump{box-shadow:inset 0 0 0 999px rgba(255,213,79,.45)}  /* リンクで飛んだ先を2秒強調 */
+  /* 課題ビューでは wbs の右上集計（期間・工数・進捗・遅延）を隠す。右上は課題の件数と更新期間だけにする。
+     計画ビューでは body に class が付かない＝wbs の見た目は 1px も動かない（golden/pixel 不変） */
+  /* 課題ビューでは wbs の集計を消す。visibility:hidden では多段の高さが残り操作バーが伸びるので display:none。
+     右寄せは #stat の margin-left:auto を失うぶん、区切りと言語ボタンを右へ送って補う */
+  body.pm-issue #stat{display:none}
+  #legendBtn{display:none}                       /* 凡例は課題ビューだけ（計画ビューは 0 画素＝pixel 不変） */
+  body.pm-issue #legendBtn{display:inline-block;font:inherit;font-size:11px;padding:5px 10px;
+    border:1px solid transparent;background:transparent;color:var(--muted);border-radius:6px;
+    cursor:pointer;align-self:center}
+  body.pm-issue #legendBtn:hover{border-color:var(--btn-border);background:#fff}
+  body.pm-issue #topbar .tdiv:last-of-type{margin-left:auto}
+  /* ===== [統合] 課題描画器の CSS（#isMain の中だけ・変数は --is-*） ===== */
+  /* 配色は姉妹品(single-file-wbs)と揃える。状態/優先度は色だけに頼らずラベル併記＝CUD配慮 */
+  :root{
+    --is-border:#d7dbe0; --is-btn-border:#9aa2ad; --is-line:#dfe3e8; --is-head-bg:#eef0f3;
+    --is-text:#1f2430; --is-muted:#6b7280; --is-accent:#2563eb; --is-edit-on:#16a34a;
+    --is-done-bg:#eceff2; --is-done-fg:#6b7280; --is-red:#c0392b; --is-amber:#8a6d1f;
+    --is-star:#1f2430;  /* ★＝更新の印。詳細の中は「役割ごとに表現を1種類」＝★は黒の記号だけ（塗り/枠は使わない） */
+  }
+  #isMain *{box-sizing:border-box}
+  /* クリックで簡素表示トグル（姉妹品と同じ動機＝現場で"自作"と言える逃げ道） */
+  /* 件数サマリ＝フィルタで不変（誠実なview）。メタ行はファイル名・本日・保存状態 */
+  #isMain #isStat{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;color:var(--is-muted);line-height:1.25}
+  #isMain #isCounts{font-size:12px;color:var(--is-text);white-space:nowrap}
+  #isMain #isCounts .cnt{margin-left:10px}
+  #isMain #isCounts .cnt:first-child{margin-left:0}
+  #isMain #isCounts .ck{color:var(--is-muted)}
+  #isMain #isCounts b{font-variant-numeric:tabular-nums}
+  #isMain #isCounts .sg{color:var(--is-star)}
+  /* 件数ラベルの★も同じ変数で黒に揃える */
+  #isMain #isCounts .cbadge{margin-left:10px;padding:1px 7px;border-radius:8px;background:#fdecea;color:#c01a2b;font-weight:600}
+  #isMain #isStat .is-mstat{font-size:11px;color:var(--is-muted);margin-top:1px;white-space:nowrap}
+  #isMain #isStat .is-mstat span{cursor:help}
+  #isMain #isStat .srng{display:inline-flex;align-items:center;gap:2px;vertical-align:-3px}
+  /* 編集モード：更新期間を直せる */
+  #isMain #isStat .srng .is-date-wrap{width:86px}
+  #isMain #isStat .srng input[type="text"]{font:inherit;font-size:11px;border:1px solid #c3c9d2;border-radius:4px;padding:0 3px;width:100%;min-width:0;color:var(--is-text)}
+  #isMain #isStat .srng .is-cal-btn{padding:1px 2px}
+  #isMain .is-ic{width:13px;height:13px;flex:0 0 auto;vertical-align:-2px}
+  /* 案件のタブバー（Excel の 1ブック＝複数案件）。開いている案件だけを描く */
+  #isMain #isTabBar{display:none;flex:0 0 auto;align-items:flex-end;gap:3px;padding:5px 12px 0;background:#fff;
+          overflow-x:auto;white-space:nowrap;border-bottom:1px solid var(--is-line);min-height:30px}
+  #isMain .stab{flex:0 0 auto;padding:3px 12px 4px;font-size:12px;color:#8b94a3;background:#eceef2;
+        border:1px solid #d4dae3;border-bottom:none;border-radius:6px 6px 0 0;cursor:pointer;line-height:1.4}
+  #isMain .stab.on{background:#fdf2cc;color:var(--is-text);font-weight:600;border-color:#ead9a0;box-shadow:inset 0 2px 0 #e0a82e}
+  #isMain .stab .tb{margin-left:6px;font-size:10px;font-weight:600}
+  #isMain .stab .tb.st{color:var(--is-star)}
+  #isMain .stab .tb.ov{color:#c01a2b}
+  #isMain .stab .tb.un{color:#8a6d1f}
+  /* ★は黒・⚠は赤・未決は橙（意味色） */
+  #isMain .stab .tx{margin-left:7px;color:var(--is-muted);font-weight:400}
+  #isMain .stab .tx:hover{color:var(--is-red)}
+  #isMain #isTabBar .addproj{flex:0 0 auto;margin-left:6px;align-self:center}
+  #isMain #isTbl tr.sumrow{cursor:pointer}
+  #isMain #isTbl tr.sumrow:hover{background:#eef4ff}
+  #isMain #isTbl tr.sumtot{font-weight:700;background:var(--is-head-bg)}
+  #isMain #isTbl td.sumn,#isMain #isTbl th.sumn{text-align:right;font-variant-numeric:tabular-nums}
+  /* フィルタバー：表示専用の絞り込み（データは変えない） */
+  #isMain #isFilterBar{display:none;flex:0 0 auto;align-items:center;gap:10px;padding:5px 12px;border-bottom:1px solid var(--is-line);background:#f4f6f9;flex-wrap:wrap}
+  #isMain #isFilterBar .is-fbar-ttl{font-size:11px;font-weight:600;color:var(--is-muted)}
+  #isMain #isFilterBar #isStateFilter{flex:1 1 auto}
+  /* ＋課題 を右端へ送るため幅を取る */
+  #isMain .is-sfilter .addissue{margin-left:auto}
+  #isMain .is-sfilter{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}
+  #isMain .is-sfilter .is-sf-lbl{font-size:11px;color:var(--is-muted)}
+  #isMain .is-sf-btn{font:inherit;font-size:11px;padding:2px 8px;border:1px solid var(--is-btn-border);background:#fff;border-radius:11px;cursor:pointer;color:var(--is-muted)}
+  #isMain .is-sf-btn.on{background:#eef4ff;border-color:var(--is-accent);color:var(--is-accent)}
+  #isMain .is-sf-btn:not(.on){text-decoration:line-through;opacity:.6}
+  /* 非表示＝取り消し線で色以外でも分かる */
+  #isMain .is-sfilter .is-sf-sep{width:1px;align-self:stretch;background:var(--is-border);margin:2px 2px}
+  #isMain .is-sf-btn.is-sf-solo:not(.on){text-decoration:none;opacity:1}
+  /* 単独トグル(期限超過)は"非表示状態"ではない */
+  #isMain .is-sf-btn.is-sf-solo.on{background:#fdecef;border-color:#d94f72;color:#b23a5b}
+  #isMain .is-asg-dd{position:relative;display:inline-block}
+  #isMain .is-asg-dd>summary{list-style:none;cursor:pointer;font:inherit;font-size:11px;padding:2px 8px;border:1px solid var(--is-btn-border);border-radius:11px;background:#fff;color:var(--is-muted)}
+  #isMain .is-asg-dd>summary::-webkit-details-marker{display:none}
+  #isMain .is-asg-dd[open]>summary{background:#eef4ff;border-color:var(--is-accent);color:var(--is-accent)}
+  #isMain .is-asg-dd .is-asg-cnt{font-weight:600}
+  #isMain .is-asg-list{position:absolute;top:100%;left:0;z-index:20;margin-top:3px;background:#fff;border:1px solid var(--is-btn-border);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.12);padding:6px;min-width:120px;max-height:240px;overflow:auto}
+  #isMain .is-asg-list label{display:flex;align-items:center;gap:5px;font-size:12px;padding:2px 4px;white-space:nowrap;cursor:pointer}
+  #isMain .is-asg-list .is-asg-acts{display:flex;gap:6px;border-bottom:1px solid var(--is-line);padding-bottom:4px;margin-bottom:4px}
+  #isMain .is-asg-list .is-asg-acts button{font:inherit;font-size:10px;padding:1px 6px;border:1px solid var(--is-btn-border);border-radius:4px;background:#fff;cursor:pointer;color:var(--is-muted)}
+  #isMain .is-sfilter .is-seg{display:inline-flex;border:1px solid var(--is-btn-border);border-radius:11px;overflow:hidden}
+  #isMain .is-seg-btn{font:inherit;font-size:11px;padding:2px 8px;border:none;border-left:1px solid var(--is-btn-border);background:#fff;color:var(--is-muted);cursor:pointer}
+  #isMain .is-seg-btn:first-child{border-left:none}
+  #isMain .is-seg-btn.on{background:var(--is-accent);color:#fff}
+  /* 表本体（Excel「課題管理表」の列構成：No/優先度/状態/詳細/担当/期限） */
+  #isMain{flex:1 1 auto;overflow:auto;background:#fff}
+  #isMain #isEmpty{padding:40px;color:var(--is-muted);text-align:center}
+  #isMain #isTbl{width:100%;border-collapse:collapse;background:#fff;table-layout:fixed}
+  #isMain #isTbl th{background:var(--is-head-bg);border:1px solid var(--is-border);padding:5px 6px;font-weight:600;
+          position:sticky;top:0;z-index:2;text-align:center;white-space:nowrap}
+  #isMain #isTbl th.title,#isMain #isTbl th.detail{text-align:left}
+  #isMain #isTbl td{border:1px solid var(--is-line);padding:4px 6px;vertical-align:top;overflow-wrap:anywhere}
+  #isMain #isTbl td.num,#isMain #isTbl td.prio,#isMain #isTbl td.state,#isMain #isTbl td.due{text-align:center;white-space:nowrap}
+  #isMain #isTbl td.num{color:var(--is-muted);font-variant-numeric:tabular-nums}
+  #isMain #isTbl td.due{font-variant-numeric:tabular-nums}
+  #isMain tr.st-closed{background:var(--is-done-bg);color:var(--is-done-fg)}
+  /* 完了行＝グレー＋タイトル取り消し線 */
+  #isMain tr.st-closed td.title b{text-decoration:line-through}
+  #isMain td.due.overdue{color:var(--is-red);font-weight:700}
+  /* 期限超過＝本日>期限かつ未完了 */
+  #isMain .caret{display:inline-block;width:14px;color:#3b4654;user-select:none;text-align:center}
+  #isMain .clk{cursor:pointer}
+  #isMain th.detail .caret{margin-right:4px}
+  /* 優先度・状態のバッジ（色＋ラベルで冗長化＝CUD） */
+  #isMain .bdg{display:inline-block;padding:1px 7px;border-radius:9px;border:1px solid var(--is-btn-border);background:#fff;white-space:nowrap}
+  #isMain .bdg.p-high{background:#fdecea;border-color:#d5563f;color:#a3301c;font-weight:700}
+  #isMain .bdg.p-mid{border-color:var(--is-btn-border);color:var(--is-text)}
+  #isMain .bdg.p-low{background:#f2f3f5;border-color:#c3c9d2;color:var(--is-muted)}
+  #isMain .bdg.s-todo{background:#fff;border-color:#8a6d1f;color:#8a6d1f}
+  #isMain .bdg.s-wip{background:#e8f1fb;border-color:#0a6ba8;color:#0a5a8f;font-weight:600}
+  #isMain .bdg.s-closed{background:#eceff2;border-color:#9aa2ad;color:#5f6772}
+  #isMain .sub{display:block;margin-top:2px;font-size:10px;color:var(--is-muted)}
+  /* 印＝状態バッジの下に小さく。待ち／凍結／未決は控えめ、催促は期限超過と同じ赤系 */
+  #isMain .mks{margin-top:3px;display:flex;flex-direction:column;gap:1px;align-items:center}
+  #isMain .mk{font-size:10px;line-height:1.35;color:var(--is-muted);white-space:nowrap}
+  #isMain .mk .mksub{color:#8a8f98}
+  #isMain .mk.mk-open{color:#8a6d1f}
+  #isMain .mk.mk-nudge{color:var(--is-red);font-weight:600}
+  #isMain .opn{margin-left:5px;font-size:10px;color:#8a6d1f;white-space:nowrap}
+  /* タイトル横の「未決 N」 */
+  #isMain .ln.odec{margin-left:12px}
+  #isMain .ln.odec .odot{color:var(--is-muted);margin-right:2px}
+  #isMain .ln.odec .dcmeta{color:var(--is-muted);margin:0 4px}
+  #isMain /* 編集モード＝行動の編集行（.aedit）と同じ1行 flex。狭ければ折り返し、2行目は本文の左端に揃う。
+     #isTbl input{width:100%}
+  #isMain のID詳細度に勝つため #isTbl を付ける（!important 回避） */
+  .ln.odec.edit{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding-left:0}
+  #isMain #isTbl .ln.odec.edit .dcq,#isMain #isStat .ln.odec.edit .dcq{flex:1 1 200px;width:auto;min-width:80px}
+  #isMain .ln.odec.edit .dcok,#isMain .ln.odec.edit .dcuntil,#isMain .ln.odec.edit .dcmeta,#isMain .ln.odec.edit .decdel{flex:0 0 auto}
+  #isMain .ln.odec.edit .dcuntil{margin-left:0}
+  #isMain .ln.odec.edit .dcmeta{margin:0;white-space:nowrap}
+  #isMain .dcok{font:inherit;font-size:11px;padding:2px 10px;border:1px solid var(--is-accent);
+        background:#fff;color:var(--is-accent);border-radius:5px;cursor:pointer;white-space:nowrap}
+  #isMain .dcok:hover{background:var(--is-accent);color:#fff}
+  #isMain .iref{color:var(--is-accent);cursor:pointer}
+  /* 課題への参照（待ちの相手・重複の元） */
+  #isMain .iref:hover{text-decoration:underline}
+  #isMain .iref.lk-x{color:var(--is-muted);text-decoration:line-through;cursor:help}
+  #isMain .mk.mk-days{color:var(--is-muted)}
+  /* 経過日数（未着手／待ち） */
+  #isMain .mk.mk-days.mk-old{color:#8a6d1f}
+  /* 7日以上は橙で「そろそろ動かす」 */
+  #isMain .ln.odec .dcuntil{margin-left:6px;white-space:nowrap}
+  #isMain .ln.odec .dcuntil .lb{margin-right:2px}
+  #isMain .ln.odec .dcuntil .is-date-wrap{display:inline-flex;width:auto;vertical-align:middle}
+  #isMain /* placeholder「期限 MM-DD」が切れない最小幅（ja/en 共通）。#isTbl input{width:100%}
+  #isMain に勝つため id を付ける */
+  #isTbl .ln.odec .dcuntil input[type=text],#isMain #isStat .ln.odec .dcuntil input[type=text]{width:82px}
+  #isForm .fm-f{margin:2px 0}
+  #isMain #legendPop .lg-h{font-weight:600;margin-top:4px}
+  #isMain #legendPop .lg-b{color:var(--is-muted);margin-left:8px}
+  #isMain .decdel{margin-left:6px;font-size:11px;color:var(--is-muted);cursor:pointer}
+  #isMain .decdel:hover{color:var(--is-red)}
+  #isMain #isCounts .cnt-sep{display:inline-block;width:1px;height:9px;margin:0 5px;background:var(--is-btn-border);vertical-align:middle}
+  #isMain .warn{color:var(--is-amber);cursor:help;margin-left:3px}
+  /* 未回答の警告＝薄い⚠（エラーにはしない） */
+  /* タイトル列＝見出し（caret・タイトル・未回答の⚠）。セルのクリックでたたむ/開く */
+  #isMain .tcell{display:flex;align-items:flex-start;gap:2px;line-height:1.5}
+  #isMain #isTbl td.title{white-space:normal;line-height:1.5}
+  #isMain #isTbl td[data-tog]{cursor:pointer}
+  /* 表示モードのタイトルセル＝クリックで開閉 */
+  #isMain #isTbl td.title b{font-size:12.5px}
+  #isMain .tcell .tt{flex:1 1 auto;min-width:0}
+  /* リンク台帳の1行＝タイトルの下。序列はタイトル＞リンク（薄く小さく・枠や札は使わない） */
+  #isMain .lk{display:block;font-size:11px;font-weight:400;color:#8b94a3;line-height:1.5;margin-top:1px}
+  #isMain .lk .lk-i{display:block;color:inherit;text-decoration:none;cursor:pointer}
+  /* 1行1リンク（縦並び） */
+  #isMain .lk .lk-i:hover{color:#3a4658;text-decoration:underline}
+  #isMain .lk .lk-x{text-decoration:line-through;cursor:help}
+  #isMain .lk .lk-x:hover{color:#8b94a3;text-decoration:line-through}
+  #isMain .lk .lkdel{margin-left:6px;color:var(--is-muted);cursor:pointer}
+  #isMain .lk .lkdel:hover{color:var(--is-red)}
+  #isMain .lk .lk-add{color:var(--is-accent);cursor:pointer}
+  #isMain #isTbody tr.jump>td{background:#fff3c4}
+  /* リンクで飛んだ先を2秒だけ強調 */
+  #isMain .tw{display:flex;align-items:center;gap:3px}
+  /* 編集モードのタイトル列（input＋✕） */
+  #isMain #isTbl .tw input{flex:1 1 auto;width:auto}
+  /* 詳細セル＝本文（Excelの1セル多段書きを構造化）。たたんだ時は「次の一手」1行だけ */
+  /* 区切り見出し＝薄い灰の小さな帯（線は引かない）。inline-block＝文字幅に合わせる／
+     前後が block なので帯は行頭に単独で並ぶ。display:table は #tbl から border-collapse:collapse を
+     継承して padding が無視される（表ボックス扱い）ため使わない */
+  #isMain .sec{display:inline-block;background:#dde2ea;color:#2b3140;border:none;font-size:11px;line-height:1.6;
+       padding:0 9px;border-radius:9px;margin:7px 0 2px;font-weight:600}
+  #isMain .body>.sec:first-child{margin-top:0}
+  /* 最初の帯（概要）は詳細セルの上端に揃える */
+  #isMain .ln{padding-left:12px;line-height:1.55;white-space:pre-wrap}
+  #isMain .ln .lb{color:var(--is-muted)}
+  #isMain .ln a{color:var(--is-accent)}
+  #isMain .act{display:flex;gap:5px;padding-left:12px;line-height:1.6;align-items:baseline}
+  #isMain .act.nextln{padding-left:0}
+  /* たたんだ時の次の一手1行はインデントしない */
+  #isMain .star{color:var(--is-star);cursor:help}
+  /* ★＝更新の印（行動行・状態変化行・タイトル）。色は --star の1か所 */
+  #isMain .act .star{width:12px;flex:0 0 auto}
+  #isMain .ln .star,#isMain #isTbl td.title .star{margin-right:2px}
+  #isMain .act .dn{min-width:20px;width:auto;flex:0 0 auto;text-align:center;white-space:nowrap}
+  /* 済/未 は ja 1字・en は記号。固定幅だと折り返すので内容に合わせる（日付列 .ad の幅は据え置きで揃いを維持） */
+  #isMain .act .dn.dn-d{color:#4b5563;font-weight:600}
+  /* 済＝濃い */
+  #isMain .act .dn.dn-t{color:#8a8f98}
+  /* 未＝薄い（塗り・枠・取り消し線は使わない）。薄さは意図だが白地で 3:1 は確保（監査 3.25） */
+  #isMain tr.st-closed .act .dn.dn-t{color:#7c8591}
+  /* 完了行は背景が灰なので、未を一段濃くして溶けないようにする（監査 3.24） */
+  html[lang="en"] #isMain .act .dn{font-size:13px;line-height:1.48;align-self:center}
+  /* ☑☐ は小さく見えるので en だけ少し大きく。align-self でベースライン揃えから外し、行の高さ(19.2px)を変えない */
+  #isMain .act .ad{width:42px;flex:0 0 auto;text-align:right;font-variant-numeric:tabular-nums;cursor:help}
+  #isMain .act .ad.tbd{width:auto;color:var(--is-muted);cursor:default}
+  #isMain .act .at{flex:1 1 auto;min-width:0;white-space:pre-wrap}
+  #isMain .act .aa{flex:0 0 auto;color:var(--is-text)}
+  #isMain .act .aa .lb{color:var(--is-muted)}
+  /* 「担当：」だけ薄く・名前は通常色 */
+  /* 編集モード */
+  #isMain #isTbl input,#isMain #isTbl select,#isMain #isTbl textarea{font:inherit;width:100%;min-width:0;border:1px solid #c3c9d2;border-radius:4px;padding:1px 3px;background:#fff;color:var(--is-text)}
+  #isMain #isTbl textarea{resize:vertical;min-height:2.6em;line-height:1.5}
+  #isMain .is-date-wrap{display:flex;align-items:center;gap:2px;width:100%;min-width:0;position:relative}
+  /* .is-cal-proxy の位置の基準にする */
+  #isMain #isTbl .is-date-wrap input[type="text"]{flex:1 1 auto;width:auto}
+  #isMain .is-cal-proxy{position:absolute;top:100%;right:0;height:1px;opacity:0;border:0;padding:0;margin:0;pointer-events:none}
+  #isMain #isTbl .is-cal-proxy,#isMain #isStat .is-cal-proxy{width:1px}
+  #isMain /* 📅 の直下に置く。#isTbl input{width:100%}
+  #isMain に勝つため id を付ける */
+  .is-cal-btn{flex:0 0 auto;font-size:11px;line-height:1.2;padding:2px 3px;border:1px solid var(--is-btn-border);background:#fff;border-radius:3px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:#445}
+  #isMain .ebtn{font:inherit;font-size:11px;padding:2px 6px;border:1px solid var(--is-btn-border);background:#fff;border-radius:4px;cursor:pointer;color:#445;display:inline-flex;align-items:center;gap:3px}
+  #isMain .ebtn:hover{background:#eef2ff;border-color:#9db4f0}
+  #isMain .ebtn .is-ic{width:12px;height:12px}
+  #isMain .ebtn.danger{margin-left:4px}
+  /* 破壊的操作は少し離して誤クリック防止 */
+  #isMain .stbtns{display:flex;gap:5px;margin:4px 0 2px 12px;flex-wrap:wrap}
+  #isMain .aedit{display:flex;gap:3px;padding-left:12px;margin-top:2px;align-items:center}
+  #isMain /* #isTbl input{width:100%}
+  #isMain のID詳細度に勝つため #isTbl を付ける（!important回避・姉妹品の .is-nm-in と同じ理由） */
+  .aedit .adate{flex:0 0 auto;width:100px}
+  #isMain #isTbl .aedit .atext{flex:1 1 auto;width:auto;min-width:80px}
+  #isMain #isTbl .aedit .aasg{flex:0 0 auto;width:84px}
+  #isMain .aedit .ebtn,#isMain .aedit .is-donechk{flex:0 0 auto}
+  #isMain .is-donechk{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;flex:0 0 auto;
+           padding:0;border:1px solid var(--is-btn-border);border-radius:3px;background:#fff;cursor:pointer;font-size:11px;line-height:1;color:var(--is-done-fg)}
+  #isMain .is-donechk.on{border-color:var(--is-done-fg)}
+  #isMain .is-donechk:hover{border-color:var(--is-accent)}
+  #isMain .fld{margin:2px 0 2px 12px}
+  #isMain .fld .lb{color:var(--is-muted)}
+  /* 備考の印＝帯と同じ形・帯より薄い塗り（本文は出さず、クリックで吹き出し） */
+  /* 状態遷移フォーム（保留／閉じる）と備考の吹き出し＝アンカー直下の小パネル */
+  #isForm,#notePop,#isMain #legendPop{position:fixed;z-index:60;background:#fff;border:1px solid var(--is-accent);border-radius:8px;
+    box-shadow:0 3px 12px rgba(0,0,0,.18);padding:8px 12px;font-size:12px;line-height:1.9;color:var(--is-text);max-width:520px}
+  #notePop,#isMain #legendPop{border-color:var(--is-btn-border);line-height:1.6}
+  #isForm .fmq{color:var(--is-muted)}
+  #notePop .np-ttl{font-size:11px;font-weight:600;color:var(--is-muted);margin-bottom:3px}
+  #notePop .np-body{white-space:pre-wrap;line-height:1.6}
+  #notePop a{color:var(--is-accent)}
+  #isForm input,#isForm select,#isForm textarea{font:inherit;border:1px solid #c3c9d2;border-radius:4px;padding:1px 5px}
+  #isForm input,#isForm textarea{width:300px}
+  #isForm textarea{vertical-align:top;height:3.4em;resize:vertical}
+  #isForm .lkf{margin-top:4px}
+  #isForm .lkf input.lkno{width:80px}
+  #isForm .fm-btns{display:flex;gap:8px;margin-top:6px}
+  #isForm .fm-ok{font:inherit;background:var(--is-accent);color:#fff;border:none;border-radius:5px;padding:3px 12px;cursor:pointer}
+  #isForm .fm-cancel{font:inherit;background:#fff;border:1px solid var(--is-btn-border);border-radius:5px;padding:3px 10px;cursor:pointer}
 </style>
 </head>
 <body>
   <div id="topbar">
-    <span class="title" id="brandTitle"><svg class="logo" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9.6" fill="#1e2f63"/><rect x="4.2" y="4.8" width="7.5" height="2.7" rx="1" fill="#7da4f7"/><rect x="6" y="8.6" width="9.3" height="2.7" rx="1" fill="#cdd9f5"/><rect x="4.8" y="12.4" width="5.8" height="2.7" rx="1" fill="#7da4f7"/><polyline points="12.8,3.2 9.8,9.6 13.8,11.2 10.8,16.8" stroke="#e11d48" stroke-width="1.8" fill="none"/></svg><span style="display:flex;flex-direction:column"><span class="brand">WBS<span class="brand-x"> Viewer</span></span><span class="ver">v1.4.0</span></span></span>
+    <span class="title" id="brandTitle"><svg class="logo" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="9.6" fill="#1e2f63"/><rect x="4.2" y="4.8" width="7.5" height="2.7" rx="1" fill="#7da4f7"/><rect x="6" y="8.6" width="9.3" height="2.7" rx="1" fill="#cdd9f5"/><rect x="4.8" y="12.4" width="5.8" height="2.7" rx="1" fill="#7da4f7"/><polyline points="12.8,3.2 9.8,9.6 13.8,11.2 10.8,16.8" stroke="#e11d48" stroke-width="1.8" fill="none"/></svg><span style="display:flex;flex-direction:column"><span class="brand">WBS<span class="brand-x"> Viewer</span></span><span class="ver">v2.0.0</span></span></span>
     <span class="tdiv"></span>
     <button id="openBtn" class="primary">ファイルを開く<span class="sub">（ドラッグ&amp;ドロップ）</span></button>
     <button id="refreshBtn">更新</button>
     <button id="editBtn" title="インライン編集（自動保存）。ONにする時、書き込み許可のため保存ダイアログで wbs.json を選び直します">編集</button>
+    <span id="pmSwitch" hidden></span>
     <input id="fallbackInput" type="file" accept=".json,application/json" hidden>
     <span id="stat">未読み込み</span>
     <span class="tdiv"></span>
@@ -275,10 +551,68 @@
     <div id="left" style="display:none"><div class="htab-sp"></div><div id="leftHead" class="head"></div><div id="leftRows"></div></div>
     <div id="right" style="display:none"><div id="rtabs"></div><div id="rightHead"></div><div id="rightBody"></div></div>
   </div>
+  <div id="isMain" hidden></div>
 
 <script>
 "use strict";
 (function(){
+  // ===== [統合] 橋：課題描画器（別IIFE）との唯一の接点。課題側が無くても wbs は素のまま動く =====
+  //  emit(kind,...)  : "data" / "lang" / "edit" を課題側へ通知（購読が無ければ何もしない）
+  //  badge(key,id)   : 計画側の作業項目セルに出す逆引き札のHTML（課題側が無い/links が無ければ ""）
+  //  expandTo(key)   : 折りたたみキー "T|案件|id" の祖先チェーンを開く（畳んだ親の中の葉を出すため）
+  //  scrollToTask()  : 該当行へスクロールして2秒強調
+  //  以下は課題側から使う共有の窓口：queueSave / notice / today / state
+  function expandTo(pname,tid){                                              // 祖先を辿って collapsed から外す
+    const proj=(normalizeProjects(lastData)||[]).find(p=>p&&p.name===pname);
+    if(!proj)return false;
+    let hit=false, chain=[];
+    (function walk(ns,anc){
+      if(!Array.isArray(ns))return;
+      for(const n of ns){
+        if(!n||typeof n!=="object")continue;
+        if(String(n.id)===String(tid)){hit=true;chain=anc.slice();return;}
+        walk(n.children,anc.concat([n]));
+        if(hit)return;
+      }
+    })(proj.tasks,[]);
+    if(!hit)return false;
+    collapsed.delete("P|"+pname);
+    chain.forEach(n=>collapsed.delete("T|"+pname+"|"+n.id));
+    return true;
+  }
+  function scrollToTask(pname,tid){                                          // 行を見つけてスクロール＋2秒強調
+    const rows=[...document.querySelectorAll("#leftRows .lrow")];
+    const idx=rows.findIndex(r=>{const c=r.querySelector(".c.num");return c&&c.innerText.trim()===String(tid);});
+    if(idx<0)return false;
+    const lr=rows[idx], gr=document.querySelectorAll("#grows .grow")[idx];
+    lr.scrollIntoView({block:"center"});
+    [lr,gr].forEach(el=>{if(!el)return;el.classList.add("pmjump");setTimeout(()=>el.classList.remove("pmjump"),2000);});
+    return true;
+  }
+  const PM={
+    subs:{},
+    on(kind,fn){(this.subs[kind]=this.subs[kind]||[]).push(fn);},
+    emit(kind,...a){(this.subs[kind]||[]).forEach(f=>{try{f(...a);}catch(e){setTimeout(()=>{throw e;},0);}});},
+    badgeFn:null,
+    badge(key,id){try{return this.badgeFn?this.badgeFn(key,id):"";}catch(_){return "";}},
+    setBadge(fn){this.badgeFn=fn;},
+    queueSave:()=>queueSave(),
+    notice:m=>notice(m),
+    today:()=>todayStr(),
+    lang:()=>lang,
+    isEdit:()=>editMode,
+    data:()=>lastData,
+    render:()=>{if(lastData)render(lastData);},
+    gotoWbs(pname,tid){                                                      // 課題→計画：表示を切替→展開→スクロール
+      if(!lastData)return false;
+      expandTo(pname,tid);
+      PM.emit("view","plan");
+      render(lastData);
+      return scrollToTask(pname,tid);
+    },
+  };
+  window.__PM=PM;
+
   const $=id=>document.getElementById(id);  // getElementById の短縮（50箇所→$()で統一・querySelector はそのまま）
   const lsGet=k=>{try{return localStorage.getItem(k);}catch(_){return null;}};  // localStorage 読み出し（try/catch同型を一本化）
   const lsSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(_){}};               // localStorage 書き込み
@@ -752,9 +1086,10 @@
                   +`<input class="nm-in" data-path="${P}" data-field="name" type="text" value="${esc(n.name)}" title="${esc(n.name)}">${bdg}${acts}</span>`;
               }else{
                 const body=`${sym(r)}${done?"✓ ":""}<span class="nm">${esc(n.name)}</span>`;
+                const pmb=PM.badge(r.key,n.id);                              // [統合] 逆引き札（links が無ければ ""）
                 v=r.collapsible
-                  ?`<span style="padding-left:${r.depth*15}px"><span class="clk" data-collapse="${esc(r.key)}">${body}</span>${bdg}</span>`
-                  :`<span style="padding-left:${r.depth*15}px">${body}${bdg}</span>`;
+                  ?`<span style="padding-left:${r.depth*15}px"><span class="clk" data-collapse="${esc(r.key)}">${body}</span>${bdg}${pmb}</span>`
+                  :`<span style="padding-left:${r.depth*15}px">${body}${bdg}${pmb}</span>`;
               }
             }
             else{                                                              // メタデータ駆動：表示=view・編集=field/get（リーフのみ）
@@ -932,6 +1267,7 @@
     lastData=data;
     if(isNew){collapsed.clear();collapseSnapshot=null;pendingCenter=true;exitEditMode();}   // 新規ファイルは折りたたみリセット＆センタリング＆編集OFF（#10）
     render(data);
+    PM.emit("data",data,isNew);                                              // [統合] 課題側へ通知（課題描画器が無ければ何もしない）
   }
   function loadText(txt,isNew,label){try{applyData(JSON.parse(txt),isNew);}catch(e){alert(t("jsonFail")(label,e.message));}}
   function renderData(data){applyData(data,true);}      // 直接/テスト呼び出し＝新規扱い
@@ -1140,6 +1476,7 @@
     $("editBtn").classList.toggle("on",editMode);
     $("leftRows").classList.toggle("editing",editMode);
     if(lastData)render(lastData);
+    PM.emit("edit",editMode);                                                // [統合] 課題側へ通知
   });
   $("leftRows").addEventListener("change",e=>{
     const t=e.target; if(t.tagName!=="INPUT")return;
@@ -1413,6 +1750,7 @@
     if(!lastData)$("stat").textContent=t("notLoaded");
     document.querySelector("#filterBar .fbar-ttl").textContent=t("fBar");
     renderStateFilter();
+    PM.emit("lang",lang);                                                    // [統合] 課題側へ通知
   }
   // フィルタバーUI(#91状態＋#92遅延＋#93担当)：表示専用＝押すと render() で行を間引くだけ（データ不変）
   // sf-btn 軸の定義テーブル（data-属性名・トグル処理・lsKey）。構造が同型でない asg/period は対象外
@@ -1472,7 +1810,1500 @@
     applyPlain();
   });
   applyPlain();
+
 })();
 </script>
+<script>
+"use strict";
+(function(){
+  const PM=window.__PM; if(!PM)return;  // [統合] 橋が無ければ課題描画器は動かない
+  const $=id=>document.getElementById(id);  // getElementById の短縮（姉妹品と同じ作法）
+  const lsGet=k=>{try{return localStorage.getItem(k);}catch(_){return null;}};  // localStorage 読み出し（try/catch同型を一本化）
+  const lsSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(_){}};
+  const SAVE_DEBOUNCE_MS=400, RENDER_DEFER_MS=350, FOCUS_POLL_MS=400;  // 自動保存と遅延再描画の間隔
+  const SAVE_RETRY_DELAY_MS=250;  // InvalidStateError（同期/AVの横入り）時に1拍おいて1回だけ再試行する間隔
+  const DAY_MS=86400000;
+  // アイコン＝単色インラインSVG（currentColorで文字色に追従・依存ゼロ）
+  const ICN={
+    file:'<svg class="is-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg>',
+    cal:'<svg class="is-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2.2" y="3.2" width="11.6" height="10.6" rx="1.6"/><path d="M2.2 6.3h11.6" stroke-width="1.2"/><path d="M5 1.6v2.4M11 1.6v2.4" stroke-linecap="round"/></svg>',
+    refresh:'<svg class="is-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M12.5 8a4.5 4.5 0 1 1-1.3-3.2"/><path d="M12.7 2.6V5.1H10.2" stroke-linejoin="round"/></svg>',
+    save:'<svg class="is-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M3 2.5h7.5L13.5 5.5V13.5H3z"/><path d="M5.2 2.5v3.3h4.6V2.5" stroke-width="1.1"/><rect x="5.2" y="9" width="5.6" height="4.3" stroke-width="1.1"/></svg>',
+    up:'<svg class="is-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12.5V4M4.5 7.5 8 4l3.5 3.5"/></svg>',
+    down:'<svg class="is-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5V12M4.5 8.5 8 12l3.5-3.5"/></svg>',
+    add:'<svg class="is-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 3.3v9.4M3.3 8h9.4"/></svg>',
+    del:'<svg class="is-ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4.2 4.2 11.8 11.8M11.8 4.2 4.2 11.8"/></svg>'
+  };
+  // ===== i18n（UI文言の単一ソース。データ(issue.json)は翻訳しない） =====
+  const I18N={
+    ja:{
+      open:"ファイルを開く",openSub:"（ドラッグ&ドロップ）",reload:"更新",edit:"編集",langBtn:"EN",
+      editTitle:"インライン編集（自動保存）。ONにする時、書き込み許可のため保存ダイアログで issue.json を選び直します",
+      notLoaded:"未読み込み",empty:"「ファイルを開く」または D&D で <b>issue.json</b> を読み込んでください（Chrome）。",
+      colNo:"No.",colPrio:"優先度",colTitle:"タイトル",colState:"状態",colDetail:"詳細",colDue:"期限",
+      colDetailTip:"たたむと「次の一手」（未の最初の行動）だけを1行で表示します。完了した課題は空欄",
+      lbActAsg:"担当：",
+      colDueTip:"期限＝影響が現れる日・価値を受け取りたい日（担当者がいつやるかではない）",
+      colPrioTip:"優先度＝影響の大きさ × その日の近さ",
+      pHigh:"高",pMid:"中",pLow:"低",
+      sTodo:"未着手",sUndecided:"未決",sWip:"対応中",sClosed:"完了",
+      hResolved:"解決",hWontfix:"不対応",hNotOccurred:"発生せず",hDuplicate:"重複",
+      mkWait:"待ち",mkFrozen:"凍結",mkNudge:"催促",
+      mkNudgeTip:"期限を過ぎても返事が無い待ち。催促する",
+      mkNudgeTipDec:"決める期限を過ぎています。決めてください",
+      mkNudgeTipDone:"相手の課題は完了しています。再開してください",
+      mkTodoDays:n=>`未着手 ${n}日`,mkWaitDays:n=>`待ち ${n}日`,
+      mkTodoDaysTip:"起票してから動いていない日数（済んだ行動がまだ無い）",
+      mkWaitDaysTip:"待ち始めてからの日数",
+      waitIssueLine:(ref,what)=>`${ref}の${what}`,   // 待ちの相手が課題のとき
+      dupLine:ref=>`→ ${ref}`,                        // 完了：[重複] → 課題 #3
+      decUntil:d=>`（〜${d}）`,decUntilPh:"期限 MM-DD",decUntilTip:"いつまでに決めるか（過ぎると催促の印）",
+      fmWhoKind:"相手",fmWhoPerson:"人名",fmWhoIssue:"課題",fmDupOrig:"元の課題",
+      fmDupNeed:"「重複」で閉じるときは、元の課題を指定してください。",
+      fmIssueMissing:"その番号の課題は見つかりません。",
+      legend:"凡例",legendTip:"この画面の見かた（状態・印・帯・記号）",legendTitle:"この画面の見かた",
+      lgState:"状態（3つ・課題ごとに1つだけ）",
+      lgStateBody:"未着手＝済んだ行動がまだ無い／対応中＝済んだ行動が1つ以上ある／完了＝閉じた",
+      lgMark:"印（6つ・いくつでも同時に付く）",
+      lgMarkBody:"★ 更新＝報告期間に動いた／⚠ 期限超過＝期限を過ぎた／⚠ 催促＝待ちや未決の期限切れ・相手の課題が完了",
+      lgMarkBody2:"待ち＝相手の返事待ち／凍結＝事情で止めた／未決 N＝決めることが N 件",
+      lgSec:"帯（詳細の区切り・4つ）",
+      lgSecBody:"概要＝支障/価値/完了条件と方針／方針（未決）＝これから決めること／実績＝済んだ行動／予定＝これからの行動",
+      lgSign:"記号",
+      lgSignBody:"済／未＝行動が終わったか（英語は ☑／☐）・★＝その行が報告期間に動いた・（調整中）＝日付が未定",
+      lgNote:"状態と印はデータから毎回計算します（JSON には書きません）。",
+      waitLine:(who,what,since,until)=>`${who?who+"に":""}${what}`+(since||until?`（${since?since+"〜":""}${since&&until?"・":""}${until?until+" まで":""}）`:""),
+      frozenLine:(rw,since)=>`${rw?rw+"再開":""}`+(since?`（${since}〜）`:""),
+      secOutline:"概要",secActual:"実績",secPlan:"予定",secOpenDec:"方針（未決）",
+      lbIfIgnored:"支障：",lbIfDone:"価値：",lbCloseWhen:"完了条件：",lbDecision:"方針：",
+      lbIfIgnoredTip:"放置すると、いつ・何が起きるか（例：10/20 の本番切替で帳票が読めなくなる）。従来の「影響」欄にあたる",
+      lbIfDoneTip:"やると、いつ・何が得られるか（例：11月から、毎月の締め作業が半日で終わる）。従来の「効果」欄にあたる",
+      lbWait:"待ち：",lbFrozen:"凍結：",lbClosed:"完了：",lbNote:"備考：",
+      tbd:"(調整中)",mkDone:"済",mkTodo:"未",
+      starIssueTip:"更新あり（期間内に動いた課題）",starActTip:"更新（期間内）",
+      cntStar:"★ 更新",cntStarWord:"更新",cntStarTip:"更新期間内に動きがあった課題の件数",
+      lbNoteTag:"備考",noteTagTip:"備考（クリックで開く）",
+      lkIssue:"課題",lkBroken:"リンク先が見つかりません",
+      pmPlan:"計画",pmIssue:"課題",pmBadgeTip:"このタスクに紐づく課題（クリックで課題表示へ）",
+      pmNoPlan:"この JSON には計画がありません",pmNoIssue:"この JSON には課題がありません",
+      decTbd:"未定",btnDecideOne:"確定",btnDecideOneTip:"答えを書いて確定する",
+      addDec:"方針",addDecTip:"決めること（未決）を1つ足す",decQPh:"何を決めるか（誰に相談するかも書ける）",
+      decAPh:"決めた内容（例：変換処理を直して対応する）",fmDecTitle:"決める",fmDecOk:"決定",
+      delDecConfirm:"この方針を削除します。よろしいですか？",decElapsed:n=>`${n}日`,
+      decElapsedSince:(n,d)=>`${n}日経過（${d}〜）`,
+      decElapsedTip:(d,n)=>`${d} に載せてから ${n} 日`,
+      lkAdd:"＋リンク",lkAddTitle:"リンクを追加",lkKind:"種類",lkKindWbs:"WBS",lkKindIssue:"課題",lkKindUrl:"URL",
+      lkProjF:"案件",lkNoF:"番号",lkTitleF:"表示名",lkUrlF:"URL",lkDel:"このリンクを削除",
+      lkBadUrl:"URL は http:// か https:// で始めてください。",lkWbsPh:"WBS id（例 2.3）",
+      hashNeedFile:"#issue のリンク先を表示するには、先に JSON を開いてください。",
+      jumpMissing:"リンク先の課題が見つかりません。",
+      jumpFiltered:"リンク先は絞り込みで隠れています（絞り込みを戻すと出ます）。",
+      tabStarTip:n=>`更新 ${n} 件（期間内に動いた課題）`,
+      starPeriod:"更新期間",starDefaultLabel:"更新期間 直近7日",starSep:"〜",
+      starRangeTip:"更新期間（JSON の star.from/to・無ければ本日を含む直近7日）。編集モードで直せます",
+      warnTip:"「放置すると/やると」がどちらも空、または完了条件が空です（載せる規律の未回答・エラーではありません）",
+      overdueTip:"期限超過（本日＞期限・未完了）",
+      allTipExpand:"すべての課題を全文表示にします",allTipCollapse:"すべての課題を1行にたたみます",
+      fBar:"絞り込み",fState:"状態",fPrio:"優先度",fAsg:"担当",fAsgAll:"全員",fAsgNone:"(未割当)",
+      fAsgSelAll:"全選択",fAsgClear:"全解除",fOverdue:"期限超過",
+      fMark:"印",fMarkTip:"この印がある課題だけ表示（表示専用）",
+      fWaitOnly:"待ち",fFrozenOnly:"凍結",fOpenOnly:"未決",fNudgeOnly:"催促",fStarOnly:"★ 更新",
+      fStateTip:"状態で表示/非表示（表示専用・データは変えません）。押下＝表示中",
+      fPrioTip:"優先度で表示/非表示（表示専用）。押下＝表示中",
+      fAsgTip:"担当で表示/非表示（複数選択・チェックした人だけ表示）。他の絞り込みと重ねて効く（表示専用）",
+      sortLbl:"並び",sortNo:"No",sortDue:"期限",sortPrio:"優先度",
+      sortTip:"並び替え（表示専用・データの順序は変えません）。期限なしは末尾／優先度は高→低",
+      cntOverdue:"期限超過",cntTip:"件数は絞り込みで変わりません（完了込みの全件）",
+      cntWaitTip:"相手の返事を待っている課題の件数（課題数）",cntFrozenTip:"事情で止めている課題の件数（課題数）",
+      cntNudgeTip:"待ちの期限を過ぎた課題の件数（催促する）",cntOpenTip:"未決の方針がある課題の件数（課題数）",
+      mkOpenTip:n=>`この課題で決めることが ${n} 件（項目数）`,tabOpenTip:n=>`未決の方針がある課題 ${n} 件（課題数）`,
+      tabSummary:"サマリ",tabSummaryTip:"案件ごとの集計（行をクリックでその案件へ）",
+      sumProject:"案件",sumNextDue:"次の期限",sumNextDueTip:"未完了の課題のうち最も近い期限",sumTotal:"合計",
+      addProj:"＋案件",addProjTip:"案件を追加（v0.1 形式のファイルは projects 形式に変換されます）",
+      delProj:"この案件を削除",newProj:"新しい案件",noName:"(名前なし)",
+      promptProj:"案件名を入力してください",promptRename:"案件名を変更",
+      confirmDelProj:n=>`案件「${n}」を課題ごと削除します。よろしいですか？`,
+      addIssue:"＋課題",addIssueTip:"課題を追加（id=最大+1・起票日=本日・優先度=中）",
+      addActTip:"行動を追加（末尾）",del:"削除",up:"上へ",down:"下へ",
+      doneTip:"済/未を切替",calTip:"カレンダーから選択",
+      newIssueTitle:"新規課題",asgPh:"担当",actPh:"何をした／する",
+      ifIgnoredPh:"放置すると、いつ・何が起きるか（例：10/20 の本番切替で帳票が読めなくなる）",
+      ifDonePh:"やると、いつ・何が得られるか（例：11月から、毎月の締め作業が半日で終わる）",
+      closeWhenPh:"完了条件（弊害が起きない／価値が実現したと確かめられる状態）",notePh:"備考（URLは自動リンク）",
+      btnWait:"待ち",btnWaitTip:"相手の返事待ちにする（誰を・何を・いつまで）",
+      btnFrozen:"凍結",btnFrozenTip:"事情で止める（再開条件を書く）",btnUnpend:"解除",
+      btnClose:"クローズ",btnCloseTip:"完了条件を確かめてクローズする（closed）",btnReopen:"再オープン",
+      fmWaitTitle:"待ちにする",fmFrozenTitle:"凍結する",fmCloseTitle:"クローズする",
+      fmWho:"誰を待つ",fmWhat:"何を待つ",fmUntil:"いつまで",
+      fmResume:"再開条件",fmHow:"閉じ方",fmNote:"確かめた事実",fmOk:"OK",fmCancel:"取消",
+      confirmDelIssue:ttl=>`「${ttl}」を削除します。よろしいですか？`,
+      unsaved:"未保存の変更あり…",savedAt:"",saveFail:"保存失敗",savePending:"未保存（外部変更のため保留）",
+      fileLabel:(name,size)=>`${name}・${size} byte`,
+      jsonFail:(label,msg)=>`JSON読み込み失敗${label?`（${label}）`:""}: ${msg}`,
+      cantSave:"保存できません。『ファイルを開く』で開き直してください。",
+      extChange:"issue.json がツール外で変更されています。画面の内容で上書きしますか？\n（キャンセル後は「更新」で再読込できます）",
+      saveErr:"保存に失敗: ",permDenied:"書き込み権限が許可されませんでした。",
+      permUnavailable:"この環境では書き込み権限を取得できませんでした。",permErr:"書き込み権限を取得できませんでした: ",
+      pickerGuide:"📂 保存ダイアログが開きます。いま開いている issue.json をそのまま選んで「保存（置換）」してください（編集の書き込み許可のため・Chrome 再起動ごとに1回）。",
+      pickerRetryCancel:"編集を有効にするには、もう一度「編集」を押してダイアログで issue.json を選んでください。",
+      pickerRetryGesture:"もう一度「編集」ボタンを押してください。保存ダイアログが開くので、いま開いている issue.json を選んで「保存（置換）」してください。",
+      diffFile:"選択されたファイルは現在開いているファイルと異なります。今後の保存先をそちらに切り替えますか？",
+      truncWarn:"注意：いま選択したファイルは Chrome の仕様で空にされている可能性があります。中身を確認してください。",
+      needHandle:"編集を保存するには、先に「ファイルを開く」か D&D で issue.json を（ハンドル付きで）開いてください。",
+      openErr:"読み込み失敗: ",reloadErr:"更新失敗: ",loadFirst:"先に「ファイルを開く」または D&D で読み込んでください。",
+      dropFail:"ドロップされたファイルを読み取れませんでした。「ファイルを開く」をお試しください。",
+      fileTip:"開いているファイル",todayTip:"本日（期限超過の基準日）",updTip:"最後に更新（読込）した時刻",saveTip:"最後に保存した時刻（自動保存）",
+      locale:"ja-JP",
+    },
+    en:{
+      open:"Open file",openSub:"(drag & drop)",reload:"Reload",edit:"Edit",langBtn:"日本語",
+      editTitle:"Inline editing (autosave). When turning ON, re-select issue.json in the save dialog to grant write permission",
+      notLoaded:"No file loaded",empty:"Load <b>issue.json</b> via \"Open file\" or drag &amp; drop (Chrome).",
+      colNo:"No.",colPrio:"Priority",colTitle:"Title",colState:"State",colDetail:"Detail",colDue:"Due",
+      colDetailTip:"When collapsed, only the next action (first not-done) is shown on one line. Closed issues stay empty",
+      lbActAsg:"Owner: ",
+      colDueTip:"Due = the day the impact lands / the value is wanted (not when someone works on it)",
+      colPrioTip:"Priority = size of impact x nearness of that day",
+      pHigh:"High",pMid:"Mid",pLow:"Low",
+      sTodo:"Not started",sUndecided:"Undecided",sWip:"In progress",sClosed:"Closed",
+      hResolved:"Resolved",hWontfix:"Won't fix",hNotOccurred:"Never happened",hDuplicate:"Duplicate",
+      mkWait:"Waiting",mkFrozen:"Frozen",mkNudge:"Nudge",
+      mkNudgeTip:"A wait past its due date with no answer. Time to nudge",
+      mkNudgeTipDec:"Past the date you set to decide by. Decide it",
+      mkNudgeTipDone:"The issue you are waiting on is closed. Resume this one",
+      mkTodoDays:n=>`Not started ${n}d`,mkWaitDays:n=>`Waiting ${n}d`,
+      mkTodoDaysTip:"Days since it was raised with no completed action yet",
+      mkWaitDaysTip:"Days since the wait started",
+      waitIssueLine:(ref,what)=>`${what} of ${ref}`,
+      dupLine:ref=>`\u2192 ${ref}`,
+      decUntil:d=>` (by ${d})`,decUntilPh:"by MM-DD",decUntilTip:"When it must be decided (a nudge mark appears once past)",
+      fmWhoKind:"Waiting on",fmWhoPerson:"Person",fmWhoIssue:"Issue",fmDupOrig:"Original issue",
+      fmDupNeed:"Closing as a duplicate needs the original issue.",
+      fmIssueMissing:"No issue with that number.",
+      legend:"Legend",legendTip:"How to read this view (states, marks, bands, signs)",legendTitle:"How to read this view",
+      lgState:"States (3 - exactly one per issue)",
+      lgStateBody:"Not started = no completed action yet / In progress = at least one completed action / Closed = closed",
+      lgMark:"Marks (6 - any number at once)",
+      lgMarkBody:"★ Updated = moved in the report period / ⚠ Overdue = past its due date / ⚠ Nudge = a wait or a decision is past its date, or the issue you wait on is closed",
+      lgMarkBody2:"Waiting = waiting on someone else / Frozen = stopped on purpose / Undecided N = N things to decide",
+      lgSec:"Bands (detail sections - 4)",
+      lgSecBody:"Summary = harm/value/close-when and decisions / Policy (open) = what is still to decide / Done = completed actions / Planned = upcoming actions",
+      lgSign:"Signs",
+      lgSignBody:"☑/☐ = whether the action is done - ★ = that line moved in the report period - (TBD) = the date is not fixed",
+      lgNote:"States and marks are derived from the data every time (never written into the JSON).",
+      waitLine:(who,what,since,until)=>`${what}${who?" from "+who:""}`+(since||until?` (${since?"since "+since:""}${since&&until?", ":""}${until?"due "+until:""})`:""),
+      frozenLine:(rw,since)=>`${rw?"resume when "+rw:""}`+(since?` (since ${since})`:""),
+      secOutline:"Summary",secActual:"Done",secPlan:"Planned",secOpenDec:"Policy (open)",
+      lbIfIgnored:"Harm: ",lbIfDone:"Value: ",lbCloseWhen:"Close when: ",lbDecision:"Decision: ",
+      lbIfIgnoredTip:"If left alone, when and what happens (e.g. reports become unreadable at the 10/20 cutover). The \"Impact\" column in conventional sheets",
+      lbIfDoneTip:"If done, when and what you gain (e.g. from November, monthly closing takes half a day). The \"Effect\" column in conventional sheets",
+      lbWait:"Waiting: ",lbFrozen:"Frozen: ",lbClosed:"Closed: ",lbNote:"Notes: ",
+      tbd:"(TBD)",mkDone:"☑",mkTodo:"☐",
+      starIssueTip:"Updated (moved within the period)",starActTip:"Updated (within the period)",
+      cntStar:"★ Updated",cntStarWord:"Updated",cntStarTip:"Issues that moved within the update period",
+      lbNoteTag:"Notes",noteTagTip:"Notes (click to open)",
+      lkIssue:"Issue",lkBroken:"Link target not found",
+      pmPlan:"Plan",pmIssue:"Issues",pmBadgeTip:"Issues linked to this task (click to open the issues view)",
+      pmNoPlan:"This JSON has no plan",pmNoIssue:"This JSON has no issues",
+      decTbd:"TBD",btnDecideOne:"Decide",btnDecideOneTip:"Write the answer and decide it",
+      addDec:"policy",addDecTip:"Add one open thing to decide",decQPh:"what to decide (you can name who to consult)",
+      decAPh:"what was decided (e.g. fix the conversion)",fmDecTitle:"Decide",fmDecOk:"Decide",
+      delDecConfirm:"Delete this policy. Are you sure?",decElapsed:n=>`${n}d`,
+      decElapsedSince:(n,d)=>`${n} days open (since ${d})`,
+      decElapsedTip:(d,n)=>`${n} days since it was added on ${d}`,
+      lkAdd:"+Link",lkAddTitle:"Add a link",lkKind:"Kind",lkKindWbs:"WBS",lkKindIssue:"Issue",lkKindUrl:"URL",
+      lkProjF:"Project",lkNoF:"No.",lkTitleF:"Label",lkUrlF:"URL",lkDel:"Delete this link",
+      lkBadUrl:"The URL must start with http:// or https://.",lkWbsPh:"WBS id (e.g. 2.3)",
+      hashNeedFile:"Open the JSON first to follow the #issue link.",
+      jumpMissing:"The linked issue was not found.",
+      jumpFiltered:"The linked issue is hidden by the current filters.",
+      tabStarTip:n=>`Updated: ${n} (moved within the period)`,
+      starPeriod:"Update period:",starDefaultLabel:"Update period: last 7 days",starSep:"–",
+      starRangeTip:"Update period (star.from/to in the JSON; the last 7 days including today when absent). Editable in edit mode",
+      warnTip:"Both \"if ignored\" and \"if done\" are empty, or the close condition is empty (an unanswered question, not an error)",
+      overdueTip:"Overdue (today > due, not closed)",
+      allTipExpand:"Expand every issue",allTipCollapse:"Collapse every issue to one line",
+      fBar:"Filter",fState:"State",fPrio:"Priority",fAsg:"Owner",fAsgAll:"All",fAsgNone:"(none)",
+      fAsgSelAll:"All",fAsgClear:"None",fOverdue:"Overdue",
+      fMark:"Marks",fMarkTip:"Show only issues with this mark (display only)",
+      fWaitOnly:"Waiting",fFrozenOnly:"Frozen",fOpenOnly:"Undecided",fNudgeOnly:"Nudge",fStarOnly:"★ Updated",
+      fStateTip:"Show/hide by state (display only - data is never changed). Pressed = shown",
+      fPrioTip:"Show/hide by priority (display only). Pressed = shown",
+      fAsgTip:"Show/hide by owner (multi-select; only checked owners shown). Combines with the other filters (display only)",
+      sortLbl:"Sort",sortNo:"No",sortDue:"Due",sortPrio:"Priority",
+      sortTip:"Sort (display only - the data order is never changed). No due date goes last; priority is high to low",
+      cntOverdue:"Overdue",cntTip:"Counts never change with the filters (all issues, closed included)",
+      cntWaitTip:"Issues waiting for someone else",cntFrozenTip:"Issues deliberately frozen",
+      cntNudgeTip:"Waits past their due date (time to nudge)",cntOpenTip:"Issues with at least one open policy item (issue count)",
+      mkOpenTip:n=>`${n} thing(s) to decide (item count)`,tabOpenTip:n=>`${n} issue(s) with open policy items (issue count)`,
+      tabSummary:"Summary",tabSummaryTip:"Per-project roll-up (click a row to open that project)",
+      sumProject:"Project",sumNextDue:"Next due",sumNextDueTip:"Nearest due date among the issues that are not closed",sumTotal:"Total",
+      addProj:"+Project",addProjTip:"Add a project (a v0.1 file is converted to the projects format)",
+      delProj:"Delete this project",newProj:"New project",noName:"(no name)",
+      promptProj:"Project name",promptRename:"Rename the project",
+      confirmDelProj:n=>`Delete the project "${n}" and all its issues?`,
+      addIssue:"+Issue",addIssueTip:"Add an issue (id = max+1, opened = today, priority = mid)",
+      addActTip:"Add an action (at the end)",del:"Delete",up:"Move up",down:"Move down",
+      doneTip:"Toggle done",calTip:"Pick a date",
+      newIssueTitle:"New issue",asgPh:"owner",actPh:"what was / will be done",
+      ifIgnoredPh:"If left alone, when and what happens (e.g. reports become unreadable at the 10/20 cutover)",
+      ifDonePh:"If done, when and what you gain (e.g. from November, monthly closing takes half a day)",
+      closeWhenPh:"Close condition (the harm cannot happen / the value is confirmed)",notePh:"Notes (URLs auto-link)",
+      btnWait:"Waiting",btnWaitTip:"Wait for someone else (who / what / by when)",
+      btnFrozen:"Freeze",btnFrozenTip:"Stop on purpose (write the resume condition)",btnUnpend:"Clear",
+      btnClose:"Close",btnCloseTip:"Confirm the close condition and close it (closed)",btnReopen:"Reopen",
+      fmWaitTitle:"Wait for an answer",fmFrozenTitle:"Freeze",fmCloseTitle:"Close the issue",
+      fmWho:"Waiting on",fmWhat:"Waiting for",fmUntil:"By when",
+      fmResume:"Resume when",fmHow:"How",fmNote:"Confirmed fact",fmOk:"OK",fmCancel:"Cancel",
+      confirmDelIssue:ttl=>`Delete "${ttl}"?`,
+      unsaved:"Unsaved changes...",savedAt:"",saveFail:"Save failed",savePending:"Not saved (external change)",
+      fileLabel:(name,size)=>`${name}, ${size} bytes`,
+      jsonFail:(label,msg)=>`Failed to load JSON${label?` (${label})`:""}: ${msg}`,
+      cantSave:'Cannot save. Re-open the file via "Open file".',
+      extChange:"issue.json was modified outside this tool. Overwrite it with the current view?\n(After cancel, press Reload to re-read.)",
+      saveErr:"Save failed: ",permDenied:"Write permission was not granted.",
+      permUnavailable:"Could not obtain write permission in this environment.",permErr:"Could not obtain write permission: ",
+      pickerGuide:"📂 A save dialog will open. Select the currently open issue.json and press Save (replace) - needed once per Chrome session to grant write permission.",
+      pickerRetryCancel:'To enable editing, press "Edit" again and select issue.json in the dialog.',
+      pickerRetryGesture:'Press "Edit" once more - the save dialog will open; select the currently open issue.json and press Save (replace).',
+      diffFile:"The selected file differs from the currently open file. Switch future saves to it?",
+      truncWarn:"Warning: the file you just selected may have been emptied by Chrome. Please check its contents.",
+      needHandle:'To save edits, first open issue.json via "Open file" or drag & drop (with a file handle).',
+      openErr:"Failed to open: ",reloadErr:"Reload failed: ",loadFirst:'Load a file first via "Open file" or drag & drop.',
+      dropFail:'Could not read the dropped file. Try "Open file" instead.',
+      fileTip:"Open file",todayTip:"Today (reference date for overdue)",updTip:"Last refreshed",saveTip:"Last saved (autosave)",
+      locale:"en-US",
+    },
+  };
+  let lang="ja";if(lsGet("issLang")==="en")lang="en";  // 既定は日本語・明示切替のみ記憶
+  const t=k=>I18N[lang][k];
+
+  // ===== 事実→導出のテーブル（状態・優先度・保留理由・閉じ方は全部ここが単一ソース） =====
+  // 状態は3つだけ（上から順に判定）。「保留」「未決」は状態ではなく“印”（下の MARKS）に移した
+  const STATES=[
+    {k:"closed",l:"sClosed",test:f=>!!f.closed},                 // 閉じた
+    {k:"wip",   l:"sWip",   test:f=>f.anyDone},                  // 済んだ行動が1つ以上＝動き出している
+    {k:"todo",  l:"sTodo",  test:()=>true},                      // 済んだ行動が無い
+  ];
+  const STATE_ORDER=["todo","wip","closed"];  // 画面（フィルタ・件数・サマリ）での並び＝進行順
+  // 印＝状態と別に付く目印。未着手・対応中には同時に付き、完了には付けない（作者裁定 2026-09-09）
+  const MARKS=[
+    {k:"wait",  l:"mkWait",     test:f=>f.pk==="waiting"},
+    {k:"frozen",l:"mkFrozen",   test:f=>f.pk==="frozen"},
+    {k:"open",  l:"sUndecided", test:f=>f.nOpen>0},
+    {k:"ovd",   l:"cntOverdue", test:f=>f.overdue},
+    {k:"nudge", l:"mkNudge",    test:f=>f.nudge},   // 待ちの until を過ぎた＝催促どき
+    {k:"star",  l:"cntStarWord",test:f=>f.star},
+  ];
+  const MARK_ORDER=MARKS.map(m=>m.k);
+  const MK_FLBL={wait:"fWaitOnly",frozen:"fFrozenOnly",open:"fOpenOnly",ovd:"fOverdue",nudge:"fNudgeOnly",star:"fStarOnly"};
+  const PRIORITIES=[{k:"high",l:"pHigh"},{k:"mid",l:"pMid"},{k:"low",l:"pLow"}];
+  // 止まっている理由は2種類だけ：待ち（相手の返事待ち）と凍結（事情で止めた）
+  // 待つ相手＝人名（文字列）か 課題（{issue} / {project,issue}）。壊れた値は「名前なしの人」に落とす
+  function whoOf(w,SN){
+    if(okObj(w)){
+      const id=w.issue;
+      if(id!==undefined&&id!==null&&String(id)!=="")
+        return {kind:"issue",pj:str(w.project)||SN,id:String(id),name:""};
+      return {kind:"person",name:""};
+    }
+    return {kind:"person",name:str(w)};
+  }
+  function pendOf(is,SN){
+    const p=obj(is&&is.pending); if(!p)return null;
+    const kind=str(p.kind)==="frozen"?"frozen":"waiting";  // kind 以外は「待ち」に落とす（壊れた値でも落とさない）
+    return {kind, since:isDate(p.since)?p.since:null, who:whoOf(p.who,SN), what:str(p.what),
+            until:isDate(p.until)?p.until:null, resumeWhen:str(p.resumeWhen)};
+  }
+  const CLOSE_HOWS=[{k:"resolved",l:"hResolved"},{k:"wontfix",l:"hWontfix"},
+                    {k:"not_occurred",l:"hNotOccurred"},{k:"duplicate",l:"hDuplicate"}];
+  const PRIO_RANK={high:0,mid:1,low:2};
+  const SORTS=[{k:"no",l:"sortNo"},{k:"due",l:"sortDue"},{k:"prio",l:"sortPrio"}];
+
+  // ===== 表示状態（すべて表示専用。データ(issue.json)には一切書かない） =====
+  let fileHandle=null, lastData=null, curIssues=[];
+  let editMode=false, refreshTimer=null;
+  let dirty=false, saveTimer=null, saveChain=Promise.resolve(), fileMtime=0;  // 保存キュー（直列化＋外部変更検知）
+  let pickerNeeded=false;  // file://等：権限APIが使えず保存ピッカー方式が必要（セッション中記憶）
+  let saveMsg="",curFileName="",updAt="";
+  const stateOn=new Set(STATE_ORDER);  // 既定=全ON（既定の見た目＝絞らない）
+  try{const s=JSON.parse(lsGet("issStateFilter")||"null");if(Array.isArray(s)){stateOn.clear();s.forEach(k=>STATE_ORDER.includes(k)&&stateOn.add(k));}}catch(_){}
+  if(!stateOn.size)STATE_ORDER.forEach(k=>stateOn.add(k));  // 旧版の記憶（未決/保留）だけだと全部消えるので既定へ戻す
+  const prioOn=new Set(PRIORITIES.map(p=>p.k));
+  try{const s=JSON.parse(lsGet("issPrioFilter")||"null");if(Array.isArray(s)){prioOn.clear();s.forEach(k=>PRIORITIES.some(p=>p.k===k)&&prioOn.add(k));}}catch(_){}
+  const asgOff=new Set();try{const a=JSON.parse(lsGet("issAsgOff")||"null");if(Array.isArray(a))a.forEach(x=>asgOff.add(x));}catch(_){}  // 非表示にした担当。既定=空=全員表示（off集合方式＝新担当は既定で見える）
+  let asgList=[];
+  const markOn=new Set();  // 「印だけに絞る」トグル（既定=空=絞らない）。印どうしは AND
+  try{const m=JSON.parse(lsGet("issMarkOn")||"null");if(Array.isArray(m))m.forEach(k=>MARK_ORDER.includes(k)&&markOn.add(k));}catch(_){}
+  let sortKey="no";{const s=lsGet("issSort");if(SORTS.some(x=>x.k===s))sortKey=s;}
+  const SUMMARY="\u0001summary";  // サマリタブの内部キー（案件名と衝突しない制御文字）
+  let tabSel=lsGet("issProj")||"";  // 開いているタブ＝案件名 or SUMMARY。無ければ最初の案件
+  let curProjs=[],curProjIdx=-1,curProjObj=null,curBook=false;
+  const collapsed=new Set();  // 折りたたみ中の課題（キー＝案件名|id・localStorage記憶）
+  try{const c=JSON.parse(lsGet("issCollapsed")||"null");if(Array.isArray(c))c.forEach(x=>collapsed.add(String(x)));}catch(_){}
+  const saveCollapsed=()=>lsSet("issCollapsed",JSON.stringify([...collapsed]));
+
+  // ===== 小さな共通関数（姉妹品から流用） =====
+  const parse=s=>new Date(s+"T00:00:00Z");
+  const isDate=s=>typeof s==="string"&&/^(19|20)\d{2}-\d{2}-\d{2}$/.test(s)&&!isNaN(parse(s).getTime());  // 年は1900-2099（範囲外はゴミ入力扱い）
+  const mdSlash=s=>s?(parse(s).getUTCMonth()+1)+"/"+parse(s).getUTCDate():"";
+  const addStr=(s,d)=>new Date(parse(s).getTime()+d*DAY_MS).toISOString().slice(0,10);
+  const todayStr=()=>{const n=new Date();return new Date(Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())).toISOString().slice(0,10);};
+  const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+  const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+  // note内の http(s) URL のみリンク化（表示はURLのまま）。javascript:/HTML注入は構造的に不可（^https?:固定・<>はURLに含めない・テキスト片は全てesc）
+  const linkify=s=>String(s??"").split(/(https?:\/\/[^\s"<>]+)/g)
+    .map((part,i)=>i%2?`<a href="${esc(part)}" target="_blank" rel="noopener noreferrer">${esc(part)}</a>`:esc(part))
+    .join("");
+  const str=v=>typeof v==="string"?v:"";  // 文字列以外は「空」扱い（異常系：落とさない）
+  const obj=v=>(v&&typeof v==="object"&&!Array.isArray(v))?v:null;  // オブジェクト以外はnull扱い
+  const shortDate=iso=>(iso&&isDate(iso)&&iso.slice(0,4)===todayStr().slice(0,4))?iso.slice(5):(iso||"");  // 今年は MM-DD、他年は full ISO
+  // ショートハンド入力→full ISO（611/6-11/6/11=今年のMD、270611/20270611、27-6-11 等）。無効はnull・空は""
+  const expandDate=(val,curISO)=>{
+    val=String(val).trim().replace(/\//g,"-");
+    if(val==="")return "";
+    if(isDate(val))return val;
+    const defYr=(curISO&&isDate(curISO))?curISO.slice(0,4):todayStr().slice(0,4);
+    const yr4=y=>y.length===2?"20"+y:y;
+    let yr,m,d,parts=val.split("-"),g=val.replace(/\D/g,"");
+    if(parts.length===2&&/^\d{1,2}$/.test(parts[0])&&/^\d{1,2}$/.test(parts[1])){yr=defYr;[m,d]=parts;}
+    else if(parts.length===3&&/^\d{2}(\d{2})?$/.test(parts[0])&&/^\d{1,2}$/.test(parts[1])&&/^\d{1,2}$/.test(parts[2])){yr=yr4(parts[0]);[,m,d]=parts;}
+    else if(g.length===3){yr=defYr;m=g.slice(0,1);d=g.slice(1);}
+    else if(g.length===4){yr=defYr;m=g.slice(0,2);d=g.slice(2);}
+    else if(g.length===6){yr=yr4(g.slice(0,2));m=g.slice(2,4);d=g.slice(4);}
+    else if(g.length===8){yr=g.slice(0,4);m=g.slice(4,6);d=g.slice(6);}
+    else return null;
+    const iso=`${yr}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;
+    return isDate(iso)?iso:null;
+  };
+  const labelOf=(tbl,k)=>{const e=tbl.find(x=>x.k===k);return e?t(e.l):"";};  // テーブル駆動のラベル引き（enum不正なら空＝バッジ無し）
+
+  // ===== 正規化と導出（§3.4）。導出値は JSON に書かず、描画のたびに事実から計算する =====
+  // ★の対象期間＝「報告期間」。トップレベルの任意 star:{from,to} で指定（to 省略＝本日）。
+  // star が無い／日付が不正／from>to は既定＝本日を含む直近7日。既定値は JSON に書き戻さない
+  function starRange(d,TODAY){
+    const s=obj(d&&d.star);
+    if(s&&isDate(s.from)){
+      const hasTo=s.to!==undefined&&s.to!==null&&s.to!=="";
+      const to=hasTo?(isDate(s.to)?s.to:null):TODAY;
+      if(to&&s.from<=to)return {from:s.from,to,custom:true};
+    }
+    return {from:addStr(TODAY,-6),to:TODAY,custom:false};
+  }
+  // ブック＝案件（projects）の束。v0.2 は projects[] が正。
+  // 課題側の形は projects[].issues の1本だけ（v0.2 が最初の公開形＝旧形式の読み替えは持たない）。
+  // 案件の知らないキー（tasks / milestones など）は触らず、保存でそのまま残す。
+  const okObj=x=>!!x&&typeof x==="object"&&!Array.isArray(x);
+  function normalizeProjects(d){
+    if(!okObj(d))return [];
+    if(Array.isArray(d.projects))return d.projects.filter(okObj);
+    return [];
+  }
+  const isBookForm=d=>okObj(d)&&Array.isArray(d.projects);
+  const projName=sh=>str(sh&&sh.name);
+  function normalizeIssues(d){
+    if(!d||typeof d!=="object"||Array.isArray(d))return [];  // トップが非オブジェクト → 空表示（落とさない）
+    if(!Array.isArray(d.issues))return [];
+    return d.issues.filter(x=>x&&typeof x==="object"&&!Array.isArray(x));
+  }
+  // 1課題ぶんの導出値。壊れた値は「無視して既定へ落とす」（graceful degradation）
+  // 方針（decisions[]）＝1課題に何個でも。元配列の添字を持ち回る（編集の取り違え防止）
+  const decsOf=is=>{const out=[];if(Array.isArray(is.decisions))is.decisions.forEach((d,i)=>{if(okObj(d))out.push({d,i});});return out;};
+  const daysBetween=(a,b)=>Math.round((parse(b).getTime()-parse(a).getTime())/DAY_MS);
+  function computeIssue(is,idx,TODAY,SR,SN){
+    const closed=obj(is.closed), pd=pendOf(is,SN);
+    const due=isDate(is.due)?is.due:null;
+    const no=(is.id===null||is.id===undefined)?"":String(is.id);
+  // actions は元配列の添字を持ち回る（編集の対象を取り違えないため）。非オブジェクト要素は捨てる
+    const acts=[];
+    if(Array.isArray(is.actions))is.actions.forEach((a,i)=>{if(a&&typeof a==="object"&&!Array.isArray(a))acts.push({a,i});});
+    const nextE=acts.find(e=>e.a.done!==true);  // 次の一手＝未の最初の1件
+    const anyDone=acts.some(e=>e.a.done===true);
+    const state=STATES.find(s=>s.test({closed,anyDone})).k;
+  // 方針＝決まったもの（decided あり）と未決（decided:null）に分ける。配列順＝表示順
+    const decs=decsOf(is);
+    const decDone=decs.filter(e=>isDate(e.d.decided));
+    const decOpen=decs.filter(e=>!isDate(e.d.decided)).map(e=>{
+      const until=isDate(e.d.until)?e.d.until:null;   // 「いつまでに決めるか」（任意）
+      return Object.assign({days:isDate(e.d.since)?daysBetween(e.d.since,TODAY):null,
+                            until, nudge:!!(until&&TODAY>until)},e);
+    });
+  // ★＝報告期間(SR)に動いたもの。済んだ行動・決めた方針・保留にした・閉じた（decisions[].since は含めない）
+    const inSR=v=>isDate(v)&&v>=SR.from&&v<=SR.to;
+    const starActs=new Set();
+    acts.forEach(e=>{if(e.a.done===true&&inSR(e.a.date))starActs.add(e.i);});  // date:null の済み行動には付けない
+    const starDecs=new Set();
+    decDone.forEach(e=>{if(inSR(e.d.decided))starDecs.add(e.i);});
+    const starPend=!!(pd&&inSR(pd.since)), starClosed=!!(closed&&inSR(closed.at));
+    const star=starActs.size>0||starDecs.size>0||starPend||starClosed;
+    const overdue=!!(due&&state!=="closed"&&TODAY>due);  // 期限超過＝本日>期限 かつ 未完了（完了行は赤にしない）
+  // 印は完了には付けない。ただし ★ だけは例外（「今週閉じた」を報告に載せるため・作者裁定 2026-09-09）。
+  // 件数・絞り込み・サマリ・タブは全部この marks を見る＝ずれない
+  // 催促は3系統：待ちの期限切れ／未決の期限切れ／待っている相手の課題が完了済み。
+  // 件数・絞り込みは marks.nudge（OR）だけを見る。どの理由かは行ごとに個別のフラグで出し分ける
+    const nudgeWait=!!(pd&&pd.kind==="waiting"&&pd.until&&TODAY>pd.until);
+    const nudgeDecs=new Set(decOpen.filter(e=>e.nudge).map(e=>e.i));
+    const nudgeDone=!!(pd&&pd.kind==="waiting"&&pd.who.kind==="issue"&&issueClosed(pd.who.pj,pd.who.id));
+    const nudge=nudgeWait||nudgeDecs.size>0||nudgeDone;
+    const todoDays=(state==="todo"&&isDate(is.opened))?daysBetween(is.opened,TODAY):null;  // 未着手のまま経った日数
+    const waitDays=(pd&&pd.kind==="waiting"&&pd.since)?daysBetween(pd.since,TODAY):null;
+    const f={pk:pd?pd.kind:"",nOpen:decOpen.length,overdue,nudge,star};
+    const marks=new Set(MARKS.filter(m=>(state!=="closed"||m.k==="star")&&m.test(f)).map(m=>m.k));
+  // 担当は課題では持たず、行動ごとに書く。絞り込み用にその課題に出てくる担当の集合を作る（軸内OR）。
+  // 行動0件／担当なしは "" ＝(未割当)扱い
+    const asgSet=[...new Set(acts.map(e=>str(e.a.assignee)))];
+    if(!asgSet.length)asgSet.push("");
+    return {
+      i:idx, no, pn:SN, key:SN+"|"+(no!==""?no:"i"+idx),  // key＝折りたたみのキー（案件ごと・id重複時は衝突するのが仕様）
+      state, how:closed?str(closed.how):"", pd,
+      prio:PRIORITIES.some(p=>p.k===is.priority)?is.priority:"mid",  // 3値以外は mid 扱い
+      asgSet, due, overdue, marks, nOpen:decOpen.length,
+      decs, decDone, decOpen,
+      warn:(!str(is.ifIgnored)&&!str(is.ifDone))||!str(is.closeWhen),  // 「載せる」の二つの問い／完了条件が未回答＝薄い警告（エラーではない）
+      acts, next:nextE?nextE.a:null,
+      nudgeWait, nudgeDecs, nudgeDone, todoDays, waitDays,
+      starActs, starDecs, starPend, starClosed, hasStar:marks.has("star"),
+    };
+  }
+
+
+  // ===== 表示部品 =====
+  const dateCell=(iso,ov)=>iso?`<span title="${esc(iso)}"${ov?` class="ovd"`:""}>${esc(mdSlash(iso))}</span>`:"—";
+  const dateInput=(i,f,val,a,dec,ph)=>`<span class="is-date-wrap"><input data-i="${i}"${a===undefined?"":` data-a="${a}"`}${dec===undefined?"":` data-dec="${dec}"`} data-field="${f}" type="text" placeholder="${esc(ph||"MM-DD")}" value="${esc(val)}">`
+    +`<input type="date" class="is-cal-proxy" tabindex="-1" aria-hidden="true">`
+    +`<button type="button" class="is-cal-btn" data-cal title="${esc(t("calTip"))}">${ICN.cal}</button></span>`;
+  // 状態＝バッジ1つ（＋完了の閉じ方）。その下に小さく印。⚠は期限の列・★はタイトル横に出るのでここでは重ねない
+  // 催促の理由（3系統）をツールチップにまとめる＝「何をすればいいか」が分かるように
+  function nudgeTip(c){
+    const r=[];
+    if(c.nudgeDone)r.push(t("mkNudgeTipDone"));
+    if(c.nudgeWait)r.push(t("mkNudgeTip"));
+    if(c.nudgeDecs.size)r.push(t("mkNudgeTipDec"));
+    return r.join("／");
+  }
+  function stateCell(c){
+    const sub=c.state==="closed"?labelOf(CLOSE_HOWS,c.how):"";
+    let h=`<span class="bdg s-${c.state}">${esc(labelOf(STATES,c.state))}</span>`+(sub?`<span class="sub">${esc(sub)}</span>`:"");
+    const mk=[];
+    if(c.marks.has("wait")){
+      const w=c.pd.who;
+      const nm=w.kind==="issue"?refFull(issueRef(w.pj,w.id,c.pn)):w.name;
+      const sub=[nm,c.pd.until?"（"+mdSlash(c.pd.until)+"）":""].filter(Boolean).join("");
+      mk.push(`<span class="mk mk-wait">${esc(t("mkWait"))}${sub?` <span class="mksub">${esc(sub)}</span>`:""}</span>`);}
+    if(c.marks.has("wait")&&c.waitDays!==null)   // 完了した課題には印を付けない（経過日数も同じ扱い）
+      mk.push(`<span class="mk mk-days" title="${esc(t("mkWaitDaysTip"))}">${esc(t("mkWaitDays")(c.waitDays))}</span>`);
+    if(c.marks.has("frozen"))
+      mk.push(`<span class="mk mk-frozen">${esc(t("mkFrozen"))}${c.pd.resumeWhen?` <span class="mksub">${esc(c.pd.resumeWhen)}</span>`:""}</span>`);
+    if(c.marks.has("open"))
+      mk.push(`<span class="mk mk-open" title="${esc(t("mkOpenTip")(c.nOpen))}">${esc(t("sUndecided"))} ${c.nOpen}</span>`);
+    if(c.marks.has("nudge"))
+      mk.push(`<span class="mk mk-nudge" title="${esc(nudgeTip(c))}">⚠ ${esc(t("mkNudge"))}</span>`);
+    if(c.todoDays!==null)
+      mk.push(`<span class="mk mk-days${c.todoDays>=7?" mk-old":""}" title="${esc(t("mkTodoDaysTip"))}">${esc(t("mkTodoDays")(c.todoDays))}</span>`);
+    return h+(mk.length?`<div class="mks">${mk.join("")}</div>`:"");
+  }
+  // ===== リンク台帳（links[]）＝課題側だけに持つ。鍵の名前で4形を区別する（混ぜて書けない） =====
+  const LK_HTTP=/^https?:\/\//i;
+  function linkOf(l){
+    if(!okObj(l))return null;
+    const pj=str(l.project);
+    if(l.url!==undefined&&l.url!==null)return {k:"url",label:str(l.title)||str(l.url),url:str(l.url)};
+    if(l.wbs!==undefined&&l.wbs!==null&&String(l.wbs)!=="")return {k:"wbs",pj,id:String(l.wbs)};
+    if(l.issue!==undefined&&l.issue!==null&&String(l.issue)!=="")return {k:"issue",pj,id:String(l.issue)};
+    return null;
+  }
+  const findProj=nm=>curProjs.find(x=>projName(x)===nm)||null;
+  const hasIssue=(pj,id)=>{const p=findProj(pj);return !!p&&normalizeIssues(p).some(x=>String(x.id)===id);};
+  const findIssue=(pj,id)=>{const p=findProj(pj);if(!p)return null;
+    return normalizeIssues(p).find(x=>String(x.id)===String(id))||null;};
+  const issueClosed=(pj,id)=>{const x=findIssue(pj,id);return !!(x&&obj(x.closed));};  // 導出ではなく素の事実
+  // 別案件の課題は「勤怠-2」（案件名の先頭2文字＋番号）。同じ案件は「#2」のまま。データは不変
+  function issueRef(pj,id,curPn){
+    const cross=!!(pj&&pj!==curPn);
+    return {cross, id:String(id), pj:pj||curPn,
+            label:cross?str(pj).slice(0,2)+"-"+id:"#"+id,
+            title:cross?str(pj)+" #"+id:"#"+id};
+  }
+  function hasWbs(pj,id){
+    const p=findProj(pj); if(!p)return false;
+    if(!Array.isArray(p.tasks))return true;  // tasks が無いファイルでは検査しない（壊れ扱いにしない）
+    let ok=false;
+    // children が配列でない（数値・文字列・オブジェクト）壊れたデータでも落ちないよう、非配列は「子なし」扱い
+    (function walk(ns){if(!Array.isArray(ns))return;
+      for(const n of ns){if(!okObj(n))continue;
+        if(String(n.id)===id){ok=true;return;} walk(n.children); if(ok)return;}})(p.tasks);
+    return ok;
+  }
+  // 課題への参照（押すと飛ぶ）。存在しない先は取り消し線＝リンク行と同じ作法
+  const refFull=r=>r.cross?r.label:t("lkIssue")+" "+r.label;   // 別案件は「勤怠-2」・同じ案件は「課題 #3」
+  function refHtml(r){
+    const lb=refFull(r);
+    return hasIssue(r.pj,r.id)
+      ?`<span class="iref" data-jp="${esc(r.pj)}" data-ji="${esc(r.id)}" title="${esc(r.title)}">${esc(lb)}</span>`
+      :`<span class="iref lk-x" title="${esc(t("lkBroken"))}">${esc(lb)}</span>`;
+  }
+  const MARK1="\u0001";  // 文字列を esc() したあとに HTML を差し込むための目印（本文は必ずエスケープする）
+  const lkX=lb=>`<span class="lk-i lk-x" title="${esc(t("lkBroken"))}">${esc(lb)}</span>`;  // 壊れたリンク＝取り消し線
+  function lkLabel(L,curPn){
+    if(L.k==="url")return L.label;
+    if(L.k==="wbs")return (L.pj&&L.pj!==curPn?L.pj+" ":"")+"WBS "+L.id;  // WBS は案件名をそのまま前に出す
+    const r=issueRef(L.pj,L.id,curPn);      // 課題は別案件なら「勤怠-2」・同じ案件は「課題 #2」
+    return r.cross?r.label:t("lkIssue")+" "+r.label;
+  }
+  const lkTitle=(L,curPn)=>(L.k==="issue"&&L.pj&&L.pj!==curPn)?issueRef(L.pj,L.id,curPn).title:"";
+  function linksRow(is,c){
+    const out=[], arr=Array.isArray(is.links)?is.links:[];
+    const brk=(lb,x)=>`<span class="lk-i lk-x" title="${esc(t("lkBroken"))}">${esc(lb)}${x}</span>`;
+    const del=li=>editMode?`<span class="lkdel" data-lkdel="${c.i}:${li}" title="${esc(t("lkDel"))}">✕</span>`:"";
+    arr.forEach((l,li)=>{
+      const L=linkOf(l); if(!L)return;
+      const lb=lkLabel(L,c.pn), x=del(li);
+      if(L.k==="url"){
+        out.push(LK_HTTP.test(L.url)  // http(s) のみ（javascript: 等は壊れ扱い）
+          ?`<a class="lk-i" href="${esc(L.url)}" target="_blank" rel="noopener noreferrer">${esc(lb)}${x}</a>`
+          :brk(lb,x));
+        return;
+      }
+      const pj=L.pj||c.pn;
+      if(L.k==="issue"){  // 同じビューア内で飛ぶ
+        const tt=lkTitle(L,c.pn);
+        out.push(hasIssue(pj,L.id)
+          ?`<span class="lk-i" data-jp="${esc(pj)}" data-ji="${esc(L.id)}"${tt?` title="${esc(tt)}"`:""}>${esc(lb)}${x}</span>`
+          :brk(lb,x));
+        return;
+      }
+      // WBS：統合ビューア（橋あり）は同じページで計画表示へ／単体版は wbs_viewer.html を新しいタブで
+      out.push(!hasWbs(pj,L.id)?brk(lb,x)
+        :(window.__PM
+          ?`<span class="lk-i" data-jw="${esc(pj)}" data-jt="${esc(L.id)}">${esc(lb)}${x}</span>`
+          :`<a class="lk-i" href="wbs_viewer.html#wbs=${esc(encodeURIComponent(pj)+"/"+encodeURIComponent(L.id))}" target="_blank" rel="noopener noreferrer">${esc(lb)}${x}</a>`));
+    });
+    // 備考も同じ行に並べる（本文は出さずクリックで吹き出し）
+    if(str(is.note))out.push(`<span class="lk-i" data-note="${c.i}" title="${esc(t("noteTagTip"))}">${esc(t("lbNoteTag"))}</span>`);
+    if(editMode)out.push(`<span class="lk-i lk-add" data-lkadd="${c.i}" title="${esc(t("lkAddTitle"))}">${esc(t("lkAdd"))}</span>`);
+    return out.length?`<span class="lk">${out.join("")}</span>`:"";
+  }
+  const STAR=tip=>`<span class="star" title="${esc(t(tip))}">★</span>`;  // ★＝報告期間に動いた印（1箇所で作る）
+  const lbTip=k=>I18N[lang][k+"Tip"]?` title="${esc(t(k+"Tip"))}"`:"";  // 問いと従来語の橋をツールチップに
+  // 概要の「方針：」＝決まった項目（decided あり）ごとに1行。1件も無ければ「方針：未定」
+  const decDelX=(c,di)=>editMode?`<span class="decdel" data-decdel="${c.i}:${di}" title="${esc(t("del"))}">✕</span>`:"";
+  function decidedLines(c){
+    if(!c.decDone.length)
+      return `<div class="ln"><span class="lb"${lbTip("lbDecision")}>${esc(t("lbDecision"))}</span>${esc(t("decTbd"))}</div>`;
+    return c.decDone.map(e=>`<div class="ln">${c.starDecs.has(e.i)?STAR("starActTip"):""}`
+      +`<span class="lb"${lbTip("lbDecision")}>${esc(t("lbDecision"))}</span>`
+      +`${esc(str(e.d.a)+(isDate(e.d.decided)?`（${mdSlash(e.d.decided)}）`:""))}${decDelX(c,e.i)}</div>`).join("");
+  }
+  // 概要の「待ち：」「凍結：」1行（無ければ出さない）
+  // 完了の1行。閉じ方が「重複」なら links の課題リンク（＝元の課題）を → で添える
+  function closedLine(is,c,inline){
+    const cl=obj(is.closed); if(!cl)return "";
+    const hl=labelOf(CLOSE_HOWS,str(cl.how));
+    let dup="";
+    if(str(cl.how)==="duplicate"){
+      const arr=Array.isArray(is.links)?is.links:[];
+      for(let i=arr.length-1;i>=0;i--){const L=linkOf(arr[i]);
+        if(L&&L.k==="issue"){dup=" "+esc(t("dupLine")(MARK1)).replace(MARK1,refHtml(issueRef(L.pj||c.pn,L.id,c.pn)));break;}}
+    }
+    const txt=(hl?`[${hl}] `:"")+str(cl.note)+(isDate(cl.at)?`（${mdSlash(cl.at)}）`:"");
+    return `<div class="ln">${c.starClosed?STAR("starActTip"):""}<span class="lb">${esc(t("lbClosed"))}</span>${esc(txt)}${dup}</div>`;
+  }
+  function pendLine(c){
+    const pd=c.pd; if(!pd)return "";
+    const st=c.starPend?STAR("starActTip"):"";
+    const sc=pd.since?mdSlash(pd.since):"", ut=pd.until?mdSlash(pd.until):"";
+    const nd=c.marks.has("nudge")?`<span class="mk mk-nudge" title="${esc(t("mkNudgeTip"))}">⚠ ${esc(t("mkNudge"))}</span>`:"";
+    if(pd.kind!=="waiting")
+      return `<div class="ln">${st}<span class="lb">${esc(t("lbFrozen"))}</span>${esc(t("frozenLine")(pd.resumeWhen,sc))}</div>`;
+    let body;
+    if(pd.who.kind==="issue"){   // 待っている相手が課題＝押すとその課題へ飛ぶ
+      const r=issueRef(pd.who.pj,pd.who.id,c.pn);
+      body=esc(t("waitIssueLine")(MARK1,str(pd.what))).replace(MARK1,refHtml(r))
+        +esc(sc||ut?`（${sc?sc+"〜":""}${sc&&ut?"・":""}${ut?ut+" まで":""}）`:"");
+    }else body=esc(t("waitLine")(pd.who.name,pd.what,sc,ut));
+    return `<div class="ln">${st}<span class="lb">${esc(t("lbWait"))}</span>${body}${nd}</div>`;
+  }
+  // 「方針（未決）」の帯＝decided:null の項目だけ。行頭「・」・（起票日〜）・経過日数
+  function openDecBlock(c){
+    if(!c.decOpen.length)return "";
+    const row=e=>{
+      const untilTxt=e.until?t("decUntil")(mdSlash(e.until)):"";      // 「いつまでに決めるか」
+      // 経過は「N日経過（M/D〜）」の1組。表示モードは 本文 → 期限 → 経過 の順
+      const meta=e.days===null?"":t("decElapsedSince")(e.days,mdSlash(e.d.since));
+      const metaH=meta?`<span class="dcmeta" title="${esc(t("decElapsedTip")(mdSlash(e.d.since),e.days))}">${esc(meta)}</span>`:"";
+      const nd=e.nudge?`<span class="mk mk-nudge" title="${esc(t("mkNudgeTipDec"))}">⚠ ${esc(t("mkNudge"))}</span>`:"";
+      if(!editMode)
+        return `<div class="ln odec"><span class="odot">・</span>${esc(str(e.d.q))}${esc(untilTxt)}${metaH}${nd}</div>`;
+      // 編集＝行動の編集行（.aedit）と同じ1行 flex。行頭は「確定」＝行動の 済/未 チェックと同じ位置
+      return `<div class="ln odec edit">`
+        +`<button type="button" class="dcok" data-decide="${c.i}:${e.i}" title="${esc(t("btnDecideOneTip"))}">${esc(t("btnDecideOne"))}</button>`
+        +`<input class="dcq" data-i="${c.i}" data-dec="${e.i}" data-field="q" type="text" value="${esc(str(e.d.q))}" placeholder="${esc(t("decQPh"))}">`
+        +`<span class="dcuntil" title="${esc(t("decUntilTip"))}">`
+        +dateInput(c.i,"until",shortDate(e.until||""),undefined,e.i,t("decUntilPh"))+`</span>`
+        +`${metaH}${nd}`
+        +`<span class="decdel" data-decdel="${c.i}:${e.i}" title="${esc(t("del"))}">✕</span></div>`;
+    };
+    return `<div class="sec">${esc(t("secOpenDec"))}</div>`+c.decOpen.map(row).join("");
+  }
+  const ln=(k,v,link,st)=>`<div class="ln">${st?STAR("starActTip"):""}<span class="lb"${lbTip(k)}>${esc(t(k))}</span>${link?linkify(v):esc(v)}</div>`;
+  // 行動1件の中身＝ 済/未 日付 本文 担当：○○（詳細の行と、たたんだ時の次の一手で共用）
+  // ※ actions[].wbs は v0.2 で廃止（WBSの葉＝課題1件・行動は課題の中の手順）。読まないが保存では消さない
+  function actBody(a){
+    const dt=isDate(a.date)?`<span class="ad" title="${esc(a.date)}">${esc(mdSlash(a.date))}</span>`
+                           :`<span class="ad tbd">${esc(t("tbd"))}</span>`;  // date:null＝調整中（未定）
+    const asg=str(a.assignee)
+      ?`<span class="aa"><span class="lb">${esc(t("lbActAsg"))}</span>${esc(str(a.assignee))}</span>`:"";  // 空の行はラベルごと出さない
+    return `<span class="dn ${a.done===true?"dn-d":"dn-t"}">${esc(a.done===true?t("mkDone"):t("mkTodo"))}</span>${dt}`
+      +`<span class="at">${esc(str(a.text))}</span>${asg}`;
+  }
+  const actLine=(e,c)=>`<div class="act">`  // 詳細の行動行（★＝報告期間内に済んだ行動）
+    +(c.starActs.has(e.i)?STAR("starActTip"):`<span class="star"></span>`)
+    +actBody(e.a)+`</div>`;
+  // たたんだ時の詳細＝次の一手（未の最初の行動）を1行だけ。完了した課題は「次」が無いので空にする
+  const nextLine=c=>(c.state==="closed"||!c.next)?"":`<div class="act nextln">${actBody(c.next)}</div>`;
+  function detailView(is,c){
+    if(collapsed.has(c.key))return nextLine(c);  // たたんだ時＝次の一手1行だけ
+    let h=`<div class="body"><div class="sec">${esc(t("secOutline"))}</div>`;
+    if(str(is.ifIgnored))h+=ln("lbIfIgnored",is.ifIgnored);
+    if(str(is.ifDone))h+=ln("lbIfDone",is.ifDone);  // 空なら行ごと省略（Excelの読み味）
+    if(str(is.closeWhen))h+=ln("lbCloseWhen",is.closeWhen);
+    h+=decidedLines(c);
+    h+=pendLine(c);
+    h+=closedLine(is,c);
+    h+=openDecBlock(c);  // 概要の下に「方針（未決）」の帯（未決が無ければ帯ごと出さない）
+    const done=c.acts.filter(e=>e.a.done===true), todo=c.acts.filter(e=>e.a.done!==true);
+    if(done.length)h+=`<div class="sec">${esc(t("secActual"))}</div>`+done.map(e=>actLine(e,c)).join("");
+    if(todo.length)h+=`<div class="sec">${esc(t("secPlan"))}</div>`+todo.map(e=>actLine(e,c)).join("");
+    return h+"</div>";
+  }
+  // 列メタデータ（見出し・幅・セル描画を1エントリに集約＝増えにくい構造）
+  const COLS=[
+    {key:"no",label:"colNo",w:"46px",cls:"num",view:(is,c)=>esc(c.no)},
+    {key:"prio",label:"colPrio",tip:"colPrioTip",w:"68px",cls:"prio",
+     view:(is,c)=>editMode
+       ?`<select data-i="${c.i}" data-field="priority">`+PRIORITIES.map(p=>`<option value="${p.k}"${c.prio===p.k?" selected":""}>${esc(t(p.l))}</option>`).join("")+`</select>`
+       :`<span class="bdg p-${c.prio}">${esc(labelOf(PRIORITIES,c.prio))}</span>`},
+    {key:"title",label:"colTitle",w:"260px",cls:"title",  // 見出し＝caret＋タイトル（＋未回答の⚠）。セルのクリックで開閉
+     view:(is,c)=>{
+       const cr=collapsed.has(c.key)?"▶":"▼";
+       const wn=c.warn?`<span class="warn" title="${esc(t("warnTip"))}">⚠</span>`:"";
+       const sm=c.hasStar?STAR("starIssueTip"):"";  // 期間内に動きがあった課題の印
+       const op=c.marks.has("open")  // 未決の方針が何件あるか（橙・小）
+         ?`<span class="opn" title="${esc(t("mkOpenTip")(c.nOpen))}">${esc(t("sUndecided"))} ${c.nOpen}</span>`:"";
+       const lk=linksRow(is,c);  // たたんだ時も出す（編集はしない＝JSON／AI 経由）
+       return editMode
+         ?`<div class="tw"><span class="clk caret" data-tog="${esc(c.key)}">${cr}</span>`
+           +sm+`<input data-i="${c.i}" data-field="title" type="text" value="${esc(str(is.title))}" title="${esc(str(is.title))}">${wn}${op}`
+           +`<button type="button" class="ebtn danger" data-act="delissue" data-i="${c.i}" title="${esc(t("del"))}">${ICN.del}</button></div>`+lk
+         :`<div class="tcell"><span class="caret">${cr}</span><span class="tt">${sm}<b>${esc(str(is.title))}</b>${wn}${op}${lk}</span></div>`;
+     }},
+    {key:"detail",label:"colDetail",tip:"colDetailTip",w:"auto",cls:"detail",
+     view:(is,c)=>editMode?detailEdit(is,c):detailView(is,c)},
+    {key:"state",label:"colState",w:"96px",cls:"state",view:(is,c)=>stateCell(c)},
+    {key:"due",label:"colDue",tip:"colDueTip",w:"92px",cls:"due",
+     view:(is,c)=>editMode?dateInput(c.i,"due",shortDate(c.due)):dateCell(c.due)},
+  ];
+
+  // ===== サマリタブの列（案件ごとの集計・読み取り専用） =====
+  const SUM_COLS=[
+    {k:"name",l:"sumProject",w:"auto",cls:"sname"},
+    {k:"todo",l:"sTodo",w:"76px",cls:"sumn"},
+    {k:"wip",l:"sWip",w:"76px",cls:"sumn"},
+    {k:"closed",l:"sClosed",w:"76px",cls:"sumn"},
+    {k:"wait",l:"mkWait",tip:"cntWaitTip",w:"70px",cls:"sumn"},
+    {k:"frozen",l:"mkFrozen",tip:"cntFrozenTip",w:"70px",cls:"sumn"},
+    {k:"open",l:"sUndecided",tip:"cntOpenTip",w:"70px",cls:"sumn"},
+    {k:"star",l:"cntStar",tip:"cntStarTip",w:"82px",cls:"sumn"},
+    {k:"ovd",l:"cntOverdue",tip:"overdueTip",w:"82px",cls:"sumn"},
+    {k:"nudge",l:"mkNudge",tip:"cntNudgeTip",w:"70px",cls:"sumn"},
+    {k:"next",l:"sumNextDue",tip:"sumNextDueTip",w:"96px",cls:"sumn"},
+  ];
+  // 1案件ぶんの集計。DOM は作らない（タブのバッジ・サマリ表はこれだけで出す）
+  function projStats(sh,TODAY,SR){
+    const list=normalizeIssues(sh), SN=projName(sh);
+    const cnt={};STATE_ORDER.forEach(k=>cnt[k]=0);
+    const mk={};MARK_ORDER.forEach(k=>mk[k]=0);   // 印はすべて「課題数」（待ち・凍結・未決・期限超過・催促・★）
+    let next=null;
+    list.forEach((is,i)=>{const c=computeIssue(is,i,TODAY,SR,SN);is._calc=c;
+      cnt[c.state]++;
+      MARK_ORDER.forEach(k=>{if(c.marks.has(k))mk[k]++;});
+      if(c.state!=="closed"&&c.due&&(!next||c.due<next))next=c.due;});  // 次の期限＝未完了で最も近い期限
+    return {list,cnt,mk,star:mk.star,ovd:mk.ovd,next};
+  }
+  function renderTabs(projs,stats,summary,ai){
+    const el=$("isTabBar"), show=curBook||editMode;  // 従来形式はタブを出さない（編集モードだけ＋案件のために出す）
+    el.style.display=show?"flex":"none";
+    if(!show){el.innerHTML="";return;}
+    const bdg=(n,cls,pre,ttl)=>n?`<span class="tb ${cls}" title="${esc(ttl)}">${esc(pre)}${n}</span>`:"";
+    let h=`<span class="stab${summary?" on":""}" data-summary="1" title="${esc(t("tabSummaryTip"))}">${esc(t("tabSummary"))}</span>`;
+    h+=projs.map((sh,i)=>{const on=!summary&&i===ai, nm=projName(sh);
+      return `<span class="stab${on?" on":""}" data-tab="${esc(nm)}" data-si="${i}">${esc(nm||t("noName"))}`
+        +bdg(stats[i].star,"st","★",t("tabStarTip")(stats[i].star))
+        +bdg(stats[i].mk.open,"un",t("sUndecided"),t("tabOpenTip")(stats[i].mk.open))
+        +bdg(stats[i].ovd,"ov","⚠",t("overdueTip"))
+        +(on&&editMode?`<span class="tx" data-delproj="${i}" title="${esc(t("delProj"))}">✕</span>`:"")+`</span>`;}).join("");
+    if(editMode)h+=`<button class="ebtn addproj" data-act="addproj" title="${esc(t("addProjTip"))}">${ICN.add}${esc(t("addProj"))}</button>`;
+    el.innerHTML=h;
+  }
+  function renderSummary(projs,stats){
+    $("isCgrp").innerHTML=SUM_COLS.map(c=>`<col style="width:${c.w}">`).join("");
+    $("isThead").innerHTML="<tr>"+SUM_COLS.map(c=>
+      `<th class="${c.cls}"${c.tip?` title="${esc(t(c.tip))}"`:""}>${esc(t(c.l))}</th>`).join("")+"</tr>";
+    const tot={todo:0,wip:0,closed:0,wait:0,frozen:0,open:0,star:0,ovd:0,nudge:0,next:null};
+    const cells=v=>SUM_COLS.map(c=>`<td class="${c.cls}">${v[c.k]}</td>`).join("");
+    const body=projs.map((sh,i)=>{const st=stats[i];
+      STATE_ORDER.forEach(k=>tot[k]+=st.cnt[k]);
+      MARK_ORDER.forEach(k=>tot[k]+=st.mk[k]);
+      if(st.next&&(!tot.next||st.next<tot.next))tot.next=st.next;
+      return `<tr class="sumrow" data-proj="${esc(projName(sh))}">`
+        +cells({name:esc(projName(sh)||t("noName")),todo:st.cnt.todo,wip:st.cnt.wip,closed:st.cnt.closed,
+                wait:st.mk.wait,frozen:st.mk.frozen,open:st.mk.open,star:st.mk.star,ovd:st.mk.ovd,nudge:st.mk.nudge,
+                next:st.next?dateCell(st.next):"—"})+"</tr>";}).join("");
+    $("isTbody").innerHTML=body+`<tr class="sumtot">`
+      +cells(Object.assign({},tot,{name:esc(t("sumTotal")),next:tot.next?dateCell(tot.next):"—"}))+"</tr>";
+    return tot;
+  }
+
+  // ===== 描画本体 =====
+  function render(data){
+    clearTimeout(refreshTimer);  // 保留中の遅延再描画を破棄（二重描画防止）
+    closeForm();
+    const TODAY=todayStr();
+    const SR=starRange(data,TODAY);  // ★の対象期間（報告期間）＝ブック共通
+    const projs=normalizeProjects(data);
+    curProjs=projs;
+    curBook=isBookForm(data);  // タブを出すのは案件の配列を持つファイル（v0.1 の1案件形は出さない）
+    const stats=projs.map(sh=>projStats(sh,TODAY,SR));  // 全案件を集計（DOMは開いている案件だけ）
+    const summary=tabSel===SUMMARY;
+    let ai=-1;
+    if(!summary){ai=projs.findIndex(sh=>projName(sh)===tabSel); if(ai<0)ai=projs.length?0:-1;}
+    curProjIdx=ai; curProjObj=ai>=0?projs[ai]:null;
+    renderTabs(projs,stats,summary,ai);
+    applyTitle();
+    if(summary){  // サマリ＝案件ごとの集計表（読み取り専用・行クリックでその案件へ）
+      curIssues=[];
+      const tot=renderSummary(projs,stats);
+      $("isEmpty").style.display=projs.length?"none":"";
+      $("isTbl").style.display=projs.length?"":"none";
+      $("isFilterBar").style.display="none";
+      renderStat(data,tot,SR,tot);  // サマリではブック全体の合計
+      return;
+    }
+    const rows=(ai>=0?stats[ai].list:[]).map(is=>({is,c:is._calc}));
+    curIssues=rows.map(r=>r.is);
+  // 件数サマリ＝開いている案件の全件で数える（絞り込んでも動かない＝誠実なview）
+    const cnt=ai>=0?stats[ai].cnt:(()=>{const z={};STATE_ORDER.forEach(k=>z[k]=0);return z;})();
+    const mk=ai>=0?stats[ai].mk:(()=>{const z={};MARK_ORDER.forEach(k=>z[k]=0);return z;})();
+    const aset=new Set();rows.forEach(r=>r.c.asgSet.forEach(a=>aset.add(a)));  // 候補＝開いている案件の actions[].assignee
+    asgList=[...aset].sort();  // "ぴぐお/Aさん" のような複数表記は1文字列として扱う
+  // 絞り込み（軸内OR・軸間AND）→ 並び替え（どちらも表示専用＝データ順は不変・ブック共通）
+    let vis=rows.filter(r=>stateOn.has(r.c.state)&&prioOn.has(r.c.prio)
+      &&(!asgOff.size||r.c.asgSet.some(a=>!asgOff.has(a)))  // 行動の担当のどれかが表示ONなら表示（軸内OR）
+      &&[...markOn].every(k=>r.c.marks.has(k)));  // 印は単独トグル・重ねると AND
+    if(sortKey==="due")vis=vis.slice().sort((a,b)=>{const x=a.c.due,y=b.c.due;  // 期限なしは末尾・同日はデータ順
+      if(x===y)return a.c.i-b.c.i;if(!x)return 1;if(!y)return -1;return x<y?-1:1;});
+    else if(sortKey==="prio")vis=vis.slice().sort((a,b)=>PRIO_RANK[a.c.prio]-PRIO_RANK[b.c.prio]||a.c.i-b.c.i);
+    const has=rows.length>0;
+    $("isEmpty").style.display=has?"none":"";
+    $("isTbl").style.display=has?"":"none";
+    // 課題が0件でも、編集中は ＋課題 を押せるように絞り込みバーごと出す（新しい案件の1件目を書き始められる）
+    $("isFilterBar").style.display=(has||(editMode&&curProjObj))?"flex":"none";
+    $("isCgrp").innerHTML=COLS.map(c=>`<col style="width:${c.w}">`).join("");
+    const anyOpen=rows.some(r=>!collapsed.has(r.c.key));
+    $("isThead").innerHTML="<tr>"+COLS.map(c=>{
+      const tip=c.tip?` title="${esc(t(c.tip))}"`:"";
+      const ca=c.key==="title"
+        ?`<span id="isAllCaret" class="clk caret" title="${esc(t(anyOpen?"allTipCollapse":"allTipExpand"))}">${anyOpen?"▼":"▶"}</span>`:"";
+      return `<th class="${c.cls}"${tip}>${ca}${esc(t(c.label))}</th>`;}).join("")+"</tr>";
+    $("isTbody").innerHTML=vis.map(r=>`<tr class="st-${r.c.state}" data-key="${esc(r.c.key)}">`
+      +COLS.map(col=>`<td class="${col.cls}${col.key==="due"&&r.c.overdue?" overdue":""}"`
+        +`${col.key==="title"&&!editMode?` data-tog="${esc(r.c.key)}"`:""}`  // セルのどこを押しても開閉できる（編集モードは入力を触るので付けない）
+        +`${col.key==="due"&&r.c.overdue?` title="${esc(t("overdueTip"))}"`:""}>${col.view(r.is,r.c)}</td>`).join("")
+      +"</tr>").join("");
+    renderFilterBar();
+    renderStat(data,cnt,SR,mk);
+  }
+  const starInput=(f,val)=>`<span class="is-date-wrap"><input data-star="${f}" type="text" placeholder="MM-DD" value="${esc(val)}">`
+    +`<input type="date" class="is-cal-proxy" tabindex="-1" aria-hidden="true">`
+    +`<button type="button" class="is-cal-btn" data-cal title="${esc(t("calTip"))}">${ICN.cal}</button></span>`;
+  function renderStat(data,cnt,SR,mk){
+    if(!lastData){$("isStat").textContent=t("notLoaded");return;}
+    const one=(lbl,n,tip)=>`<span class="cnt"${tip?` title="${esc(t(tip))}"`:""}><span class="ck">${lbl}</span> <b>${n}</b></span>`;
+    const marks=[[esc(t("mkWait")),mk.wait,"cntWaitTip"],
+                 [esc(t("mkFrozen")),mk.frozen,"cntFrozenTip"],
+                 [esc(t("sUndecided")),mk.open,"cntOpenTip"],
+                 ["⚠ "+esc(t("cntOverdue")),mk.ovd,"overdueTip"],
+                 ["⚠ "+esc(t("mkNudge")),mk.nudge,"cntNudgeTip"]].filter(x=>x[1]);  // 0 の印は並べない
+    const counts=STATE_ORDER.map(k=>one(esc(t(STATES.find(s=>s.k===k).l)),cnt[k])).join("")
+      +`<span class="cnt-sep"></span>`+marks.map(x=>one(x[0],x[1],x[2])).join("")
+      +`<span class="cnt" title="${esc(t("cntStarTip"))}"><span class="ck"><span class="sg">★</span> ${esc(t("cntStarWord"))}</span> <b id="isStarCount">${mk.star}</b></span>`;
+    const ov="";
+    const cur=obj(lastData.star)||{};
+    const srng=editMode  // 編集モード＝報告期間を直せる（空にすると star キーを消して既定に戻る）
+      ?`<span class="srng" title="${esc(t("starRangeTip"))}">${esc(t("starPeriod"))} ${starInput("from",shortDate(isDate(cur.from)?cur.from:""))}`
+        +`${esc(t("starSep"))} ${starInput("to",shortDate(isDate(cur.to)?cur.to:""))}</span>`
+      :`<span id="isStarRange" title="${esc(t("starRangeTip"))}">${SR.custom
+          ?esc(t("starPeriod")+" "+mdSlash(SR.from)+t("starSep")+mdSlash(SR.to)):esc(t("starDefaultLabel"))}</span>`;
+    const nm=(data&&typeof data==="object"&&str(data.name))?str(data.name)+" ・ ":"";
+    $("isStat").innerHTML=`<span id="isCounts" title="${esc(t("cntTip"))}">${counts}${ov}</span>`
+      +`<span class="is-mstat">${nm?esc(nm):""}<span title="${esc(t("fileTip"))}">${ICN.file} ${esc(curFileName||"—")}</span>`
+      +` ・ <span title="${esc(t("todayTip"))}">${ICN.cal} ${esc(mdSlash(todayStr()))}</span>`
+      +` ・ ${srng}`
+      +` ・ <span title="${esc(t("updTip"))}">${ICN.refresh} ${esc(updAt)}</span>`
+      +`<span id="isSaveMsg" title="${esc(t("saveTip"))}">${saveMsg?"・ "+ICN.save+" "+esc(saveMsg):""}</span></span>`;
+  }
+  function applyData(data,isNew){
+    lastData=data;
+    updAt=new Date().toLocaleTimeString(t("locale"));
+    if(isNew)exitEditMode();  // 新規ファイルは編集OFF（別ファイルへの誤書込防止）
+    render(data);
+    handleHash();  // URL に #issue= が付いていれば、読み込み後にその行へ飛ぶ
+  }
+  function loadText(txt,isNew,label){try{applyData(JSON.parse(txt),isNew);}catch(e){alert(t("jsonFail")(label,e.message));}}
+  function renderData(data){applyData(data,true);}  // 直接/テスト呼び出し＝新規扱い
+
+  // ===== 編集モードの詳細セル（インライン編集） =====
+  const DATE_FIELDS={due:1,date:1};  // 日付として扱うフィールド（短縮入力→ISO・不正は無視）
+  function setField(o,f,val){
+    if(DATE_FIELDS[f]){
+      const iso=expandDate(val,typeof o[f]==="string"?o[f]:null);
+      if(iso===null)return;  // 解釈不能・範囲外は無視（ゴミを保存しない）
+      o[f]=iso===""?null:iso;
+    }else if(f==="priority")o[f]=PRIORITIES.some(p=>p.k===val)?val:"mid";
+    else o[f]=val;
+  }
+  const taFld=(k,is,c,f)=>`<div class="fld"><span class="lb"${lbTip(k)}>${esc(t(k))}</span>`
+    +`<textarea data-i="${c.i}" data-field="${f}" placeholder="${esc(t(f+"Ph"))}">${esc(str(is[f]))}</textarea></div>`;
+  function actEdit(e,c){
+    const a=e.a,A=` data-i="${c.i}" data-a="${e.i}"`;
+    const st=c.starActs.has(e.i)?STAR("starActTip"):`<span class="star"></span>`;
+    return `<div class="aedit">${st}`
+      +`<button type="button" class="is-donechk${a.done===true?" on":""}" data-act="done"${A} title="${esc(t("doneTip"))}">${a.done===true?"✓":""}</button>`
+      +`<span class="adate">${dateInput(c.i,"date",shortDate(isDate(a.date)?a.date:""),e.i)}</span>`
+      +`<input class="atext"${A} data-field="text" type="text" value="${esc(str(a.text))}" placeholder="${esc(t("actPh"))}">`
+      +`<input class="aasg"${A} data-field="assignee" type="text" value="${esc(str(a.assignee))}" placeholder="${esc(t("asgPh"))}">`
+      +`<button type="button" class="ebtn" data-act="aup"${A} title="${esc(t("up"))}">${ICN.up}</button>`
+      +`<button type="button" class="ebtn" data-act="adown"${A} title="${esc(t("down"))}">${ICN.down}</button>`
+      +`<button type="button" class="ebtn danger" data-act="adel"${A} title="${esc(t("del"))}">${ICN.del}</button></div>`;
+  }
+  function detailEdit(is,c){
+    if(collapsed.has(c.key))return nextLine(c);  // たたんだ時は表示モードと同じ1行（編集UIは畳む）
+    const I=` data-i="${c.i}"`;
+    const btn=(act,lbl,tip)=>`<button type="button" class="ebtn" data-act="${act}"${I}${tip?` title="${esc(t(tip))}"`:""}>${esc(t(lbl))}</button>`;
+    let h=`<div class="body"><div class="sec">${esc(t("secOutline"))}</div>`;
+  // 状態遷移ボタン＝1クリックで事実(decision/pending/closed)を書く＝片手落ち防止
+    h+=`<div class="stbtns">`
+      +(c.pd&&c.pd.kind==="waiting"?btn("unpend","btnUnpend"):btn("wait","btnWait","btnWaitTip"))
+      +(c.pd&&c.pd.kind==="frozen"?btn("unpend","btnUnpend"):btn("frozen","btnFrozen","btnFrozenTip"))
+      +(obj(is.closed)?btn("reopen","btnReopen"):btn("close","btnClose","btnCloseTip"))
+      +`</div>`;
+    h+=taFld("lbIfIgnored",is,c,"ifIgnored")+taFld("lbIfDone",is,c,"ifDone")+taFld("lbCloseWhen",is,c,"closeWhen");
+    h+=decidedLines(c);
+    h+=pendLine(c);
+    h+=closedLine(is,c);
+    h+=openDecBlock(c)  // 未決が0件でも「＋方針」は出す（最初の1件を足せるように帯ごと出す）
+      +(c.decOpen.length?"":`<div class="sec">${esc(t("secOpenDec"))}</div>`)
+      +`<div class="fld"><button type="button" class="ebtn" data-act="adddec"${I} title="${esc(t("addDecTip"))}">${ICN.add}${esc(t("addDec"))}</button></div>`;
+    const done=c.acts.filter(e=>e.a.done===true), todo=c.acts.filter(e=>e.a.done!==true);
+    h+=`<div class="sec">${esc(t("secActual"))}</div>`+done.map(e=>actEdit(e,c)).join("");
+    h+=`<div class="sec">${esc(t("secPlan"))}</div>`+todo.map(e=>actEdit(e,c)).join("");
+    h+=`<div class="fld"><button type="button" class="ebtn" data-act="aadd"${I} title="${esc(t("addActTip"))}">${ICN.add}</button></div>`;
+    h+=taFld("lbNote",is,c,"note");
+    return h+"</div>";
+  }
+  // 表示は済/未で2群に分かれるので、▲▼は「配列の隣」ではなく「同じ群の隣」と入れ替える（画面の見た目と一致させる）
+  function swapAct(is,ai,dir){
+    const arr=is.actions;if(!Array.isArray(arr))return;
+    const cur=arr[ai];if(!cur||typeof cur!=="object")return;
+    const dn=cur.done===true;
+    for(let j=ai+dir;j>=0&&j<arr.length;j+=dir){
+      const o=arr[j];if(!o||typeof o!=="object"||(o.done===true)!==dn)continue;
+      arr[ai]=o;arr[j]=cur;return;
+    }
+  }
+  const newIssue=id=>({id,title:t("newIssueTitle"),priority:"mid",opened:todayStr(),due:null,
+    ifIgnored:"",ifDone:"",closeWhen:"",decisions:[],pending:null,closed:null,actions:[],note:""});
+
+  // ===== 状態遷移フォーム（保留／閉じる）＝アンカー直下の小パネル =====
+  let formEl=null;
+  function closeForm(){if(formEl){formEl.remove();formEl=null;}}
+  document.addEventListener("click",e=>{  // 外側クリックで閉じる（開くトリガー自身は各ハンドラで処理）
+    if(!e.target.closest('#isForm,#notePop,#legendPop,[data-legend],[data-act="wait"],[data-act="frozen"],[data-act="close"],[data-note],[data-decide],[data-lkadd]'))closeForm();},true);
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeForm();});
+  function placePanel(el,anchor){  // アンカー直下・画面内にクランプ（fixed＝スクロール座標に依存しない）
+    document.body.appendChild(el);
+    const a=anchor.getBoundingClientRect(),w=el.offsetWidth,h=el.offsetHeight;
+    el.style.left=clamp(a.left-20,4,window.innerWidth-w-4)+"px";
+    el.style.top=(a.bottom+6+h>window.innerHeight?Math.max(4,a.top-h-6):a.bottom+6)+"px";
+  }
+
+  function openDecForm(i,di,anchor){   // 未決の1件に答えを書いて decided を今日にする
+    closeForm();
+    const is=curIssues[i]; if(!is)return;
+    const d=Array.isArray(is.decisions)?is.decisions[di]:null; if(!okObj(d))return;
+    const el=document.createElement("div"); el.id="isForm"; formEl=el;
+    el.innerHTML=`<b>${esc(t("fmDecTitle"))}</b><br><span class="fmq">${esc(str(d.q))}</span><br>`
+      +`<input data-fm="a" type="text" value="${esc(str(d.a))}" placeholder="${esc(t("decAPh"))}">`
+      +`<div class="fm-btns"><button type="button" class="fm-ok">${esc(t("fmDecOk"))}</button>`
+      +`<button type="button" class="fm-cancel">${esc(t("fmCancel"))}</button></div>`;
+    el.querySelector(".fm-cancel").addEventListener("click",closeForm);
+    el.querySelector(".fm-ok").addEventListener("click",()=>{
+      d.a=el.querySelector('[data-fm="a"]').value; d.decided=todayStr();
+      closeForm();queueSave();render(lastData);
+    });
+    placePanel(el,anchor);
+    const fi=el.querySelector("input");if(fi){fi.focus();fi.select();}
+  }
+  // 凡例＝この画面の見かた（状態3・印6・帯4・記号）。10行だけ・ja/en
+  const LEGEND=["lgState","lgStateBody","lgMark","lgMarkBody","lgMarkBody2",
+                "lgSec","lgSecBody","lgSign","lgSignBody","lgNote"];
+  function openLegend(anchor){
+    const same=!!(formEl&&formEl.id==="legendPop");
+    closeForm(); if(same)return;                       // 同じボタンをもう一度押したら閉じる
+    const el=document.createElement("div"); el.id="legendPop"; formEl=el;
+    el.innerHTML=`<div class="np-ttl">${esc(t("legendTitle"))}</div>`
+      +LEGEND.map(k=>`<div class="${/Body|Note/.test(k)?"lg-b":"lg-h"}">${esc(t(k))}</div>`).join("");
+    placePanel(el,anchor);
+  }
+  document.addEventListener("click",e=>{const b=e.target.closest("[data-legend]");if(b)openLegend(b);});
+  function openLinkForm(i,anchor){   // リンクを画面から足す（3種）。存在しない先は従来どおり取り消し線で出る
+    closeForm();
+    const is=curIssues[i]; if(!is)return;
+    const pn=(is._calc&&is._calc.pn)||"";
+    const pj=findProj(pn), tks=[];
+    (function walk(ns){if(!Array.isArray(ns))return;
+      for(const n of ns){if(!okObj(n))continue;tks.push({id:String(n.id),name:str(n.name)});walk(n.children);}})(pj&&pj.tasks);
+    const el=document.createElement("div"); el.id="isForm"; formEl=el;
+    const wf=tks.length
+      ?`<select data-lk="wbs">`+tks.map(x=>`<option value="${esc(x.id)}">${esc(x.id+" "+x.name)}</option>`).join("")+`</select>`
+      :`<input data-lk="wbs" type="text" placeholder="${esc(t("lkWbsPh"))}">`;
+    const po=curProjs.map(p=>projName(p)).map(nm=>
+      `<option value="${esc(nm)}"${nm===pn?" selected":""}>${esc(nm||t("noName"))}</option>`).join("");
+    el.innerHTML=`<b>${esc(t("lkAddTitle"))}</b><br>${esc(t("lkKind"))} <select data-lk="kind">`
+      +[["wbs","lkKindWbs"],["issue","lkKindIssue"],["url","lkKindUrl"]].map(([k,l])=>
+        `<option value="${k}">${esc(t(l))}</option>`).join("")+`</select>`
+      +`<div class="lkf" data-f="wbs">${esc(t("lkKindWbs"))} ${wf}</div>`
+      +`<div class="lkf" data-f="issue" hidden>${esc(t("lkProjF"))} <select data-lk="proj">${po}</select>`
+      +`　${esc(t("lkNoF"))} <input class="lkno" data-lk="issue" type="text"></div>`
+      +`<div class="lkf" data-f="url" hidden>${esc(t("lkTitleF"))} <input data-lk="title" type="text"><br>`
+      +`${esc(t("lkUrlF"))} <input data-lk="url" type="text" placeholder="https://"></div>`
+      +`<div class="fm-btns"><button type="button" class="fm-ok">${esc(t("fmOk"))}</button>`
+      +`<button type="button" class="fm-cancel">${esc(t("fmCancel"))}</button></div>`;
+    const gv=k=>{const n=el.querySelector(`[data-lk="${k}"]`);return n?n.value:"";};
+    el.querySelector('[data-lk="kind"]').addEventListener("change",ev=>{
+      el.querySelectorAll(".lkf").forEach(d=>{d.hidden=d.getAttribute("data-f")!==ev.target.value;});});
+    el.querySelector(".fm-cancel").addEventListener("click",closeForm);
+    el.querySelector(".fm-ok").addEventListener("click",()=>{
+      const kind=gv("kind"); let lk=null;
+      if(kind==="wbs"){const v=str(gv("wbs")).trim(); if(!v)return; lk={wbs:v};}
+      else if(kind==="issue"){
+        const no=str(gv("issue")).trim(); if(!no)return;
+        const n=Number(no), id=Number.isFinite(n)&&no!==""?n:no, p2=gv("proj");
+        lk=(p2&&p2!==pn)?{project:p2,issue:id}:{issue:id};
+      }else{
+        const u=str(gv("url")).trim();
+        if(!LK_HTTP.test(u)){alert(t("lkBadUrl"));return;}   // http(s) 以外は受け付けない
+        lk={title:str(gv("title")).trim()||u,url:u};
+      }
+      if(!Array.isArray(is.links))is.links=[];
+      is.links.push(lk);
+      closeForm(); queueSave(); render(lastData);
+    });
+    placePanel(el,anchor);
+  }
+  // 備考＝添え書き。印をクリックした時だけ全文を吹き出しで見せる（同じ印をもう一度で閉じる）
+  let notePopFor=-1;
+  function openNote(i,anchor){
+    const same=!!(formEl&&formEl.id==="notePop"&&notePopFor===i);
+    closeForm(); notePopFor=-1;
+    if(same)return;
+    const is=curIssues[i]; if(!is||!str(is.note))return;
+    const el=document.createElement("div"); el.id="notePop"; formEl=el; notePopFor=i;
+    el.innerHTML=`<div class="np-ttl">${esc(t("lbNoteTag"))}</div>`
+      +`<div class="np-body">${linkify(str(is.note))}</div>`;  // http(s) だけ自動リンク・全片 esc
+    placePanel(el,anchor);
+  }
+  const selOf=(name,tbl,cur)=>`<select data-fm="${name}">`
+    +tbl.map(x=>`<option value="${x.k}"${cur===x.k?" selected":""}>${esc(t(x.l))}</option>`).join("")+`</select>`;
+  function openForm(kind,i,anchor){
+    closeForm();
+    const is=curIssues[i];if(!is)return;
+    const el=document.createElement("div");el.id="isForm";formEl=el;
+    const pn=(is._calc&&is._calc.pn)||"";
+    const pv=pendOf(is,pn)||{};
+    const wIsIssue=pv.kind==="waiting"&&pv.who&&pv.who.kind==="issue";
+    const projOpts=cur=>curProjs.map(x=>projName(x)).map(nm=>
+      `<option value="${esc(nm)}"${nm===(cur||pn)?" selected":""}>${esc(nm||t("noName"))}</option>`).join("");
+    el.innerHTML=(kind==="wait"
+      ?`<b>${esc(t("fmWaitTitle"))}</b><br>${esc(t("fmWhoKind"))} `
+        +`<select data-fm="whoKind">`
+        +[["person","fmWhoPerson"],["issue","fmWhoIssue"]].map(([k,l])=>
+            `<option value="${k}"${wIsIssue&&k==="issue"?" selected":""}>${esc(t(l))}</option>`).join("")+`</select>`
+        +`<div class="fm-f" data-f="person"${wIsIssue?" hidden":""}>${esc(t("fmWho"))} `
+        +`<input data-fm="who" type="text" value="${esc(wIsIssue?"":(pv.who?pv.who.name:""))}"></div>`
+        +`<div class="fm-f" data-f="issue"${wIsIssue?"":" hidden"}>${esc(t("lkProjF"))} <select data-fm="wproj">${projOpts(wIsIssue?pv.who.pj:"")}</select>`
+        +` #<input data-fm="wissue" type="text" size="4" value="${esc(wIsIssue?pv.who.id:"")}"></div>`
+        +`${esc(t("fmWhat"))} <input data-fm="what" type="text" value="${esc(pv.kind==="waiting"?pv.what:"")}"><br>`
+        +`${esc(t("fmUntil"))} ${dateInput(i,"__until",shortDate(pv.kind==="waiting"&&pv.until?pv.until:""))}`
+      :kind==="frozen"
+      ?`<b>${esc(t("fmFrozenTitle"))}</b><br>${esc(t("fmResume"))} <input data-fm="resumeWhen" type="text" value="${esc(pv.kind==="frozen"?pv.resumeWhen:"")}">`
+      :`<b>${esc(t("fmCloseTitle"))}</b><br>${esc(t("fmHow"))} ${selOf("how",CLOSE_HOWS,"resolved")}<br>`
+        +`<div class="fm-f" data-f="dup" hidden>${esc(t("fmDupOrig"))} <select data-fm="dproj">${projOpts("")}</select>`
+        +` #<input data-fm="dissue" type="text" size="4"></div>`
+        +`${esc(t("fmNote"))} <textarea data-fm="note"></textarea>`)
+      +`<div class="fm-btns"><button type="button" class="fm-ok">${esc(t("fmOk"))}</button>`
+      +`<button type="button" class="fm-cancel">${esc(t("fmCancel"))}</button></div>`;
+    el.querySelector(".fm-cancel").addEventListener("click",closeForm);
+    const gv=k=>{const n=el.querySelector(`[data-fm="${k}"]`);return n?n.value:"";};
+    const show=(f,on)=>{const n=el.querySelector(`.fm-f[data-f="${f}"]`);if(n)n.hidden=!on;};
+    el.addEventListener("change",ev=>{   // 相手の種類／閉じ方に応じて入力欄を出し分ける
+      const sel=ev.target.closest('select[data-fm="whoKind"],select[data-fm="how"]');if(!sel)return;
+      if(sel.getAttribute("data-fm")==="whoKind"){show("person",sel.value==="person");show("issue",sel.value==="issue");}
+      else show("dup",sel.value==="duplicate");
+    });
+  // 課題の指定＝案件と番号。存在しない番号は受け付けない（迷子の参照を作らない）
+    const pickIssue=(ps,is2)=>{
+      const pj=gv(ps), id=String(gv(is2)).trim();
+      if(!id||!hasIssue(pj,id))return null;
+      return {pj,id,link:(pj===pn?{issue:Number(id)}:{project:pj,issue:Number(id)})};
+    };
+    el.querySelector(".fm-ok").addEventListener("click",()=>{
+      if(kind==="wait"){
+        const ui=el.querySelector('input[data-field="__until"]');
+        const until=ui?expandDate(ui.value):"";   // 解釈できない日付は「期限なし」にする（ゴミを書かない）
+        let who;
+        if(gv("whoKind")==="issue"){
+          const r=pickIssue("wproj","wissue");
+          if(!r){alert(t("fmIssueMissing"));return;}
+          who=r.pj===pn?{issue:Number(r.id)}:{project:r.pj,issue:Number(r.id)};
+        }else who=gv("who");
+        is.pending={kind:"waiting",since:todayStr(),who,what:gv("what"),until:until?until:null};
+      }
+      else if(kind==="frozen")is.pending={kind:"frozen",since:todayStr(),resumeWhen:gv("resumeWhen"),detail:""};
+      else{
+        const how=gv("how");
+        if(how==="duplicate"){   // 「重複」は元の課題の指定が必須。links に台帳として残す
+          const r=pickIssue("dproj","dissue");
+          if(!r){alert(t(String(gv("dissue")).trim()?"fmIssueMissing":"fmDupNeed"));return;}
+          if(!Array.isArray(is.links))is.links=[];
+          is.links.push(r.link);
+        }
+        is.closed={at:todayStr(),how,note:gv("note")};
+        is.pending=null;}  // 閉じたら保留は残さない（保留のまま完了＝片手落ち。AIへの依頼例と同じ振る舞いに揃える）
+      closeForm();queueSave();render(lastData);
+    });
+    placePanel(el,anchor);
+    const first=el.querySelector("select,input");if(first)first.focus();
+  }
+
+  // ===== [統合] 橋：開く／更新／保存／言語／本日／案内バー／D&D は wbs 側の1本を共用する =====
+  // 課題側は自前の保存パスを持たない（聖域は wbs の1本だけ）。ここは差し替え部分。
+  function queueSave(){PM.queueSave();}
+  function notice(m){PM.notice(m);}
+  function setSaveMsg(){}                                    // 保存状態の表示は wbs 側の #stat が持つ
+  function focusedInTable(){const a=document.activeElement;
+    return !!(a&&(a.tagName==="INPUT"||a.tagName==="TEXTAREA")&&a.closest&&a.closest("#isTbl,#isStat"));}
+  function deferRender(){                                    // 入力にフォーカス中は再描画を遅らせる
+    clearTimeout(refreshTimer);
+    refreshTimer=setTimeout(function tick(){
+      if(focusedInTable()||formEl){refreshTimer=setTimeout(tick,FOCUS_POLL_MS);return;}  // 小フォームを開いている間は待つ（開いた直後に消える事故の防止）
+      if(lastData)render(lastData);
+    },RENDER_DEFER_MS);
+  }
+  function exitEditMode(){editMode=false;closeForm();}
+  function applyTitle(){                                     // ブラウザのタブ名＝「ブック名 – WBS Viewer」
+    const d=lastData, nm=(d&&typeof d==="object"&&!Array.isArray(d))?str(d.name):"";
+    const plain=document.body.classList.contains("plain");
+    document.title=plain?(nm||"WBS"):(nm?nm+" – WBS Viewer":"WBS Viewer");
+  }
+
+  // 課題描画器の受け皿（#isMain の中だけを触る）
+  $("isMain").innerHTML=
+    '<div id="isStat"></div><div id="isTabBar"></div>'
+    +'<div id="isFilterBar"><span class="fbar-ttl"></span><span id="isStateFilter" class="sfilter"></span></div>'
+    +'<div id="isBody"><div id="isEmpty"></div>'
+    +'<table id="isTbl" style="display:none"><colgroup id="isCgrp"></colgroup>'
+    +'<thead id="isThead"></thead><tbody id="isTbody"></tbody></table>'
+    +'</div>';
+
+  // 凡例ボタンは wbs の操作バーへ足す（EN の左・課題ビューだけ CSS で出す＝計画ビューは 0 画素）
+  (function(){
+    const lb=document.getElementById("langBtn");
+    if(!lb||document.getElementById("legendBtn"))return;
+    const b=document.createElement("button");
+    b.id="legendBtn"; b.type="button"; b.setAttribute("data-legend","");
+    b.textContent=t("legend"); b.title=t("legendTip");
+    lb.parentNode.insertBefore(b,lb);
+  })();
+
+  // ===== [統合] 計画｜課題 の2択スイッチ（wbs の時間/進捗タブと同じ作法） =====
+  const hasK=(d,k)=>normalizeProjects(d).some(p=>Array.isArray(p[k])&&p[k].length>0);
+  let pmView=lsGet("pmView")==="issue"?"issue":"plan";
+  function applyView(){
+    const tasks=hasK(lastData,"tasks"), issues=hasK(lastData,"issues"), noData=!lastData;
+    if(!issues&&!noData)pmView="plan"; else if(!tasks&&!noData)pmView="issue";
+    const sw=document.getElementById("pmSwitch");
+    // 開く前は出す／課題があるファイルでは出す。計画だけのファイル（＝素の wbs.json）では従来どおり出さない
+    sw.hidden=!(noData||issues);
+    sw.innerHTML=sw.hidden?"":[["plan","pmPlan",tasks||noData,"pmNoPlan"],
+                               ["issue","pmIssue",issues||noData,"pmNoIssue"]].map(([k,l,ok,tip])=>
+      `<button type="button" class="pm-b${pmView===k?" on":""}"${ok?"":` disabled title="${esc(t(tip))}"`}`
+      +` data-pmv="${k}">${esc(t(l))}</button>`).join("");
+    const on=pmView==="issue";
+    document.body.classList.toggle("pm-issue",on);             // 課題ビューだけ wbs の右上集計を隠す
+    document.getElementById("isMain").hidden=!on;
+    const m=document.getElementById("main"); if(m)m.style.display=on?"none":"";
+    const wf=document.getElementById("filterBar"); if(wf&&on)wf.style.display="none";
+  }
+  function setView(v){
+    pmView=v; lsSet("pmView",v);
+    if(v==="plan")PM.render();                               // wbs 側を描き直す（フィルタバーの表示も戻る）
+    applyView();
+    if(lastData&&v==="issue")render(lastData);
+  }
+  document.getElementById("pmSwitch").addEventListener("click",e=>{
+    const b=e.target.closest("[data-pmv]"); if(b)setView(b.getAttribute("data-pmv"));
+  });
+
+  // ===== [統合] 計画側の逆引き札：課題の links[].wbs から wbs id → 課題 を作る =====
+  let bIdx=null,bIdxFor=null;
+  function buildBadgeIndex(d){                               // "案件名\u0000WBS id" → [課題] の索引を1回だけ作る
+    const m=new Map();
+    normalizeProjects(d).forEach(pj=>{
+      const from=projName(pj);
+      normalizeIssues(pj).forEach(is=>{
+        if(!Array.isArray(is.links))return;
+        is.links.forEach(l=>{
+          const L=linkOf(l); if(!L||L.k!=="wbs")return;
+          const k=(L.pj||from)+"\u0000"+L.id;
+          if(!m.has(k))m.set(k,[]);
+          m.get(k).push({p:from,id:is.id});
+        });
+      });
+    });
+    return m;
+  }
+  function badgeFor(rowKey,tid){                             // rowKey は wbs の "T|案件名|id"
+    // wbs の render は課題側への通知より先に走るので、データは橋から直接もらう（初回描画でも札が出る）
+    const d=PM.data();
+    if(!d||typeof rowKey!=="string"||rowKey.slice(0,2)!=="T|")return "";
+    if(bIdxFor!==d){bIdx=buildBadgeIndex(d);bIdxFor=d;}       // 同じデータなら作り直さない
+    const pn=rowKey.slice(2,rowKey.lastIndexOf("|"));
+    const out=bIdx.get(pn+"\u0000"+String(tid));
+    if(!out||!out.length)return "";
+    const body=out.map(o=>`<span class="pmb" data-pmi="${esc(String(o.id))}" data-pmp="${esc(o.p)}">`
+      +`${esc(o.p===pn?"":o.p+" ")}#${esc(String(o.id))}</span>`).join("");
+    return `<span class="pmb-w" title="${esc(t("pmBadgeTip"))}">${esc(t("lkIssue"))} ${body}</span>`;
+  }
+  document.addEventListener("click",e=>{                     // 札のクリック＝課題表示へ飛ぶ
+    const b=e.target.closest(".pmb"); if(!b)return;
+    setView("issue");
+    jumpToIssue(b.getAttribute("data-pmp"),b.getAttribute("data-pmi"),true);
+  });
+
+  // ===== [統合] wbs 側からの通知を受ける（データ／言語／編集） =====
+  PM.setBadge(badgeFor);
+  PM.on("data",(d,isNew)=>{
+    bIdxFor=null;                                             // データが変わったら索引を作り直す
+    applyData(d,isNew);
+    applyView();
+  });
+  PM.on("lang",l=>{lang=l;applyLang();applyView();if(lastData)render(lastData);});
+  PM.on("edit",e=>{
+    editMode=e;
+    if(!e)closeForm();
+    if(lastData)render(lastData);
+  });
+  PM.on("view",v=>{if(v==="plan"){pmView="plan";lsSet("pmView","plan");applyView();}});
+
+  // ===== 表の操作（イベント委譲）。変異は同期で行い即 render（DOMの data-i を常に最新に保つ） =====
+  const DW_IN="input[data-field],input[data-star]";  // 日付ウィジェット内のテキスト入力（課題側／報告期間側）
+  function calProxyChange(el){  // 📅の選択/クリアをテキスト入力へ反映
+    if(!el.classList||!el.classList.contains("is-cal-proxy"))return false;
+    const txt=el.closest(".is-date-wrap").querySelector(DW_IN);
+    txt.value=el.value;  // 空＝カレンダーの「クリア」もそのまま反映（→null保存）
+    txt.dispatchEvent(new Event("change",{bubbles:true}));
+    return true;
+  }
+  function calBtnClick(e){  // 📅 → ネイティブカレンダー（入力はISO固定）
+    const cb=e.target.closest("button[data-cal]"); if(!cb)return false;
+    const w=cb.closest(".is-date-wrap"),txt=w.querySelector(DW_IN),px=w.querySelector(".is-cal-proxy");
+    px.value=isDate(txt.value)?txt.value:(expandDate(txt.value)||"");  // 短縮形はfull ISOに展開してからnativeへ
+    try{px.showPicker();}catch(_){}
+    return true;
+  }
+  $("isTbl").addEventListener("change",e=>{
+    const el=e.target;
+    if(!/^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName))return;
+    if(calProxyChange(el))return;
+    const f=el.getAttribute("data-field"); if(!f)return;
+    const is=curIssues[+el.getAttribute("data-i")]; if(!is)return;
+    const di=el.getAttribute("data-dec");
+    if(di!==null){const d=Array.isArray(is.decisions)?is.decisions[+di]:null;
+      if(!d||typeof d!=="object")return;
+      if(f==="until"){const iso=expandDate(el.value,isDate(d.until)?d.until:null);
+        if(iso===null)return; d.until=iso===""?null:iso;}   // ゴミは保存しない・空なら期限なし
+      else d[f]=el.value;
+      queueSave(); deferRender(); return;}
+    const ai=el.getAttribute("data-a");
+    if(ai===null)setField(is,f,el.value);
+    else{const a=Array.isArray(is.actions)?is.actions[+ai]:null; if(!a||typeof a!=="object")return; setField(a,f,el.value);}
+    queueSave(); deferRender();
+  });
+  const gotoTab=v=>{tabSel=v;lsSet("issProj",v);if(lastData)render(lastData);};
+  // リンクの飛び先へ：案件タブを合わせ→たたんでいれば開き→スクロール→2秒強調。URL の #issue= で「戻る」も効く
+  const rowByKey=k=>[...document.querySelectorAll("#isTbody tr")].find(tr=>tr.getAttribute("data-key")===k)||null;
+  let jumpTimer=null;
+  function jumpToIssue(pn,id,push){
+    if(!lastData){notice(t("hashNeedFile"));return;}
+    if(window.__PM&&typeof setView!=="undefined")setView("issue");  // 統合版：課題表示へ切り替えてから飛ぶ
+    if(!hasIssue(pn,String(id))){notice(t("jumpMissing"));return;}
+    tabSel=pn; lsSet("issProj",tabSel);
+    const key=pn+"|"+id;
+    if(collapsed.has(key)){collapsed.delete(key);saveCollapsed();}
+    const h="#issue="+encodeURIComponent(pn)+"/"+encodeURIComponent(id);
+    if(push&&location.hash!==h)history.pushState(null,"",h);  // 同じ目印を続けて積まない
+    render(lastData);
+    const tr=rowByKey(key);
+    if(!tr){notice(t("jumpFiltered"));return;}  // 絞り込みで隠れている時は黙って何も起きないようにしない
+    notice("");
+    tr.scrollIntoView({block:"center"});
+    clearTimeout(jumpTimer);
+    document.querySelectorAll("#isTbody tr.jump").forEach(x=>x.classList.remove("jump"));
+    tr.classList.add("jump");
+    jumpTimer=setTimeout(()=>{tr.classList.remove("jump");},2000);
+  }
+  function jumpToWbs(pn,tid,push){  // 課題→計画（統合ビューアのみ）。同じページで表示を切り替える
+    if(!window.__PM)return;
+    if(!lastData){notice(t("hashNeedFile"));return;}
+    const h="#wbs="+encodeURIComponent(pn)+"/"+encodeURIComponent(tid);
+    if(push&&location.hash!==h)history.pushState(null,"",h);  // 同じ目印を続けて積まない
+    if(!window.__PM.gotoWbs(pn,tid))notice(t("jumpMissing")); else notice("");
+  }
+  function handleHash(){  // #issue=<案件名>/<id>。読込前なら案内バーで「先に JSON を開いて」
+    const w=/^#wbs=(.*)\/([^/]*)$/.exec(location.hash||"");
+    if(w&&window.__PM){                                      // #wbs= は計画側へ（統合ビューアのみ）
+      let pn,tid; try{pn=decodeURIComponent(w[1]);tid=decodeURIComponent(w[2]);}catch(_){return;}
+      if(!lastData){notice(t("hashNeedFile"));return;}
+      jumpToWbs(pn,tid,false); return;
+    }
+    const m=/^#issue=(.*)\/([^/]*)$/.exec(location.hash||"");
+    if(!m)return;
+    let pn,id; try{pn=decodeURIComponent(m[1]);id=decodeURIComponent(m[2]);}catch(_){return;}
+    if(!lastData){notice(t("hashNeedFile"));return;}
+    jumpToIssue(pn,id,false);
+  }
+  window.addEventListener("hashchange",handleHash);
+  $("isTbl").addEventListener("click",e=>{
+    const lkd=e.target.closest("[data-lkdel]");  // リンクの ✕（<a> の中にもあるので既定の遷移を止める）
+    if(lkd){
+      e.preventDefault();
+      const[ii,li]=lkd.getAttribute("data-lkdel").split(":").map(Number);
+      const is2=curIssues[ii];
+      if(is2&&Array.isArray(is2.links)){is2.links.splice(li,1);queueSave();render(lastData);}
+      return;
+    }
+    const lka=e.target.closest("[data-lkadd]");
+    if(lka){openLinkForm(+lka.getAttribute("data-lkadd"),lka);return;}
+    const dcd=e.target.closest("[data-decdel]");  // 方針の ✕（決まった・未決の両方）
+    if(dcd){
+      const[ii,di]=dcd.getAttribute("data-decdel").split(":").map(Number);
+      const is2=curIssues[ii];
+      if(is2&&Array.isArray(is2.decisions)&&is2.decisions[di]){
+        if(!confirm(t("delDecConfirm")))return;
+        is2.decisions.splice(di,1);queueSave();render(lastData);
+      }
+      return;
+    }
+    const dcb=e.target.closest("[data-decide]");  // 「決める」＝答えを書いて decided を今日にする
+    if(dcb){const[ii,di]=dcb.getAttribute("data-decide").split(":").map(Number);openDecForm(ii,di,dcb);return;}
+    const nb0=e.target.closest("[data-note]");  // 備考の印（リンク行の中）＝全文の吹き出し
+    if(nb0){openNote(+nb0.getAttribute("data-note"),nb0);return;}
+    const jp0=e.target.closest("[data-jp]");  // 課題への参照（リンク行・待ちの相手・重複の元）
+    if(jp0){jumpToIssue(jp0.getAttribute("data-jp"),jp0.getAttribute("data-ji"),true);return;}
+    const lkEl=e.target.closest(".lk");  // リンク行のクリックは折りたたみに使わない
+    if(lkEl){
+      const jw=e.target.closest("[data-jw]");
+      if(jw)jumpToWbs(jw.getAttribute("data-jw"),jw.getAttribute("data-jt"),true);
+      return;  // <a>（外部URL・単体版のWBS）は既定の遷移に任せる
+    }
+    const nb=e.target.closest("[data-note]");  // 備考の印＝全文の吹き出し
+    if(nb){openNote(+nb.getAttribute("data-note"),nb);return;}
+    const sr=e.target.closest("tr[data-proj]");  // サマリ表の行＝その案件へ移動
+    if(sr){gotoTab(sr.getAttribute("data-proj"));return;}
+    if(calBtnClick(e))return;
+    const b=e.target.closest("button[data-act]");
+    if(b){
+      const act=b.getAttribute("data-act"), i=+b.getAttribute("data-i"), is=curIssues[i];
+      if(!is)return;
+      const ai=b.getAttribute("data-a")===null?-1:+b.getAttribute("data-a");
+      const arr=Array.isArray(is.actions)?is.actions:null;
+      if(act==="done"){const a=arr&&arr[ai];if(!a||typeof a!=="object")return;a.done=!(a.done===true);}
+      else if(act==="adel"){if(!arr)return;arr.splice(ai,1);}
+      else if(act==="aup")swapAct(is,ai,-1);
+      else if(act==="adown")swapAct(is,ai,1);
+      else if(act==="aadd"){if(!Array.isArray(is.actions))is.actions=[];
+        is.actions.push({date:null,text:"",assignee:"",done:false});}
+      else if(act==="adddec"){if(!Array.isArray(is.decisions))is.decisions=[];
+        is.decisions.push({q:"",since:todayStr(),decided:null,a:""});}  // 末尾に「未決」を1つ足す
+      else if(act==="unpend")is.pending=null;
+      else if(act==="reopen")is.closed=null;
+      else if(act==="wait"||act==="frozen"||act==="close"){openForm(act,i,b);return;}  // フォームのOKで書く（renderは向こう側で）
+      else if(act==="delissue"){
+        if(!confirm(t("confirmDelIssue")(str(is.title))))return;
+        const raw=curProjObj&&Array.isArray(curProjObj.issues)?curProjObj.issues:null;
+        const at=raw?raw.indexOf(is):-1; if(at<0)return;  // 正規化で捨てた要素があっても正しい位置を消す
+        raw.splice(at,1);
+      }
+      else return;
+      queueSave(); render(lastData); return;
+    }
+    const tg=e.target.closest("[data-tog]");  // 折りたたみ（1行 ⇄ 全文）。状態はlocalStorage（キー＝id）
+    if(tg){
+      const k=tg.getAttribute("data-tog");
+      collapsed.has(k)?collapsed.delete(k):collapsed.add(k);
+      saveCollapsed(); if(lastData)render(lastData);
+    }
+  });
+  // projects が無いファイル（空の器）でも ＋案件 から書き始められるように配列だけ用意する
+  function ensureProjects(){
+    if(!okObj(lastData))return false;
+    if(!Array.isArray(lastData.projects))lastData.projects=[];
+    return true;
+  }
+  $("isTabBar").addEventListener("click",e=>{
+    const dl=e.target.closest("[data-delproj]");
+    if(dl){  // 開いている案件を課題ごと削除（最後の1枚も消せる＝projects:[] の空表示）
+      const i=+dl.getAttribute("data-delproj"), sh=curProjs[i]; if(!sh)return;
+      if(!confirm(t("confirmDelProj")(projName(sh)||t("noName"))))return;
+      if(!ensureProjects())return;
+      lastData.projects.splice(lastData.projects.indexOf(sh),1);
+      const nx=lastData.projects[0];
+      tabSel=nx?projName(nx):SUMMARY; lsSet("issProj",tabSel);
+      queueSave(); render(lastData); return;
+    }
+    if(e.target.closest('[data-act="addproj"]')){
+      const nm=prompt(t("promptProj"),t("newProj"));
+      if(nm===null)return;
+      if(!ensureProjects())return;
+      lastData.projects.push({name:str(nm)||t("newProj"),issues:[]});
+      tabSel=str(nm)||t("newProj"); lsSet("issProj",tabSel);  // 追加後にその案件へ切替
+      queueSave(); render(lastData); return;
+    }
+    const tb=e.target.closest(".stab"); if(!tb)return;
+    gotoTab(tb.hasAttribute("data-summary")?SUMMARY:tb.getAttribute("data-tab"));
+  });
+  $("isTabBar").addEventListener("dblclick",e=>{  // タブのダブルクリックで名前変更
+    if(!editMode)return;
+    const tb=e.target.closest(".stab[data-tab]"); if(!tb)return;
+    const i=+tb.getAttribute("data-si"), sh=curProjs[i]; if(!sh)return;
+    const nm=prompt(t("promptRename"),projName(sh));
+    if(nm===null)return;
+    if(!ensureProjects())return;
+    sh.name=str(nm);
+    tabSel=sh.name; lsSet("issProj",tabSel);
+    queueSave(); render(lastData);
+  });
+  $("isStat").addEventListener("click",e=>{calBtnClick(e);});
+  $("isStat").addEventListener("change",e=>{  // ★の対象期間を直す（from が空になったら既定に戻す＝キーごと削除）
+    const el=e.target;
+    if(calProxyChange(el))return;
+    const f=el.getAttribute&&el.getAttribute("data-star"); if(!f)return;
+    if(!lastData||typeof lastData!=="object"||Array.isArray(lastData))return;
+    const cur=obj(lastData.star)||{};
+    const iso=expandDate(el.value,isDate(cur[f])?cur[f]:null);
+    if(iso===null)return;  // 解釈不能・範囲外は無視（ゴミを保存しない）
+    const nx={from:isDate(cur.from)?cur.from:"",to:isDate(cur.to)?cur.to:""};
+    nx[f]=iso;
+    if(!nx.from)delete lastData.star;  // 既定（直近7日）に戻す＝JSONに既定値を書かない
+    else{const o={from:nx.from};if(nx.to)o.to=nx.to;lastData.star=o;}
+    queueSave(); deferRender();
+  });
+  function addIssue(){  // ＋課題＝末尾に追加（id=最大+1・起票日=本日・優先度=中）→その行へ飛んで書き始められる
+    if(!lastData||!curProjObj)return;
+    if(!Array.isArray(curProjObj.issues))curProjObj.issues=[];  // 番号(id)は案件ごと
+    const ids=curProjObj.issues.map(x=>x&&typeof x==="object"?Number(x.id):NaN).filter(n=>Number.isFinite(n));
+    const nid=(ids.length?Math.max(...ids):0)+1;  // 空でも NaN にならないよう 0 起点
+    curProjObj.issues.push(newIssue(nid));
+    const key=projName(curProjObj)+"|"+nid;
+    if(collapsed.has(key)){collapsed.delete(key);saveCollapsed();}
+    queueSave(); render(lastData);
+    const tr=rowByKey(key);
+    if(!tr)return;
+    tr.scrollIntoView({block:"center"});
+    document.querySelectorAll("#isTbody tr.jump").forEach(x=>x.classList.remove("jump"));
+    tr.classList.add("jump"); clearTimeout(jumpTimer);
+    jumpTimer=setTimeout(()=>{tr.classList.remove("jump");},2000);
+    const inp=tr.querySelector('td.title input[data-field="title"]');
+    if(inp){inp.focus();inp.select();}
+  }
+  $("isThead").addEventListener("click",e=>{  // ▼/▶＝全展開／全たたみ
+    if(e.target.id!=="isAllCaret"||!lastData)return;
+    const keys=curIssues.map(is=>is._calc.key);
+    if(keys.some(k=>!collapsed.has(k)))keys.forEach(k=>collapsed.add(k)); else keys.forEach(k=>collapsed.delete(k));
+    saveCollapsed(); render(lastData);
+  });
+
+  // ===== フィルタバー（表示専用＝押すと render() で行を間引く/並べ替えるだけ・データ不変） =====
+  const SF_AXES=[  // is-sf-btn 軸の定義テーブル（data-属性名・トグル処理）。if-else 分岐の代わり
+    {attr:"data-state",toggle:k=>{stateOn.has(k)?stateOn.delete(k):stateOn.add(k);lsSet("issStateFilter",JSON.stringify([...stateOn]));}},
+    {attr:"data-prio", toggle:k=>{prioOn.has(k)?prioOn.delete(k):prioOn.add(k);lsSet("issPrioFilter",JSON.stringify([...prioOn]));}},
+    {attr:"data-mark",toggle:k=>{markOn.has(k)?markOn.delete(k):markOn.add(k);lsSet("issMarkOn",JSON.stringify([...markOn]));}},
+  ];
+  const saveAsg=()=>lsSet("issAsgOff",JSON.stringify([...asgOff]));
+  const pill=(attr,k,on,label,tip,solo)=>`<button class="is-sf-btn${solo?" is-sf-solo":""}${on?" on":""}" ${attr}="${esc(k)}" title="${esc(tip)}">${esc(label)}</button>`;
+  function renderFilterBar(){
+    const el=$("isStateFilter"); if(!el)return;
+    const dd=el.querySelector(".is-asg-dd"), wasOpen=!!(dd&&dd.open);  // ドロップダウンの開閉状態を保持
+    let h=`<span class="is-sf-lbl">${esc(t("fState"))}</span>`
+      +STATE_ORDER.map(k=>pill("data-state",k,stateOn.has(k),t(STATES.find(s=>s.k===k).l),t("fStateTip"))).join("");
+    h+=`<span class="is-sf-sep"></span><span class="is-sf-lbl">${esc(t("fPrio"))}</span>`
+      +PRIORITIES.map(p=>pill("data-prio",p.k,prioOn.has(p.k),t(p.l),t("fPrioTip"))).join("");
+    if(asgList.length){  // 担当＝データ内担当のチェックリスト（複数選択・軸内OR）
+      const sel=asgList.filter(a=>!asgOff.has(a));
+      const badge=sel.length===asgList.length?t("fAsgAll"):sel.length===1?(sel[0]||t("fAsgNone")):`(${sel.length})`;
+      const opts=asgList.map(a=>`<label><input type="checkbox" class="is-asg-cb" data-asg="${esc(a)}"${asgOff.has(a)?"":" checked"}><span>${esc(a||t("fAsgNone"))}</span></label>`).join("");
+      h+=`<span class="is-sf-sep"></span><details class="is-asg-dd"${wasOpen?" open":""}><summary title="${esc(t("fAsgTip"))}">${esc(t("fAsg"))} <span class="is-asg-cnt">${esc(badge)}</span></summary>`
+        +`<div class="is-asg-list"><div class="is-asg-acts"><button type="button" class="is-asg-all">${esc(t("fAsgSelAll"))}</button><button type="button" class="is-asg-none">${esc(t("fAsgClear"))}</button></div>${opts}</div></details>`;
+    }
+    h+=`<span class="is-sf-sep"></span><span class="is-sf-lbl">${esc(t("fMark"))}</span>`
+      +MARK_ORDER.map(k=>pill("data-mark",k,markOn.has(k),t(MK_FLBL[k]),t("fMarkTip"),true)).join("");
+    h+=`<span class="is-sf-sep"></span><span class="is-sf-lbl">${esc(t("sortLbl"))}</span><span class="is-seg" title="${esc(t("sortTip"))}">`
+      +SORTS.map(s=>`<button class="is-seg-btn${sortKey===s.k?" on":""}" data-sort="${s.k}">${esc(t(s.l))}</button>`).join("")+`</span>`;
+    if(editMode&&curProjObj)  // ＋課題は絞り込みバーの右端（表の下ではなく、常に見える位置に）
+      h+=`<button type="button" class="ebtn addissue" data-act="addissue" title="${esc(t("addIssueTip"))}">${ICN.add}${esc(t("addIssue"))}</button>`;
+    el.innerHTML=h;
+  }
+  const refreshFilters=()=>{if(lastData)render(lastData);else renderFilterBar();};
+  $("isStateFilter").addEventListener("click",e=>{
+    if(e.target.closest('button[data-act="addissue"]')){addIssue();return;}
+    const sf=e.target.closest(".is-sf-btn");
+    if(sf){const ax=SF_AXES.find(a=>sf.hasAttribute(a.attr));if(ax)ax.toggle(sf.getAttribute(ax.attr));refreshFilters();}
+    else if(e.target.closest(".is-asg-all")){asgOff.clear();saveAsg();refreshFilters();}
+    else if(e.target.closest(".is-asg-none")){asgOff.clear();asgList.forEach(a=>asgOff.add(a));saveAsg();refreshFilters();}
+    else if(e.target.closest(".is-seg-btn")){sortKey=e.target.closest(".is-seg-btn").getAttribute("data-sort");lsSet("issSort",sortKey);refreshFilters();}
+  });
+  $("isStateFilter").addEventListener("change",e=>{
+    const cb=e.target.closest(".is-asg-cb"); if(!cb)return;
+    const a=cb.getAttribute("data-asg");
+    cb.checked?asgOff.delete(a):asgOff.add(a);
+    saveAsg(); refreshFilters();
+  });
+
+  // ===== [統合] 言語は wbs 側の切替に追随する（課題側は言語ボタンを持たない） =====
+  function applyLang(){
+    const fb=document.querySelector("#isFilterBar .fbar-ttl"); if(fb)fb.textContent=t("fBar");
+    const em=document.getElementById("isEmpty"); if(em)em.innerHTML=t("empty");
+    // 凡例は課題側が操作バーへ足したボタン＝ここで言語を追随させる（wbs 側のボタンには触らない）
+    document.querySelectorAll("[data-legend]").forEach(b=>{b.textContent=t("legend");b.title=t("legendTip");});
+    renderFilterBar();
+  }
+  lang=PM.lang();
+  applyLang();
+  applyView();   // 起動時にも走らせる＝ファイルを開く前から「計画｜課題」を出す
+  handleHash();
+})();
+</script>
+
 </body>
 </html>

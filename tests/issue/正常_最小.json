@@ -1,0 +1,19 @@
+{
+  "projects": [
+    {
+      "name": "案件",
+      "issues": [
+        {
+          "id": 1,
+          "title": "id と title だけの最小の課題",
+          "decisions": []
+        },
+        {
+          "id": 2,
+          "title": "2件目",
+          "decisions": []
+        }
+      ]
+    }
+  ]
+}
