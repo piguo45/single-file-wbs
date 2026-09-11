@@ -1,0 +1,3576 @@
+{
+  "name": "大量100件",
+  "projects": [
+    {
+      "name": "大量100件",
+      "issues": [
+        {
+          "id": 1,
+          "title": "課題 1：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-02",
+          "due": "2026-09-02",
+          "ifIgnored": "放置すると 1 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "1 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 2,
+          "title": "課題 2：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-03",
+          "due": "2026-10-03",
+          "ifIgnored": "放置すると 2 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "2 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "frozen",
+            "since": "2026-09-02",
+            "resumeWhen": "",
+            "detail": "待ち"
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 3,
+          "title": "課題 3：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-04",
+          "due": "2026-09-04",
+          "ifIgnored": "放置すると 3 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "3 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "resolved",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 4,
+          "title": "課題 4：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-05",
+          "due": "2026-10-05",
+          "ifIgnored": "放置すると 4 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "4 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 5,
+          "title": "課題 5：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-06",
+          "due": "2026-09-06",
+          "ifIgnored": "放置すると 5 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "5 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 6,
+          "title": "課題 6：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-07",
+          "due": "2026-10-07",
+          "ifIgnored": "放置すると 6 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "6 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 7,
+          "title": "課題 7：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-08",
+          "due": null,
+          "ifIgnored": "放置すると 7 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "7 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "wontfix",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 8,
+          "title": "課題 8：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-09",
+          "due": "2026-10-09",
+          "ifIgnored": "放置すると 8 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "8 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 9,
+          "title": "課題 9：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-10",
+          "due": "2026-09-10",
+          "ifIgnored": "放置すると 9 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "9 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 10,
+          "title": "課題 10：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-11",
+          "due": "2026-10-11",
+          "ifIgnored": "放置すると 10 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "10 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 11,
+          "title": "課題 11：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-12",
+          "due": "2026-09-12",
+          "ifIgnored": "放置すると 11 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "11 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "not_occurred",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 12,
+          "title": "課題 12：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-13",
+          "due": "2026-10-13",
+          "ifIgnored": "放置すると 12 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "12 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 13,
+          "title": "課題 13：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-14",
+          "due": "2026-09-14",
+          "ifIgnored": "放置すると 13 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "13 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 14,
+          "title": "課題 14：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-15",
+          "due": null,
+          "ifIgnored": "放置すると 14 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "14 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "frozen",
+            "since": "2026-09-02",
+            "resumeWhen": "",
+            "detail": "待ち"
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 15,
+          "title": "課題 15：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-16",
+          "due": "2026-09-16",
+          "ifIgnored": "放置すると 15 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "15 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "resolved",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 16,
+          "title": "課題 16：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-17",
+          "due": "2026-10-17",
+          "ifIgnored": "放置すると 16 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "16 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 17,
+          "title": "課題 17：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-18",
+          "due": "2026-09-18",
+          "ifIgnored": "放置すると 17 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "17 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 18,
+          "title": "課題 18：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-19",
+          "due": "2026-10-19",
+          "ifIgnored": "放置すると 18 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "18 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 19,
+          "title": "課題 19：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-20",
+          "due": "2026-09-20",
+          "ifIgnored": "放置すると 19 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "19 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "wontfix",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 20,
+          "title": "課題 20：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-21",
+          "due": "2026-10-21",
+          "ifIgnored": "放置すると 20 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "20 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 21,
+          "title": "課題 21：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-22",
+          "due": null,
+          "ifIgnored": "放置すると 21 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "21 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 22,
+          "title": "課題 22：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-23",
+          "due": "2026-10-23",
+          "ifIgnored": "放置すると 22 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "22 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 23,
+          "title": "課題 23：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-24",
+          "due": "2026-09-24",
+          "ifIgnored": "放置すると 23 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "23 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "not_occurred",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 24,
+          "title": "課題 24：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-25",
+          "due": "2026-10-25",
+          "ifIgnored": "放置すると 24 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "24 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 25,
+          "title": "課題 25：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-26",
+          "due": "2026-09-26",
+          "ifIgnored": "放置すると 25 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "25 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 26,
+          "title": "課題 26：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-27",
+          "due": "2026-10-27",
+          "ifIgnored": "放置すると 26 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "26 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "frozen",
+            "since": "2026-09-02",
+            "resumeWhen": "",
+            "detail": "待ち"
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 27,
+          "title": "課題 27：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-28",
+          "due": "2026-09-28",
+          "ifIgnored": "放置すると 27 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "27 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "resolved",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 28,
+          "title": "課題 28：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-01",
+          "due": null,
+          "ifIgnored": "放置すると 28 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "28 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 29,
+          "title": "課題 29：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-02",
+          "due": "2026-09-02",
+          "ifIgnored": "放置すると 29 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "29 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 30,
+          "title": "課題 30：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-03",
+          "due": "2026-10-03",
+          "ifIgnored": "放置すると 30 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "30 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 31,
+          "title": "課題 31：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-04",
+          "due": "2026-09-04",
+          "ifIgnored": "放置すると 31 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "31 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "wontfix",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 32,
+          "title": "課題 32：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-05",
+          "due": "2026-10-05",
+          "ifIgnored": "放置すると 32 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "32 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 33,
+          "title": "課題 33：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-06",
+          "due": "2026-09-06",
+          "ifIgnored": "放置すると 33 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "33 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 34,
+          "title": "課題 34：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-07",
+          "due": "2026-10-07",
+          "ifIgnored": "放置すると 34 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "34 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 35,
+          "title": "課題 35：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-08",
+          "due": null,
+          "ifIgnored": "放置すると 35 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "35 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "not_occurred",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 36,
+          "title": "課題 36：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-09",
+          "due": "2026-10-09",
+          "ifIgnored": "放置すると 36 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "36 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 37,
+          "title": "課題 37：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-10",
+          "due": "2026-09-10",
+          "ifIgnored": "放置すると 37 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "37 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 38,
+          "title": "課題 38：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-11",
+          "due": "2026-10-11",
+          "ifIgnored": "放置すると 38 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "38 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "frozen",
+            "since": "2026-09-02",
+            "resumeWhen": "",
+            "detail": "待ち"
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 39,
+          "title": "課題 39：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-12",
+          "due": "2026-09-12",
+          "ifIgnored": "放置すると 39 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "39 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "resolved",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 40,
+          "title": "課題 40：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-13",
+          "due": "2026-10-13",
+          "ifIgnored": "放置すると 40 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "40 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 41,
+          "title": "課題 41：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-14",
+          "due": "2026-09-14",
+          "ifIgnored": "放置すると 41 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "41 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 42,
+          "title": "課題 42：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-15",
+          "due": null,
+          "ifIgnored": "放置すると 42 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "42 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 43,
+          "title": "課題 43：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-16",
+          "due": "2026-09-16",
+          "ifIgnored": "放置すると 43 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "43 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "wontfix",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 44,
+          "title": "課題 44：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-17",
+          "due": "2026-10-17",
+          "ifIgnored": "放置すると 44 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "44 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 45,
+          "title": "課題 45：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-18",
+          "due": "2026-09-18",
+          "ifIgnored": "放置すると 45 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "45 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 46,
+          "title": "課題 46：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-19",
+          "due": "2026-10-19",
+          "ifIgnored": "放置すると 46 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "46 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 47,
+          "title": "課題 47：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-20",
+          "due": "2026-09-20",
+          "ifIgnored": "放置すると 47 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "47 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "not_occurred",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 48,
+          "title": "課題 48：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-21",
+          "due": "2026-10-21",
+          "ifIgnored": "放置すると 48 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "48 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 49,
+          "title": "課題 49：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-22",
+          "due": null,
+          "ifIgnored": "放置すると 49 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "49 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 50,
+          "title": "課題 50：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-23",
+          "due": "2026-10-23",
+          "ifIgnored": "放置すると 50 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "50 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "frozen",
+            "since": "2026-09-02",
+            "resumeWhen": "",
+            "detail": "待ち"
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 51,
+          "title": "課題 51：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-24",
+          "due": "2026-09-24",
+          "ifIgnored": "放置すると 51 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "51 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "resolved",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 52,
+          "title": "課題 52：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-25",
+          "due": "2026-10-25",
+          "ifIgnored": "放置すると 52 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "52 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 53,
+          "title": "課題 53：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-26",
+          "due": "2026-09-26",
+          "ifIgnored": "放置すると 53 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "53 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 54,
+          "title": "課題 54：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-27",
+          "due": "2026-10-27",
+          "ifIgnored": "放置すると 54 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "54 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 55,
+          "title": "課題 55：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-28",
+          "due": "2026-09-28",
+          "ifIgnored": "放置すると 55 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "55 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "wontfix",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 56,
+          "title": "課題 56：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-01",
+          "due": null,
+          "ifIgnored": "放置すると 56 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "56 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 57,
+          "title": "課題 57：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-02",
+          "due": "2026-09-02",
+          "ifIgnored": "放置すると 57 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "57 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 58,
+          "title": "課題 58：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-03",
+          "due": "2026-10-03",
+          "ifIgnored": "放置すると 58 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "58 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 59,
+          "title": "課題 59：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-04",
+          "due": "2026-09-04",
+          "ifIgnored": "放置すると 59 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "59 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "not_occurred",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 60,
+          "title": "課題 60：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-05",
+          "due": "2026-10-05",
+          "ifIgnored": "放置すると 60 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "60 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 61,
+          "title": "課題 61：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-06",
+          "due": "2026-09-06",
+          "ifIgnored": "放置すると 61 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "61 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 62,
+          "title": "課題 62：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-07",
+          "due": "2026-10-07",
+          "ifIgnored": "放置すると 62 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "62 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "frozen",
+            "since": "2026-09-02",
+            "resumeWhen": "",
+            "detail": "待ち"
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 63,
+          "title": "課題 63：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-08",
+          "due": null,
+          "ifIgnored": "放置すると 63 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "63 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "resolved",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 64,
+          "title": "課題 64：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-09",
+          "due": "2026-10-09",
+          "ifIgnored": "放置すると 64 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "64 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 65,
+          "title": "課題 65：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-10",
+          "due": "2026-09-10",
+          "ifIgnored": "放置すると 65 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "65 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 66,
+          "title": "課題 66：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-11",
+          "due": "2026-10-11",
+          "ifIgnored": "放置すると 66 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "66 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 67,
+          "title": "課題 67：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-12",
+          "due": "2026-09-12",
+          "ifIgnored": "放置すると 67 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "67 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "wontfix",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 68,
+          "title": "課題 68：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-13",
+          "due": "2026-10-13",
+          "ifIgnored": "放置すると 68 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "68 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 69,
+          "title": "課題 69：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-14",
+          "due": "2026-09-14",
+          "ifIgnored": "放置すると 69 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "69 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 70,
+          "title": "課題 70：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-15",
+          "due": null,
+          "ifIgnored": "放置すると 70 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "70 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 71,
+          "title": "課題 71：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-16",
+          "due": "2026-09-16",
+          "ifIgnored": "放置すると 71 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "71 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "not_occurred",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 72,
+          "title": "課題 72：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-17",
+          "due": "2026-10-17",
+          "ifIgnored": "放置すると 72 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "72 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 73,
+          "title": "課題 73：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-18",
+          "due": "2026-09-18",
+          "ifIgnored": "放置すると 73 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "73 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 74,
+          "title": "課題 74：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-19",
+          "due": "2026-10-19",
+          "ifIgnored": "放置すると 74 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "74 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "frozen",
+            "since": "2026-09-02",
+            "resumeWhen": "",
+            "detail": "待ち"
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 75,
+          "title": "課題 75：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-20",
+          "due": "2026-09-20",
+          "ifIgnored": "放置すると 75 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "75 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "resolved",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 76,
+          "title": "課題 76：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-21",
+          "due": "2026-10-21",
+          "ifIgnored": "放置すると 76 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "76 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 77,
+          "title": "課題 77：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-22",
+          "due": null,
+          "ifIgnored": "放置すると 77 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "77 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 78,
+          "title": "課題 78：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-23",
+          "due": "2026-10-23",
+          "ifIgnored": "放置すると 78 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "78 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 79,
+          "title": "課題 79：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-24",
+          "due": "2026-09-24",
+          "ifIgnored": "放置すると 79 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "79 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "wontfix",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 80,
+          "title": "課題 80：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-25",
+          "due": "2026-10-25",
+          "ifIgnored": "放置すると 80 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "80 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 81,
+          "title": "課題 81：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-26",
+          "due": "2026-09-26",
+          "ifIgnored": "放置すると 81 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "81 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 82,
+          "title": "課題 82：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-27",
+          "due": "2026-10-27",
+          "ifIgnored": "放置すると 82 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "82 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 83,
+          "title": "課題 83：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-28",
+          "due": "2026-09-28",
+          "ifIgnored": "放置すると 83 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "83 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "not_occurred",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 84,
+          "title": "課題 84：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-01",
+          "due": null,
+          "ifIgnored": "放置すると 84 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "84 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 85,
+          "title": "課題 85：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-02",
+          "due": "2026-09-02",
+          "ifIgnored": "放置すると 85 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "85 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 86,
+          "title": "課題 86：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-03",
+          "due": "2026-10-03",
+          "ifIgnored": "放置すると 86 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "86 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "frozen",
+            "since": "2026-09-02",
+            "resumeWhen": "",
+            "detail": "待ち"
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 87,
+          "title": "課題 87：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-04",
+          "due": "2026-09-04",
+          "ifIgnored": "放置すると 87 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "87 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "resolved",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 88,
+          "title": "課題 88：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-05",
+          "due": "2026-10-05",
+          "ifIgnored": "放置すると 88 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "88 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 89,
+          "title": "課題 89：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-06",
+          "due": "2026-09-06",
+          "ifIgnored": "放置すると 89 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "89 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 90,
+          "title": "課題 90：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-07",
+          "due": "2026-10-07",
+          "ifIgnored": "放置すると 90 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "90 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 91,
+          "title": "課題 91：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-08",
+          "due": null,
+          "ifIgnored": "放置すると 91 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "91 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "wontfix",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 92,
+          "title": "課題 92：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-09",
+          "due": "2026-10-09",
+          "ifIgnored": "放置すると 92 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "92 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 93,
+          "title": "課題 93：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-10",
+          "due": "2026-09-10",
+          "ifIgnored": "放置すると 93 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "93 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 94,
+          "title": "課題 94：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-11",
+          "due": "2026-10-11",
+          "ifIgnored": "放置すると 94 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "94 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-02",
+            "who": "",
+            "what": "待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 95,
+          "title": "課題 95：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-12",
+          "due": "2026-09-12",
+          "ifIgnored": "放置すると 95 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "95 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "not_occurred",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 96,
+          "title": "課題 96：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-13",
+          "due": "2026-10-13",
+          "ifIgnored": "放置すると 96 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "96 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 97,
+          "title": "課題 97：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-14",
+          "due": "2026-09-14",
+          "ifIgnored": "放置すると 97 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "97 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 98,
+          "title": "課題 98：想定される事象の要約",
+          "priority": "low",
+          "opened": "2026-08-15",
+          "due": null,
+          "ifIgnored": "放置すると 98 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "98 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": {
+            "kind": "frozen",
+            "since": "2026-09-02",
+            "resumeWhen": "",
+            "detail": "待ち"
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "佐藤",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "佐藤",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 99,
+          "title": "課題 99：想定される事象の要約",
+          "priority": "high",
+          "opened": "2026-08-16",
+          "due": "2026-09-16",
+          "ifIgnored": "放置すると 99 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "99 番の弊害が起きないと確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-01",
+              "decided": "2026-09-01",
+              "a": "対応する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "resolved",
+            "note": "確認済"
+          },
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 100,
+          "title": "課題 100：想定される事象の要約",
+          "priority": "mid",
+          "opened": "2026-08-17",
+          "due": "2026-10-17",
+          "ifIgnored": "放置すると 100 番の影響が出る",
+          "ifDone": "",
+          "closeWhen": "100 番の弊害が起きないと確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "続き",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        }
+      ]
+    }
+  ]
+}

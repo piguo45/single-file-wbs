@@ -1,0 +1,335 @@
+{
+  "name": "自分の課題管理表",
+  "star": {
+    "from": "2026-09-01",
+    "to": "2026-09-07"
+  },
+  "projects": [
+    {
+      "name": "販売管理移行",
+      "_memo": "案件のカスタムキー（保存で保持）",
+      "issues": [
+        {
+          "id": 1,
+          "title": "移行テストで文字コードのエラー",
+          "priority": "high",
+          "opened": "2026-08-01",
+          "due": "2026-09-10",
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-03",
+              "decided": "2026-09-03",
+              "a": "直す"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "wbs": "2.3"
+            },
+            {
+              "issue": 2
+            },
+            {
+              "project": "勤怠システム",
+              "issue": 1
+            },
+            {
+              "title": "仕様書",
+              "url": "https://example.com/spec"
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-03",
+              "text": "調査",
+              "assignee": "ぴぐお",
+              "done": true
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 2,
+          "title": "バッチの実行時間が想定を超える",
+          "priority": "mid",
+          "opened": "2026-08-01",
+          "due": "2026-09-20",
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-02",
+              "text": "起票",
+              "assignee": "Aさん",
+              "done": true
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 3,
+          "title": "検証データの提供が届かない",
+          "priority": "high",
+          "opened": "2026-08-01",
+          "due": "2026-09-05",
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-08-19",
+              "decided": "2026-08-19",
+              "a": "待つ"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-08-20",
+            "who": "",
+            "what": "開発部待ち",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-08-20",
+              "text": "依頼",
+              "assignee": "ぴぐお",
+              "done": true
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 4,
+          "title": "ログイン画面の表示崩れ",
+          "priority": "low",
+          "opened": "2026-08-01",
+          "due": "2026-08-25",
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-08-28",
+              "decided": "2026-08-28",
+              "a": "直す"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-08-30",
+            "how": "resolved",
+            "note": "3ブラウザで確認"
+          },
+          "actions": [
+            {
+              "date": "2026-08-29",
+              "text": "修正",
+              "assignee": "佐藤",
+              "done": true
+            }
+          ],
+          "note": ""
+        }
+      ],
+      "tasks": [
+        {
+          "id": "1",
+          "name": "設計",
+          "children": [
+            {
+              "id": "1.1",
+              "name": "要件整理"
+            }
+          ]
+        },
+        {
+          "id": "2",
+          "name": "変換ツール",
+          "children": [
+            {
+              "id": "2.3",
+              "name": "文字コード変換"
+            }
+          ]
+        }
+      ],
+      "milestones": [
+        {
+          "date": "2026-10-20",
+          "label": "本番切替",
+          "color": "#cc79a7"
+        }
+      ]
+    },
+    {
+      "name": "勤怠システム",
+      "issues": [
+        {
+          "id": 1,
+          "title": "打刻の丸め仕様が未確定",
+          "priority": "mid",
+          "opened": "2026-08-01",
+          "due": "2026-10-01",
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-08-01",
+              "decided": "2026-08-01",
+              "a": "仕様を詰める"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "wbs": "1.1"
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-04",
+              "text": "検証",
+              "assignee": "ぴぐお",
+              "done": true
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 2,
+          "title": "申請画面の導線が分かりにくい",
+          "priority": "low",
+          "opened": "2026-08-01",
+          "due": null,
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [],
+          "note": ""
+        },
+        {
+          "id": 3,
+          "title": "旧勤怠の帳票をそのまま残したい",
+          "priority": "low",
+          "opened": "2026-08-01",
+          "due": null,
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-08-09",
+              "decided": "2026-08-09",
+              "a": "残さない"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-08-10",
+            "how": "wontfix",
+            "note": "新帳票に寄せる"
+          },
+          "actions": [],
+          "note": ""
+        }
+      ]
+    },
+    {
+      "name": "サーバ更改",
+      "issues": [
+        {
+          "id": 1,
+          "title": "見積が予算を超える見込み",
+          "priority": "high",
+          "opened": "2026-08-01",
+          "due": "2026-09-12",
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-08-05",
+              "decided": "2026-08-05",
+              "a": "構成を見直す"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-08-06",
+              "text": "見積",
+              "assignee": "佐藤",
+              "done": true
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 2,
+          "title": "回線工事の日程が押さえられない",
+          "priority": "mid",
+          "opened": "2026-08-01",
+          "due": "2026-12-01",
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-06-30",
+              "decided": "2026-06-30",
+              "a": "待つ"
+            }
+          ],
+          "pending": {
+            "kind": "frozen",
+            "since": "2026-07-01",
+            "resumeWhen": "移行後",
+            "detail": "移行を優先"
+          },
+          "closed": null,
+          "actions": [],
+          "note": ""
+        },
+        {
+          "id": 3,
+          "title": "監視の移行方針が決まっていない",
+          "priority": "mid",
+          "opened": "2026-08-01",
+          "due": "2026-11-01",
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [],
+          "note": ""
+        }
+      ]
+    }
+  ]
+}

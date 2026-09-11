@@ -1,0 +1,45 @@
+{
+  "name": "<b>プロジェクト</b> & \"引用\" <script>alert(1)</script>",
+  "projects": [
+    {
+      "name": "<b>プロジェクト</b> & \"引用\" <script>alert(1)</script>",
+      "issues": [
+        {
+          "id": 1,
+          "title": "<script>alert(1)</script> & \"引用\" <b>太字</b>",
+          "priority": "high",
+          "opened": "2026-09-01",
+          "due": "2026-09-20",
+          "ifIgnored": "放置 <script>alert(2)</script> & <>",
+          "ifDone": "",
+          "closeWhen": "完了条件 \"quoted\" & <tag>",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-02",
+              "decided": "2026-09-02",
+              "a": "<i>方針</i> & \"...\""
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-01",
+              "text": "<script>alert(3)</script>",
+              "assignee": "\"><img src=x onerror=alert(1)>",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "& < > \" のそのまま表示",
+              "assignee": "</td><td>注入",
+              "done": false
+            }
+          ],
+          "note": "https://example.com/a?x=1&y=2 と javascript:alert(1) と <script>alert(5)</script>"
+        }
+      ]
+    }
+  ]
+}

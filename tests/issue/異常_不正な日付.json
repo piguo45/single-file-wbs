@@ -1,0 +1,91 @@
+{
+  "name": "不正な日付",
+  "projects": [
+    {
+      "name": "不正な日付",
+      "issues": [
+        {
+          "id": 1,
+          "title": "月日が範囲外",
+          "priority": "mid",
+          "opened": "2026-13-45",
+          "due": "2026-02-30",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "actions": [
+            {
+              "date": "2026-99-99",
+              "text": "壊れた日付",
+              "done": true
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "年が範囲外（1899/2100）",
+          "due": "1899-12-31",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "actions": [
+            {
+              "date": "2100-01-01",
+              "text": "範囲外の年",
+              "done": false
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "title": "日付が数値・真偽・オブジェクト",
+          "due": 20260901,
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": true,
+              "decided": true,
+              "a": "日付でないat"
+            }
+          ],
+          "closed": {
+            "at": {
+              "y": 2026
+            },
+            "how": "resolved",
+            "note": "atが壊れている"
+          },
+          "actions": [
+            {
+              "date": 123,
+              "text": "数値の日付",
+              "done": false
+            },
+            {
+              "date": "",
+              "text": "空文字の日付",
+              "done": false
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "title": "形式違い（スラッシュ・和暦風）",
+          "due": "2026/09/01",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "actions": [
+            {
+              "date": "R8.9.1",
+              "text": "和暦風",
+              "done": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

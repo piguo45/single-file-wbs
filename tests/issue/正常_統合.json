@@ -1,0 +1,220 @@
+{
+  "name": "自分の課題管理表",
+  "star": {
+    "from": "2026-09-01",
+    "to": "2026-09-07"
+  },
+  "projects": [
+    {
+      "name": "販売管理システム移行",
+      "milestones": [
+        {
+          "date": "2026-10-20",
+          "label": "本番切替",
+          "color": "#cc79a7"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "2",
+          "name": "変換ツール",
+          "children": [
+            {
+              "id": "2.3",
+              "name": "文字コード変換",
+              "qty": 1,
+              "hours": 16,
+              "assignee": "ぴぐお",
+              "plan": {
+                "start": "2026-09-14",
+                "end": "2026-09-18"
+              },
+              "actual": {
+                "start": null,
+                "end": null
+              },
+              "note": ""
+            },
+            {
+              "id": "2.4",
+              "name": "PT",
+              "qty": 1,
+              "hours": 8,
+              "assignee": "ぴぐお",
+              "plan": {
+                "start": "2026-09-21",
+                "end": "2026-09-25"
+              },
+              "actual": {
+                "start": null,
+                "end": null
+              },
+              "note": ""
+            }
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "id": 1,
+          "title": "文字コード起因のエラーが大量発生",
+          "priority": "high",
+          "opened": "2026-09-05",
+          "due": "2026-09-10",
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-03",
+              "decided": "2026-09-03",
+              "a": "変換処理を直す"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "wbs": "2.3"
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-03",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 3,
+          "title": "文字コード変換の仕様が開発部から未回答",
+          "priority": "high",
+          "opened": "2026-09-05",
+          "due": "2026-10-10",
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-05",
+              "decided": "2026-09-05",
+              "a": "質問票を送って待つ"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "wbs": "2.3"
+            },
+            {
+              "issue": 1
+            },
+            {
+              "project": "勤怠システム更改",
+              "issue": 2
+            },
+            {
+              "title": "仕様書",
+              "url": "https://example.com/spec"
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-03",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 5,
+          "title": "リンクを持たない課題（札に出ない）",
+          "priority": "low",
+          "opened": "2026-09-05",
+          "due": "2026-11-01",
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-03",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            }
+          ],
+          "note": ""
+        }
+      ]
+    },
+    {
+      "name": "勤怠システム更改",
+      "tasks": [
+        {
+          "id": "1",
+          "name": "要件整理",
+          "qty": 1,
+          "hours": 8,
+          "assignee": "Aさん",
+          "plan": {
+            "start": "2026-09-07",
+            "end": "2026-09-11"
+          },
+          "actual": {
+            "start": null,
+            "end": null
+          },
+          "note": ""
+        }
+      ],
+      "issues": [
+        {
+          "id": 2,
+          "title": "打刻の丸め仕様が未確定",
+          "priority": "mid",
+          "opened": "2026-09-05",
+          "due": "2026-10-01",
+          "ifIgnored": "放置すると困る",
+          "ifDone": "",
+          "closeWhen": "確かめられること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-04",
+              "decided": "2026-09-04",
+              "a": "仕様を詰める"
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "project": "販売管理システム移行",
+              "wbs": "2.4"
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-03",
+              "text": "着手",
+              "assignee": "ぴぐお",
+              "done": true
+            }
+          ],
+          "note": ""
+        }
+      ]
+    }
+  ]
+}

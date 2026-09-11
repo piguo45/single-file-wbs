@@ -1,0 +1,28 @@
+{
+  "name": "projects不正",
+  "projects": [
+    null,
+    3,
+    "文字列",
+    [
+      1,
+      2
+    ],
+    {
+      "issues": "（配列ではない）"
+    },
+    {
+      "name": "名前あり・issues 欠損"
+    },
+    {
+      "name": "正常な案件",
+      "issues": [
+        {
+          "id": 1,
+          "title": "これだけ描ける",
+          "decisions": []
+        }
+      ]
+    }
+  ]
+}

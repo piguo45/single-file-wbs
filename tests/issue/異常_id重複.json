@@ -1,0 +1,42 @@
+{
+  "name": "id重複",
+  "projects": [
+    {
+      "name": "id重複",
+      "issues": [
+        {
+          "id": 1,
+          "title": "同じ id の1件目",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "actions": []
+        },
+        {
+          "id": 1,
+          "title": "同じ id の2件目（折りたたみキーが衝突するのは仕様）",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "actions": []
+        },
+        {
+          "id": 2,
+          "title": "id が文字列",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "actions": []
+        },
+        {
+          "id": "2",
+          "title": "数値の 2 と文字列の \"2\"",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "actions": []
+        }
+      ]
+    }
+  ]
+}

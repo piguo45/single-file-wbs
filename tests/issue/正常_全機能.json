@@ -1,0 +1,346 @@
+{
+  "name": "○○移行プロジェクト",
+  "star": {
+    "from": "2026-09-01",
+    "to": "2026-09-07"
+  },
+  "_meta": {
+    "owner": "ぴぐお",
+    "note": "AIのメタ置き場（ビューアは無視・保存で保持）"
+  },
+  "projects": [
+    {
+      "name": "○○移行プロジェクト",
+      "issues": [
+        {
+          "id": 1,
+          "title": "移行テストで文字コード起因のエラーが大量発生",
+          "priority": "high",
+          "opened": "2026-09-05",
+          "due": "2026-09-10",
+          "ifIgnored": "本番の切替で同じエラーが起き、移行が失敗する。影響が出るのは本番切替日",
+          "ifDone": "",
+          "closeWhen": "リハーサルで一連の移行手順を通して、エラーが出ないこと",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-09-07",
+              "decided": "2026-09-07",
+              "a": "原因調査と変換処理の修正で対応する"
+            },
+            {
+              "q": "再発防止をどこまでやるか",
+              "since": "2026-09-05",
+              "decided": null,
+              "a": ""
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-05",
+              "text": "事象発生",
+              "assignee": "",
+              "done": true
+            },
+            {
+              "date": "2026-09-07",
+              "text": "調査方針検討、影響調査",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": "2026-09-11",
+              "text": "資料作成、内部Rv",
+              "assignee": "ぴぐお/Aさん",
+              "done": false
+            },
+            {
+              "date": "2026-09-14",
+              "text": "ツール作成、PT（9/14週）",
+              "assignee": "ぴぐお",
+              "done": false
+            },
+            {
+              "date": null,
+              "text": "文字コード仕様について開発部と打合せ",
+              "assignee": "",
+              "done": false
+            },
+            {
+              "date": null,
+              "text": "移行リハーサル検証",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": "参考 https://example.com/spec ・関連リンクは note に素のURLで",
+          "_ai": {
+            "tokens": 1200,
+            "model": "claude-fable-5-1",
+            "memo": "起票をAIが下書き"
+          }
+        },
+        {
+          "id": 2,
+          "title": "バッチの実行時間が想定を超える見込み",
+          "priority": "mid",
+          "opened": "2026-09-06",
+          "due": "2026-10-20",
+          "ifIgnored": "夜間バッチが翌営業日の始業に間に合わない",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [
+            {
+              "q": "どこまで速くすれば合格とするか（情シスに確認）",
+              "since": "2026-09-02",
+              "decided": null,
+              "a": ""
+            },
+            {
+              "q": "実行時間の目標を決める",
+              "since": "2026-09-04",
+              "decided": null,
+              "a": ""
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-09-06",
+              "text": "計測ログを採取",
+              "assignee": "Aさん",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "チューニング方針を決める",
+              "assignee": "Aさん",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 3,
+          "title": "帳票のレイアウト方針が固まっていない",
+          "priority": "low",
+          "opened": "2026-08-28",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "",
+          "closeWhen": "",
+          "decisions": [],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-09-01",
+            "who": "企画部",
+            "what": "レイアウトの最終決裁者の指名",
+            "until": null
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-08-28",
+              "text": "要望ヒアリング",
+              "assignee": "",
+              "done": true
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 4,
+          "title": "検証用データの提供が届かない",
+          "priority": "high",
+          "opened": "2026-08-20",
+          "due": "2026-09-01",
+          "ifIgnored": "検証が始められず、後続の全工程が押す",
+          "ifDone": "",
+          "closeWhen": "本番相当のデータで検証が完了していること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-08-21",
+              "decided": "2026-08-21",
+              "a": "データ提供を依頼して待つ"
+            }
+          ],
+          "pending": {
+            "kind": "waiting",
+            "since": "2026-08-25",
+            "who": "開発部",
+            "what": "検証データの提供",
+            "until": "2026-09-05"
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-08-21",
+              "text": "データ提供を依頼",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": "2026-08-25",
+              "text": "督促（1回目）",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "受領後に検証を再開",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 5,
+          "title": "新画面の追加要望（今期は着手しない）",
+          "priority": "mid",
+          "opened": "2026-07-10",
+          "due": "2026-12-01",
+          "ifIgnored": "",
+          "ifDone": "操作の手数が半分になり、月末作業が1日短くなる",
+          "closeWhen": "新画面がリリースされ、月末作業が1日短縮されたと確認できること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-07-12",
+              "decided": "2026-07-12",
+              "a": "来期の計画に載せる"
+            }
+          ],
+          "pending": {
+            "kind": "frozen",
+            "since": "2026-07-12",
+            "resumeWhen": "移行が完了したら",
+            "detail": "今期は移行を優先"
+          },
+          "closed": null,
+          "actions": [
+            {
+              "date": "2026-07-10",
+              "text": "要望を受領",
+              "assignee": "佐藤",
+              "done": true
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 6,
+          "title": "ログイン画面の表示崩れ",
+          "priority": "high",
+          "opened": "2026-08-30",
+          "due": "2026-09-05",
+          "ifIgnored": "利用者が入口で迷い、問い合わせが増える",
+          "ifDone": "",
+          "closeWhen": "主要ブラウザ3種で崩れが再現しないこと",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-08-30",
+              "decided": "2026-08-30",
+              "a": "CSSを修正する"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-09-03",
+            "how": "resolved",
+            "note": "Chrome/Edge/Firefox で再現しないことを確認"
+          },
+          "actions": [
+            {
+              "date": "2026-08-30",
+              "text": "再現手順を特定",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": "2026-09-02",
+              "text": "CSS修正・確認",
+              "assignee": "ぴぐお",
+              "done": true
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 7,
+          "title": "旧システムの画面をそのまま移植したい",
+          "priority": "low",
+          "opened": "2026-08-01",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "慣れた画面のままで移行時の教育が要らない",
+          "closeWhen": "移植する／しないの方針が関係者に共有されていること",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-08-05",
+              "decided": "2026-08-05",
+              "a": "移植しない（新画面に寄せる）"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-08-06",
+            "how": "wontfix",
+            "note": "教育コストより保守コストが大きいと判断"
+          },
+          "actions": [
+            {
+              "date": "2026-08-05",
+              "text": "方針を関係者に説明",
+              "assignee": "Aさん",
+              "done": true
+            }
+          ],
+          "note": ""
+        },
+        {
+          "id": 8,
+          "title": "連休中のアクセス集中でサーバが落ちる恐れ",
+          "priority": "mid",
+          "opened": "2026-08-01",
+          "due": "2026-08-20",
+          "ifIgnored": "連休中に停止し、復旧要員がいない",
+          "ifDone": "",
+          "closeWhen": "連休が明けても停止が起きていないこと",
+          "decisions": [
+            {
+              "q": "対応方針",
+              "since": "2026-08-02",
+              "decided": "2026-08-02",
+              "a": "監視を強化して様子を見る"
+            }
+          ],
+          "pending": null,
+          "closed": {
+            "at": "2026-08-21",
+            "how": "not_occurred",
+            "note": "連休中のピークは想定の6割で、停止は発生せず"
+          },
+          "actions": [
+            {
+              "date": "2026-08-02",
+              "text": "監視しきい値を調整",
+              "assignee": "佐藤",
+              "done": true
+            }
+          ],
+          "note": "",
+          "_links": [
+            "https://example.com/monitor"
+          ]
+        }
+      ]
+    }
+  ]
+}

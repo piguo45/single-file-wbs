@@ -1,0 +1,56 @@
+{
+  "projects": [
+    {
+      "name": "案件",
+      "issues": [
+        {
+          "id": 1,
+          "title": "actions が文字列",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "actions": "（配列ではない）"
+        },
+        {
+          "id": 2,
+          "title": "actions がオブジェクト",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "actions": {
+            "date": "2026-09-01"
+          }
+        },
+        {
+          "id": 3,
+          "title": "actions が数値",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "actions": 7
+        },
+        {
+          "id": 4,
+          "title": "actions の要素に非オブジェクトが混ざる",
+          "ifIgnored": "x",
+          "closeWhen": "y",
+          "decisions": [],
+          "actions": [
+            null,
+            3,
+            "文字列",
+            [
+              1,
+              2
+            ],
+            {
+              "date": "2026-09-01",
+              "text": "有効な要素",
+              "done": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

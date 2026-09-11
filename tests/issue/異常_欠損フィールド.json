@@ -1,0 +1,59 @@
+{
+  "projects": [
+    {
+      "name": "案件",
+      "issues": [
+        {
+          "id": 1,
+          "decisions": []
+        },
+        {
+          "title": "id が無い課題",
+          "decisions": []
+        },
+        {
+          "id": 3,
+          "title": "actions と note が無い",
+          "priority": "mid",
+          "decisions": []
+        },
+        {
+          "id": 4,
+          "title": "decision/pending/closed が非オブジェクト",
+          "decisions": [],
+          "pending": 5,
+          "closed": [
+            1,
+            2
+          ],
+          "actions": [
+            {
+              "text": "date が無い",
+              "done": true
+            },
+            {
+              "date": "2026-09-10"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "title": "文字列であるべき欄が数値",
+          "ifIgnored": 1,
+          "ifDone": 2,
+          "closeWhen": 3,
+          "decisions": [],
+          "actions": [
+            {
+              "date": "2026-09-11",
+              "text": 42,
+              "assignee": 7,
+              "done": "yes"
+            }
+          ],
+          "note": 7
+        }
+      ]
+    }
+  ]
+}
