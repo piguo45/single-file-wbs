@@ -1306,6 +1306,61 @@
                 "model": "claude-fable-5-1 (PM) + claude-opus-5 (実装)",
                 "memo": "A班=ビューア/回帰網、B班=説明書/README/課題移行。golden 49 全一致・pixel 差分は版表記の 48 画素のみを実測してから撮り直し。AI チェック 8 本全合格"
               }
+            },
+            {
+              "id": "4.15",
+              "name": "GitHub Pages 公開＋デモ版(#211)",
+              "note": "#211：Pages で wbs_viewer.html と demo.html（サンプル埋め込み）を公開。README/CLAUDE.md に導線",
+              "children": [
+                {
+                  "id": "4.15.1",
+                  "name": "Pages 有効化＋README 導線",
+                  "qty": 1,
+                  "hours": 1,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-13",
+                    "end": "2026-09-13"
+                  },
+                  "actual": {
+                    "start": "2026-09-13",
+                    "end": null
+                  },
+                  "note": ""
+                },
+                {
+                  "id": "4.15.2",
+                  "name": "demo.html 生成スクリプト＋e2e＋doc",
+                  "qty": 1,
+                  "hours": 3,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-13",
+                    "end": "2026-09-13"
+                  },
+                  "actual": {
+                    "start": "2026-09-13",
+                    "end": null
+                  },
+                  "note": ""
+                },
+                {
+                  "id": "4.15.3",
+                  "name": "実機確認（https でドロップ・編集ON保存）",
+                  "qty": 1,
+                  "hours": 1,
+                  "assignee": "ぴぐお",
+                  "plan": {
+                    "start": "2026-09-14",
+                    "end": "2026-09-14"
+                  },
+                  "actual": {
+                    "start": null,
+                    "end": null
+                  },
+                  "note": ""
+                }
+              ]
             }
           ]
         },
@@ -2763,6 +2818,53 @@
             }
           ],
           "note": "#35（計画側の CUD 検証）の続き。課題側の配色は #35 の後に作ったため未確認"
+        },
+        {
+          "id": 211,
+          "title": "【公開】GitHub Pages でビューアとデモ版を公開する（URL を開くだけで試せる）",
+          "priority": "mid",
+          "opened": "2026-09-13",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "公開した時点から、ダウンロードせずに URL を開いて wbs.json をドロップするだけで試せる。デモ版は開いた瞬間にサンプルの計画と課題が出る（記事・X からの導線が短くなる）。https では編集ONで権限プロンプトが出せるため、file:// の「保存ダイアログで選び直す」経路（0バイト化 #107 の温床）を通らずに済む",
+          "closeWhen": "① Pages の URL で wbs_viewer.html が開き、wbs_sample_issues.json をドロップすると計画／課題が表示され、編集ONで保存が通る（実機）② demo.html を開いた瞬間にサンプルが表示され JS エラー 0（e2e で固定）③ README（ja/en）に「ブラウザで開く」の導線がある ④ 生成手順（scripts）がリポにあり、リリース手順に「demo.html を再生成」が載っている",
+          "decisions": [
+            {
+              "q": "Pages に出すのは main の最新か、リリースのタグ版か（既定案＝main の root。Releases と食い違う瞬間は許容）",
+              "since": "2026-09-13",
+              "until": null,
+              "decided": null,
+              "a": ""
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "wbs": "4.15"
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-13",
+              "text": "Zenn 読者からの提案を受け、A（Pages 公開）＋B（サンプル埋め込みのデモ版）で進めると合意。外部送信なし＝訪問者のデータはブラウザ内で完結、リポや他の訪問者は汚せない（XSS はエスケープ済み・壊れた入力は graceful）",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "Pages 有効化＋demo.html の生成スクリプト＋e2e＋README/CLAUDE.md（ja/en）の導線",
+              "assignee": "Claude",
+              "done": false
+            },
+            {
+              "date": null,
+              "text": "実機で https から ドロップ表示・編集ONで保存 を確認",
+              "assignee": "ぴぐお",
+              "done": false
+            }
+          ],
+          "note": "提案者は Zenn 記事のコメント（2026-09）。fetch は使わない設計なので、デモはサンプル JSON を HTML に埋め込んで生成する（本体は変えない）"
         }
       ]
     },
