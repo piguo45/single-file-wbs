@@ -1,8 +1,12 @@
 # 個人データ・アーカイブは公開しない
 wbs-archive-*.json
 
-# 内部開発ルール（dev_kit由来）は非公開
-.claude/
+# 内部開発ルール（dev_kit由来）は非公開。例外＝リポで持ち歩く Claude Code 設定（GitHub Issue 読み取り専用フック）だけ公開
+.claude/*
+!.claude/settings.json
+!.claude/hooks/
+.claude/hooks/*
+!.claude/hooks/block-gh-issue-write.sh
 *Zone.Identifier
 
 # Python バイトコード（e2eテストの実行で生成・コミット不要）
