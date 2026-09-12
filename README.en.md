@@ -26,6 +26,13 @@ Issues: flip **Plan｜Issues** in the toolbar and the same file's issue table ap
 
 ## Start in 30 seconds
 
+**Open it in your browser** (no download, no install)
+
+- Demo → **<https://piguo45.github.io/single-file-wbs/demo.html>** (the sample plan and issues show up the moment it opens)
+- The tool → **<https://piguo45.github.io/single-file-wbs/wbs_viewer.html>** (open it and drop your own `wbs.json` on it; your data is processed inside the browser only and is never sent anywhere)
+
+**Keep a local copy**
+
 1. Download `wbs_viewer.html` from [Releases](https://github.com/piguo45/single-file-wbs/releases/latest)
 2. Open it in Chrome (plain `file://` is fine)
 3. Load `wbs_sample_issues.json` via **Open file** (or drag & drop onto that same button)
