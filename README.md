@@ -26,6 +26,13 @@
 
 ## 30秒で始める
 
+**ブラウザで開く**（ダウンロードもインストールも要らない）
+
+- デモ → **<https://piguo45.github.io/single-file-wbs/demo.html>**（開いた瞬間にサンプルの計画と課題が出る）
+- 本体 → **<https://piguo45.github.io/single-file-wbs/wbs_viewer.html>**（開いて自分の `wbs.json` をドロップする。データはブラウザの中だけで処理され、どこにも送られない）
+
+**手元に置いて使う**
+
 1. [Releases](https://github.com/piguo45/single-file-wbs/releases/latest) から `wbs_viewer.html` をダウンロードする
 2. Chrome で開く（`file://` のままでよい）
 3. **「ファイルを開く」** で `wbs_sample_issues.json` を読み込む（同じボタンへのドラッグ&ドロップでも可）
