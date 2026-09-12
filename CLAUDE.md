@@ -1373,6 +1373,7 @@ python3 scripts/check.py wbs.json
 - Chromium 系（Chrome 推奨）・`file://` 前提（File System Access API を使用）。
 - 自分の実データ `wbs.json` は**既定で gitignore 済み**（誤コミット防止）。`wbs-archive-*.json` も無視。
 - サンプルは2つ。**`wbs_sample.json`**＝計画（`tasks`）だけの従来のサンプル／**`wbs_sample_issues.json`**＝計画と課題のサンプル（架空・**2案件のブック**。1件目は**計画と課題が同居**する実例・**3状態と6つの印を網羅**）。このリポジトリ自身の正本は末尾の「このリポの正本」節。
+- **`wbs_demo.json`** はデモ専用のデータ（架空・1案件・計画の葉33件と課題11件）。GitHub Pages の `demo.html` に `scripts/build_demo.py` が埋め込む。トップレベルの **`_demoToday`** が「このデータの本日」で、`demo.html` は開いた日との差を**7日単位に丸めて**全体の日付を平行移動する（曜日を保つ・**祝日は暦の事実なので動かさない**）。`_demoToday` はビューアが読まないカスタムキー＝製品本体もこのファイルも素の `wbs.json` として開ける。
 - 公開リポなので、サンプル・スクショには**架空名のみ**。実在の会社名・案件名・個人情報・単価は入れない。
 
 ---

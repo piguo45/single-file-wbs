@@ -1403,6 +1403,7 @@ Avoid the following when entering data (nothing crashes, but display degrades).
 - Chromium-based browsers (Chrome recommended), `file://` assumed (it uses the File System Access API).
 - Your own real data `wbs.json` is **gitignored by default** (to prevent accidental commits), as is `wbs-archive-*.json`.
 - Two samples: **`wbs_sample.json`** = the plan (`tasks`) only, the classic sample; **`wbs_sample_issues.json`** = plan and issues (fictional, **a two-project book**; the first project shows **a plan (`tasks`) and issues living together**, and the set covers all three states and all six marks). This repository's own source of truth is in the final section, "The source of truth for this repo".
+- **`wbs_demo.json`** is the demo-only data (fictional, one project, 33 plan leaves and 11 issues). `scripts/build_demo.py` embeds it into `demo.html` for GitHub Pages. The top-level **`_demoToday`** is "today" as far as this data is concerned, and `demo.html` shifts every date by the gap between that and the day it is opened, **rounded to whole weeks** (so weekdays are preserved; **holidays are calendar facts and are never shifted**). `_demoToday` is a custom key the viewer ignores, so the file still opens as a plain `wbs.json`.
 - This is a public repo: samples and screenshots use **fictional names only**. No real company names, project names, personal data, or rates.
 
 ---

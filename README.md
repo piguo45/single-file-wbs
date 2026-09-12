@@ -28,7 +28,7 @@
 
 **ブラウザで開く**（ダウンロードもインストールも要らない）
 
-- デモ → **<https://piguo45.github.io/single-file-wbs/demo.html>**（開いた瞬間にサンプルの計画と課題が出る）
+- デモ → **<https://piguo45.github.io/single-file-wbs/demo.html>**（開いた瞬間にサンプルの計画と課題が出る。架空の案件・日付は開いた日を基準に動く）
 - 本体 → **<https://piguo45.github.io/single-file-wbs/wbs_viewer.html>**（開いて自分の `wbs.json` をドロップする。データはブラウザの中だけで処理され、どこにも送られない）
 
 **手元に置いて使う**
