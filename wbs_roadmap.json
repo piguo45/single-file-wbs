@@ -1372,7 +1372,7 @@
                   },
                   "actual": {
                     "start": "2026-09-13",
-                    "end": null
+                    "end": "2026-09-13"
                   },
                   "note": "wbs_demo.json（架空）／build_demo.py の埋め込み先変更＋週単位の日付シフト／test_demo 更新"
                 }
@@ -2881,10 +2881,10 @@
               "done": true
             },
             {
-              "date": null,
-              "text": "wbs_demo.json（架空・全機能が見える量）を作り、build_demo.py に埋め込み＋読み込み時の日付ずらし（週単位で平行移動・祝日は据え置き）を追加。e2e 更新",
+              "date": "2026-09-13",
+              "text": "wbs_demo.json（架空・全機能が見える量）を作り、build_demo.py に埋め込み＋読み込み時の日付ずらし（週単位で平行移動・祝日は据え置き）を追加。e2e 更新（33葉・遅延6・前倒し2・課題11で3状態6印を網羅・demo.html 320KB・両回帰網 GREEN・check 警告0）",
               "assignee": "Claude",
-              "done": false
+              "done": true
             },
             {
               "date": null,
