@@ -1359,6 +1359,22 @@
                     "end": null
                   },
                   "note": ""
+                },
+                {
+                  "id": "4.15.4",
+                  "name": "デモ専用データ＋日付ずらし",
+                  "qty": 1,
+                  "hours": 4,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-13",
+                    "end": "2026-09-13"
+                  },
+                  "actual": {
+                    "start": "2026-09-13",
+                    "end": null
+                  },
+                  "note": "wbs_demo.json（架空）／build_demo.py の埋め込み先変更＋週単位の日付シフト／test_demo 更新"
                 }
               ]
             }
@@ -2827,7 +2843,7 @@
           "due": null,
           "ifIgnored": "",
           "ifDone": "公開した時点から、ダウンロードせずに URL を開いて wbs.json をドロップするだけで試せる。デモ版は開いた瞬間にサンプルの計画と課題が出る（記事・X からの導線が短くなる）。https では編集ONで権限プロンプトが出せるため、file:// の「保存ダイアログで選び直す」経路（0バイト化 #107 の温床）を通らずに済む",
-          "closeWhen": "① Pages の URL で wbs_viewer.html が開き、wbs_sample_issues.json をドロップすると計画／課題が表示され、編集ONで保存が通る（実機）② demo.html を開いた瞬間にサンプルが表示され JS エラー 0（e2e で固定）③ README（ja/en）に「ブラウザで開く」の導線がある ④ 生成手順（scripts）がリポにあり、リリース手順に「demo.html を再生成」が載っている",
+          "closeWhen": "① Pages の URL で wbs_viewer.html が開き、wbs_sample_issues.json をドロップすると計画／課題が表示され、編集ONで保存が通る（実機）② demo.html を開いた瞬間にサンプルが表示され JS エラー 0（e2e で固定）③ README（ja/en）に「ブラウザで開く」の導線がある ④ 生成手順（scripts）がリポにあり、リリース手順に「demo.html を再生成」が載っている ⑤ デモは wbs_demo.json（25葉以上・遅延あり・進捗査定あり・リスケ履歴あり・課題リンクあり）を埋め込み、開いた日を基準に日付がずれて「本日線が期間内・進行中と遅延が見える」状態で出る",
           "decisions": [
             {
               "q": "Pages に出すのは main の最新か、リリースのタグ版か（既定案＝main の root。Releases と食い違う瞬間は許容）",
@@ -2835,6 +2851,13 @@
               "until": null,
               "decided": null,
               "a": ""
+            },
+            {
+              "q": "デモの中身が薄い（計画の葉が3行）→ デモ専用データを作るか、実データを埋め込むか",
+              "since": "2026-09-13",
+              "until": null,
+              "decided": "2026-09-13",
+              "a": "A＝架空のデモ専用データ wbs_demo.json（25〜35葉・遅延/進捗査定/リスケ履歴/課題リンクを網羅）を作り、読み込み時に日付を今日基準で平行移動する（祝日は動かさない）"
             }
           ],
           "pending": null,
@@ -2856,6 +2879,12 @@
               "text": "Pages 有効化＋demo.html の生成スクリプト＋e2e＋README/CLAUDE.md（ja/en）の導線（Pages 有効化済み・demo.html 296KB・e2e test_demo 13件・両回帰網 GREEN）",
               "assignee": "Claude",
               "done": true
+            },
+            {
+              "date": null,
+              "text": "wbs_demo.json（架空・全機能が見える量）を作り、build_demo.py に埋め込み＋読み込み時の日付ずらし（週単位で平行移動・祝日は据え置き）を追加。e2e 更新",
+              "assignee": "Claude",
+              "done": false
             },
             {
               "date": null,
