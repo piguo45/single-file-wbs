@@ -1324,7 +1324,7 @@
                   },
                   "actual": {
                     "start": "2026-09-13",
-                    "end": null
+                    "end": "2026-09-13"
                   },
                   "note": ""
                 },
@@ -1340,7 +1340,7 @@
                   },
                   "actual": {
                     "start": "2026-09-13",
-                    "end": null
+                    "end": "2026-09-13"
                   },
                   "note": ""
                 },
@@ -2852,10 +2852,10 @@
               "done": true
             },
             {
-              "date": null,
-              "text": "Pages 有効化＋demo.html の生成スクリプト＋e2e＋README/CLAUDE.md（ja/en）の導線",
+              "date": "2026-09-13",
+              "text": "Pages 有効化＋demo.html の生成スクリプト＋e2e＋README/CLAUDE.md（ja/en）の導線（Pages 有効化済み・demo.html 296KB・e2e test_demo 13件・両回帰網 GREEN）",
               "assignee": "Claude",
-              "done": false
+              "done": true
             },
             {
               "date": null,
