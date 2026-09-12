@@ -1446,6 +1446,7 @@ python3 scripts/check.py wbs.json
 
 - single-file-wbs の課題・TODO・未決はすべてこのファイルの `issues[]` に載せる。開発計画（いつ・誰が・どれだけ）は同じ案件の `tasks` に載せる。**課題側に工数や日付を転記しない**（計画は計画、課題は「何を・なぜ」）。
 - **GitHub Issue は新規には使わない**（正本を2か所に持たない）。2026-09-11 に、開いていた 26 件を `issues[]` へ移した。
+- **Claude Code には GitHub Issue を読み取り専用にするフックを同梱**（`.claude/settings.json` ＋ `.claude/hooks/block-gh-issue-write.sh`・リポで持ち歩く）。`gh issue list/view/status` だけ通し、それ以外の `gh issue` と `gh api` の書き込みは実行前に止める。人間が書く時はプロンプトで `! gh issue …` と打つ（Claude を経由しない）。
 - **外部からの報告窓口としての GitHub Issue は残る**（公開リポなので誰でも立てられる）。受け取ったら**内容を `issues[]` へ転記**し、`links` に `{ "title": "GitHub #N", "url": "…" }` を添える。以後は JSON 側で追う。
 - 正本ルールは**リポ単位で宣言・1リポ1正本**。他のリポでは GitHub Issue が正本のこともある（各リポの `CLAUDE.md` の宣言に従う → 「開発運用：`/pm` スキル」の互換手順）。
 - 自分の実データ `wbs.json` は gitignore 済み（正本ではない・手元の実験用）。

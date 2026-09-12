@@ -1475,6 +1475,7 @@ Machine-checkable close conditions are **run** (never report or close on "should
 
 - Every issue, TODO and open question for single-file-wbs goes into that file's `issues[]`; the development plan (when, who, how much) goes into the same project's `tasks`. **Never copy effort or dates onto the issue side** (the plan is the plan; issues carry the what and why).
 - **GitHub Issues are not used for new work** (never keep the source of truth in two places). On 2026-09-11 the 26 open issues were moved into `issues[]`.
+- **A Claude Code hook that makes GitHub Issues read-only ships with the repo** (`.claude/settings.json` + `.claude/hooks/block-gh-issue-write.sh`). Only `gh issue list/view/status` pass; every other `gh issue` subcommand and any write via `gh api` is blocked before it runs. A human who really needs to write types `! gh issue …` in the prompt (bypassing Claude).
 - **GitHub Issues remain as an inbox from outside** (this is a public repo, so anyone can file one). When one arrives, **copy its content into `issues[]`** and add `{ "title": "GitHub #N", "url": "…" }` to `links`. From then on it is tracked in the JSON.
 - The rule is: **declare it per repository, one per repository.** Other repos may well use GitHub Issues as their source of truth — follow the declaration in each repo's `CLAUDE.md` (→ the compatibility path in "Dev workflow: the `/pm` skill").
 - Your own real data in `wbs.json` is gitignored (it is not the source of truth — it is your local scratch file).
