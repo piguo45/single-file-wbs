@@ -2907,7 +2907,13 @@
           "decisions": [],
           "pending": null,
           "closed": null,
-          "links": []
+          "links": [],
+          "_updates": [
+            {
+              "at": "2026-09-15",
+              "note": "夜の日記A4で「single-file-wbs の SaaS化（AWS）」として再出現。Server化→SaaS化へ構想が具体化する傾向。裁定時は①配布ラッパ ②チーム共有 ③AIチーム都合 に加え ④SaaS（AWS・課金/マルチテナント）を選択肢に含める"
+            }
+          ]
         }
       ]
     },
