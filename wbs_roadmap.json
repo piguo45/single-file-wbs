@@ -2914,6 +2914,134 @@
               "note": "夜の日記A4で「single-file-wbs の SaaS化（AWS）」として再出現。Server化→SaaS化へ構想が具体化する傾向。裁定時は①配布ラッパ ②チーム共有 ③AIチーム都合 に加え ④SaaS（AWS・課金/マルチテナント）を選択肢に含める"
             }
           ]
+        },
+        {
+          "id": 213,
+          "title": "【構想】SaaS 化（ホスト版・共有編集・AI チャット従量課金）— OSS はそのまま残す",
+          "priority": "mid",
+          "opened": "2026-09-15",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "OSS（ローカル・MIT）はそのままに、同じビューアと同じ JSON を AWS 上でホストして複数人で共有編集できる。利用者は「ローカルで使う／ホスト版で使う」を選べ、いつでも JSON を持ち帰れる（ロックインしない）。作者にとっては労働以外の収入源と、AWS（Cognito 等）の実地経験になる",
+          "closeWhen": "MVP が公開され、①Cognito でログイン ②S3 上の JSON をビューアで開き、保存が版チェック（If-Match）付きで通る ③2人以上で同じブックを編集し衝突時に確認が出る ④AI チャットから計画・課題の編集（CLAUDE.md と同じ意味論）ができ、AI の利用分だけ従量で課金される ⑤JSON のダウンロードでローカル版にそのまま戻れる ⑥基本料金が Backlog の最安プランより安い",
+          "decisions": [
+            {
+              "q": "製品の型＝「OSS ＋ ホスト版」（GitLab／n8n 型）。OSS は MIT・ローカルのまま、SaaS は別リポ・別製品で共有編集を足す",
+              "since": "2026-09-15",
+              "until": null,
+              "decided": "2026-09-15",
+              "a": "この型で進める。境界＝OSS：1枚のHTML＋JSON をローカルで／SaaS：同じものを複数人で共有編集。境界は動かさない"
+            },
+            {
+              "q": "料金＝基本料金は定額で Backlog の最安プランより安く。AI チャット（裏で AI を API 実行）だけ従量課金",
+              "since": "2026-09-15",
+              "until": null,
+              "decided": "2026-09-15",
+              "a": "共有編集は定額（Backlog 未満）、AI 利用分のみ従量。AI は SaaS 側のサーバーから API で呼び、OSS の CLAUDE.md と同じ意味論で JSON を編集する"
+            },
+            {
+              "q": "SaaS のリポ名・公開／非公開・ライセンス（AGPL 等の「ホストして商売するなら公開」型か非公開か）",
+              "since": "2026-09-15",
+              "until": null,
+              "decided": null,
+              "a": ""
+            },
+            {
+              "q": "AWS の置き場＝piguolabo 組織に専用アカウント（例 piguo-prod-wbs）を新設するか",
+              "since": "2026-09-15",
+              "until": null,
+              "decided": null,
+              "a": ""
+            },
+            {
+              "q": "認証＝Cognito（Hosted UI／OIDC）でよいか。会社利用向けの SAML 連携は後回しか",
+              "since": "2026-09-15",
+              "until": null,
+              "decided": null,
+              "a": ""
+            },
+            {
+              "q": "データ単位と同時編集の意味論＝1ブック＝1 JSON・S3 バージョニング・版チェックで衝突確認（CRDT／リアルタイムは需要待ち）でよいか",
+              "since": "2026-09-15",
+              "until": null,
+              "decided": null,
+              "a": ""
+            },
+            {
+              "q": "AI 従量課金の設計＝原価（トークン）に対する上乗せ率・上限・悪用対策（レート制限・月額上限）",
+              "since": "2026-09-15",
+              "until": null,
+              "decided": null,
+              "a": ""
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "issue": 214
+            },
+            {
+              "title": "GitHub Pages のデモ（入口の一つ）",
+              "url": "https://piguo45.github.io/single-file-wbs/demo.html"
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-15",
+              "text": "構想を合意：OSS＋ホスト版の型／基本料金は Backlog 未満の定額／AI チャットのみ従量（裏で API 実行）。骨子案＝ビューア無改造＋保存先差し替え、Cognito・S3（版管理）・API Gateway＋Lambda・DynamoDB（権限）・CloudFront・Terraform",
+              "assignee": "ぴぐお",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "未決5件を決める（リポ・アカウント・認証・データ単位・AI 課金設計）",
+              "assignee": "ぴぐお",
+              "done": false
+            },
+            {
+              "date": null,
+              "text": "自分専用 MVP（ログイン→S3 の JSON を開く→保存）を作る",
+              "assignee": "ぴぐお/Claude",
+              "done": false
+            }
+          ],
+          "note": "段階：①裁定 ②自分専用 MVP ③共有（招待・役割・版履歴からの復元）④課金・規約 ⑤AI チャット ⑥リアルタイム（需要があれば）。OSS 側の唯一の変更は #214（保存先の差し込み口）。預かる責任（漏洩・可用性・規約）が本物になる＝最小権限・暗号化・監査ログ・バックアップを設計で先に潰す"
+        },
+        {
+          "id": 214,
+          "title": "【設計】保存先の差し込み口（storage adapter）を正式な仕様にする（既定＝File System Access）",
+          "priority": "mid",
+          "opened": "2026-09-15",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "ホスト版（#213）や他の保存先（例：社内の静的配置＋API）が、ビューア本体をパッチせずに保存経路だけ差し替えられる。OSS の版が上がっても差し替え側が壊れない。デモ版（demo.html）の埋め込み方式と同じ「本体無改変」の原則を保存パスにも広げる",
+          "closeWhen": "①ビューアに保存先の差し込み口（読み込み／保存／更新時刻の取得／権限確認の4操作）が定義され、既定実装が今の File System Access と同じ振る舞い（保存キュー直列化・更新時刻による衝突検知・横入りの自動リトライ・0バイト対策）を保つ ②既存の e2e（save／save_retry／permissions）が無改変で GREEN ③差し替え実装のサンプル（メモリ上に保存するだけの最小版）が e2e で動く ④CLAUDE.md（ja/en）に差し込み口の仕様が載る",
+          "decisions": [
+            {
+              "q": "差し込み口の形＝window.__PM の橋（統合時の作法）に足すか、別名の adapter オブジェクトにするか。保存パス（聖域）を触るのでブランチ＋実機スモーク必須",
+              "since": "2026-09-15",
+              "until": null,
+              "decided": null,
+              "a": ""
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "issue": 213
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-15",
+              "text": "#213 の前提として起票（OSS 側の唯一の変更）",
+              "assignee": "ぴぐお",
+              "done": true
+            }
+          ],
+          "note": "制約：保存パスは聖域（データ消失歴あり）。既定実装の振る舞いを1つも変えない。fetch を本体に足さない（差し替え実装は SaaS 側リポに置く）。#107（0バイト化）の対策と競合しないよう順番を決める"
         }
       ]
     },
