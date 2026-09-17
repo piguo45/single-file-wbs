@@ -3101,6 +3101,103 @@
             }
           ],
           "note": "入口：wbs_viewer.html の #rsPop .rsp-row（white-space:nowrap）と #rsPop の max-width:560px。日付→日付の並びは折り返さず、理由の文だけ折り返すのが望ましい。ゴールデン/ピクセルの対象外要素（吹き出しは既定で非表示）"
+        },
+        {
+          "id": 216,
+          "title": "【表示】WBS 画面のデザイン棚卸し（線・格・文字・色）",
+          "priority": "mid",
+          "opened": "2026-09-18",
+          "due": null,
+          "ifIgnored": "",
+          "ifDone": "WBS 画面（計画側）が「綺麗でモダン」に見え、初見の利用者が業務システム的な重さを感じない。情報量は落とさず、装飾（線・枠・色面積・帯）を減らして読みやすくする。デモと記事の第一印象が上がる",
+          "closeWhen": "①北極星 3 つ（GitHub Projects Roadmap／Linear／Notion Timeline）と現状を並べた比較シートを作り、削る要素を決める ②P1 線（縦罫線を消し横罫線のみ・ピル/バッジ/ボタンの枠線をやめる・列折りたたみの段はホバー時だけ）③P2 格（主ボタンは「ファイルを開く」1つ・操作バーを1段40pxに・「絞り込み」等のラベル文字を消す）④P3 文字（最小11px・font-family を Inter/Noto Sans JP/system-ui のインストール済みだけ・CDN なし）⑤P4 色（土日列と階層の行地を薄く・セグメントの塗りを細く）を段階的に当て、各段で比較スクショを作者が承認 ⑥配色監査 ΔE<10 の新規ペアがゼロ ⑦ゴールデン/ピクセルを差分目視のうえ撮り直し・両回帰網 GREEN ⑧CLAUDE.md（ja/en）の表示節を更新・demo.html 再生成",
+          "decisions": [
+            {
+              "q": "北極星（見本）をどれにするか",
+              "since": "2026-09-18",
+              "until": null,
+              "decided": "2026-09-18",
+              "a": "GitHub Projects の Roadmap ビュー（同じ骨格・横罫線のみ）／Linear（枠線なし・濃淡と余白で階層）／Notion のタイムライン（週末の塗りが極薄・色数が少ない）。ガント単体は Frappe Gantt、部品の既定値は shadcn/ui・Radix Themes・Vercel Geist、判断基準は『Refactoring UI』"
+            },
+            {
+              "q": "課題側の画面はこの棚卸しの対象にするか",
+              "since": "2026-09-18",
+              "until": null,
+              "decided": "2026-09-18",
+              "a": "対象外（作者評価＝課題側は今のままで良い）。ただし P1〜P3 の共通部品（ボタン・ピル・文字サイズ）の変更が課題側にも及ぶ場合は、崩れないことだけ確認する"
+            },
+            {
+              "q": "フォントの選定（Inter＋Noto Sans JP を指定するか、system-ui だけにするか）",
+              "since": "2026-09-18",
+              "until": null,
+              "decided": null,
+              "a": ""
+            },
+            {
+              "q": "列折りたたみの「−」段を常設からホバー表示に変えてよいか（発見性とのトレードオフ）",
+              "since": "2026-09-18",
+              "until": null,
+              "decided": null,
+              "a": ""
+            }
+          ],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "GitHub Projects（Roadmap ビュー）",
+              "url": "https://github.com/features/issues"
+            },
+            {
+              "title": "Linear",
+              "url": "https://linear.app"
+            },
+            {
+              "title": "Frappe Gantt",
+              "url": "https://frappe.io/gantt"
+            },
+            {
+              "title": "shadcn/ui",
+              "url": "https://ui.shadcn.com"
+            },
+            {
+              "title": "Refactoring UI",
+              "url": "https://www.refactoringui.com"
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-18",
+              "text": "診断：線が多い（全セル罫線＋枠線つきピル/ボタン/バッジ）・上部の帯が3段・ボタンの格が不揃い・9〜12px の文字が混在・汎用 sans（Windows で Yu Gothic/Meiryo）・土日列と行地の色面積。原因は情報量でなく装飾の多さ",
+              "assignee": "Claude",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "北極星 3 つと現状を並べた比較シートを作る（削る要素の一覧つき）",
+              "assignee": "Claude",
+              "done": false
+            },
+            {
+              "date": null,
+              "text": "P1 線 → 比較スクショ → 承認",
+              "assignee": "Claude/ぴぐお",
+              "done": false
+            },
+            {
+              "date": null,
+              "text": "P2 格・P3 文字 → 比較スクショ → 承認",
+              "assignee": "Claude/ぴぐお",
+              "done": false
+            },
+            {
+              "date": null,
+              "text": "P4 色・配色監査・ゴールデン/ピクセル撮り直し・CLAUDE.md・demo.html 再生成",
+              "assignee": "Claude",
+              "done": false
+            }
+          ],
+          "note": "変更は CSS 中心（JS はホバー表示の切替程度）。見た目の大変更なので、従来どおりブランチ→比較スクショ→作者の UI チェック→マージ。関連：#106（進捗タブの圧を下げた前例）。課題側の絞り込みバー簡素化は別課題で扱う（16 個→8 個の案あり）"
         }
       ]
     },
