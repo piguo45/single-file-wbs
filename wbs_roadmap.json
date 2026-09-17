@@ -3067,6 +3067,40 @@
             }
           ],
           "note": "制約：保存パスは聖域（データ消失歴あり）。既定実装の振る舞いを1つも変えない。fetch を本体に足さない（差し替え実装は SaaS 側リポに置く）。#107（0バイト化）の対策と競合しないよう順番を決める"
+        },
+        {
+          "id": 215,
+          "title": "【表示】リスケ履歴の吹き出しで、長い理由が枠を突き抜ける（外部報告・Zenn コメント）",
+          "priority": "mid",
+          "opened": "2026-09-18",
+          "due": null,
+          "ifIgnored": "リスケの理由を1〜2文で丁寧に書く人ほど吹き出しが崩れ、履歴が読めない。Zenn 記事のコメントで報告あり（v2.0.0 で再現）",
+          "ifDone": "",
+          "closeWhen": "↷N の吹き出しに 100 文字超の理由を持つ履歴を表示しても、文が吹き出しの幅の中で折り返され、吹き出しが画面の右端からはみ出さない（headless で scrollWidth ≤ clientWidth・right ≤ 画面幅を検査）。リスケ確定フォームの理由入力欄も同様に長文で崩れない",
+          "decisions": [],
+          "pending": null,
+          "closed": null,
+          "links": [
+            {
+              "title": "Zenn 記事（コメント欄で報告）",
+              "url": "https://zenn.dev/piguolabo/articles/99b5b30a028f80"
+            }
+          ],
+          "actions": [
+            {
+              "date": "2026-09-18",
+              "text": "headless で再現：吹き出しの幅 560px に対し理由行が 1,430px（.rsp-row の white-space:nowrap が原因）",
+              "assignee": "Claude",
+              "done": true
+            },
+            {
+              "date": null,
+              "text": "折り返し（理由部分のみ）＋吹き出し幅を画面内に収める修正・e2e 追加・demo.html 再生成",
+              "assignee": "Claude",
+              "done": false
+            }
+          ],
+          "note": "入口：wbs_viewer.html の #rsPop .rsp-row（white-space:nowrap）と #rsPop の max-width:560px。日付→日付の並びは折り返さず、理由の文だけ折り返すのが望ましい。ゴールデン/ピクセルの対象外要素（吹き出しは既定で非表示）"
         }
       ]
     },
