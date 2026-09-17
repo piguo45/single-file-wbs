@@ -2429,10 +2429,10 @@
               "url": "https://github.com/piguo45/single-file-wbs/blob/main/docs/design/brief-deps.md"
             },
             {
-              "issue": 96
+              "issue": 216
             },
             {
-              "issue": 216
+              "wbs": "4.9.2"
             }
           ],
           "actions": [
