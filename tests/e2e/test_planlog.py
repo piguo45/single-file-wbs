@@ -1,6 +1,7 @@
 """リスケ履歴(#96)：表示（直近トレイル1本・↷Nバッジ・クリック吹き出し）と記録（↷フォーム→plan自動更新＋_planLog追記）。
 訂正（日付セル直接編集）は履歴を残さない＝リスケとの分離。XSS(esc)・壊れ入力graceful・変更なしは記録しない。
-本日=CLOCK_PIN(2026-06-15)固定。"""
+本日=CLOCK_PIN(2026-06-15)固定。
+末尾（#215）：長い理由を持つ吹き出しが枠・画面内に収まる（日付部分は1行維持・理由だけ折返し）。"""
 from playwright.sync_api import sync_playwright
 from common import VIEWER, check, finish, leaf, granted_handle_init, new_page
 import json
@@ -94,5 +95,34 @@ with sync_playwright() as p:
     pg.click('button[data-act="resched"] >> nth=0'); pg.wait_for_timeout(100)
     pg.click("#rsForm .rs-cancel"); pg.wait_for_timeout(100)
     check(not pg.is_visible("#rsForm"), "取消でフォームが閉じる（記録なし）")
+
+    # ===== #215: 長い理由を持つ吹き出しが枠・画面内に収まる =====
+    LONG_REASON = ("検証環境の手配が難航し承認フローの見直しと合わせて後ろ倒しになった。詳細は "
+                   "https://example.com/" + "x" * 80 +
+                   " を参照。外部ベンダーとの契約更新も来月にずれ込む見込みのため、実質的な着手は連休明け以降になる可能性が高い。")
+
+    def mk_long_data(reason):
+        lf = leaf("1.1", "長文理由", ps="2026-06-01", pe="2026-06-05")
+        lf["_planLog"] = [mklog("2026-05-20", "2026-05-24", "2026-06-01", "2026-06-05", reason)]
+        return {"projects": [{"name": "P2", "milestones": [], "tasks": [
+            {"id": "1", "name": "検証", "children": [lf]}]}]}
+
+    for vw in (1400, 900):
+        pgw = new_page(b, viewport={"width": vw, "height": 600})
+        pgw.on("pageerror", lambda e: errors.append(str(e)))
+        pgw.add_init_script(granted_handle_init(mk_long_data(LONG_REASON)))
+        pgw.goto(VIEWER)
+        pgw.click("#openBtn"); pgw.wait_for_timeout(200)
+        pgw.click('#leftRows .rsbdg >> nth=0'); pgw.wait_for_timeout(100)
+        check(pgw.is_visible("#rsPop"), f"[w={vw}] 長文理由でも吹き出しが開く")
+        box = pgw.eval_on_selector("#rsPop", "e=>({sw:e.scrollWidth,cw:e.clientWidth,right:e.getBoundingClientRect().right})")
+        check(box["sw"] <= box["cw"] + 1, f"[w={vw}] 横スクロール無し（scrollWidth<=clientWidth） -> {box}")
+        check(box["right"] <= vw + 0.5, f"[w={vw}] 吹き出しが画面右端内に収まる -> right={box['right']} vs {vw}")
+        pop_text = pgw.inner_text("#rsPop")
+        check(LONG_REASON in pop_text, f"[w={vw}] 理由の全文が切り捨てられず表示される")
+        meta_rects = pgw.eval_on_selector("#rsPop .rsp-meta", "e=>e.getClientRects().length")
+        check(meta_rects == 1, f"[w={vw}] 日付→日付の部分は1行のまま -> {meta_rects}")
+        pgw.close()
+
     b.close()
 finish(errors)
