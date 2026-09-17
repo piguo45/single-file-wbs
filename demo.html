@@ -236,13 +236,16 @@
   .rsbdg{font:inherit;font-size:10px;padding:0 4px;margin-left:4px;border:none;background:transparent;color:#6b7280;cursor:pointer;border-radius:4px}  /* ↷N=修正回数。クリックで吹き出し */
   .rsbdg:hover{background:#eef4ff;color:var(--accent)}
   #rsPop,#rsForm{position:fixed;z-index:60;background:#fff;border:1px solid var(--btn-border);border-radius:8px;
-    box-shadow:0 3px 12px rgba(0,0,0,.18);padding:8px 12px;font-size:12px;line-height:1.7;color:var(--text);max-width:560px}
-  #rsPop .rsp-row{white-space:nowrap}
+    box-shadow:0 3px 12px rgba(0,0,0,.18);padding:8px 12px;font-size:12px;line-height:1.7;color:var(--text);max-width:min(560px,calc(100vw - 24px))}
+  #rsPop{max-height:min(400px,calc(100vh - 24px));overflow:auto}  /* 履歴が多い時は縦スクロール（#215） */
+  #rsPop .rsp-row{white-space:normal}                              /* 行全体は折返し可・日付部分だけ.rsp-metaでnowrap維持（#215） */
+  #rsPop .rsp-meta{white-space:nowrap}
+  #rsPop .rsp-reason{white-space:normal;overflow-wrap:anywhere}    /* 理由の自由文だけ折り返す（日付の並びが割れると±N日が読みにくいため） */
   #rsPop .rsp-base{border-top:1px solid var(--line);margin-top:4px;padding-top:4px;color:var(--muted)}
   #rsForm{border-color:var(--accent)}
   #rsForm input{font:inherit;border:1px solid #c3c9d2;border-radius:4px;padding:1px 5px}
   #rsForm input.rs-date{width:92px}
-  #rsForm input.rs-reason{width:260px}
+  #rsForm input.rs-reason{width:260px;max-width:100%}
   #rsForm .rs-btns{display:flex;gap:8px;margin-top:6px}
   #rsForm .rs-ok{font:inherit;background:var(--accent);color:#fff;border:none;border-radius:5px;padding:3px 12px;cursor:pointer}
   #rsForm .rs-cancel{font:inherit;background:#fff;border:1px solid var(--btn-border);border-radius:5px;padding:3px 10px;cursor:pointer}
@@ -1741,7 +1744,9 @@
     let html=`<b>${esc(t("rsTitle")(log.length))}</b>`;
     log.slice().reverse().forEach(en=>{                                       // 新しい順
       const d=rsDelta(en.from,en.to);
-      html+=`<div class="rsp-row">${esc(md5(en.at))}  ${esc(rsSpan(en.from))} → ${esc(rsSpan(en.to))}${d?`（${esc(d)}）`:""}${en.reason?`　${esc(t("rsBy"))}: ${esc(String(en.reason))}`:""}</div>`;});
+      const meta=`${esc(md5(en.at))}  ${esc(rsSpan(en.from))} → ${esc(rsSpan(en.to))}${d?`（${esc(d)}）`:""}`;
+      const reason=en.reason?`<span class="rsp-reason">　${esc(t("rsBy"))}: ${esc(String(en.reason))}</span>`:"";
+      html+=`<div class="rsp-row"><span class="rsp-meta">${meta}</span>${reason}</div>`;});
     const cur=(n.plan&&typeof n.plan==="object")?n.plan:{};
     const vs=rsDelta(log[0].from,cur);
     html+=`<div class="rsp-base">${esc(t("rsOrig"))} ${esc(rsSpan(log[0].from))} → ${esc(t("rsNow"))} ${esc(rsSpan(cur))}${vs?`（${esc(t("rsVs"))} ${esc(vs)}）`:""}</div>`;
