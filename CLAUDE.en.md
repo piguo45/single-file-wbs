@@ -545,6 +545,7 @@ long names don't break anything but get truncated in the task column (full text 
   "actual": { "start": null, "end": null }, "note": "" }
 ```
 - To add an intermediate phase, add a **summary node** with `children` and put leaves under it (max 3 levels).
+- **Name summary nodes (levels 1–2) so they make sense on their own**: `number + what it achieves` (e.g. `Wave 2: ship the dependency tab` / `2 Development`). **Do not put status (in progress / waiting), priority, a bare issue number, or repo-internal abbreviations in the name** (the context is lost when several projects are aggregated side by side or when an AI reads it). If the user asks for an abbreviated or status-laden name, propose a compliant name and confirm (never rename silently).
 - **When the leaf belongs to an issue**, do not leave it unreferenced — add `{ "wbs": "<the new id>" }` to that issue's `links` (→ "Example requests to an AI (issue side — have it edit the JSON)" ⑦-4). **One WBS leaf = one issue**, so never turn the steps inside an issue into child tasks (those live in the issue's `actions[]`).
 
 ### ③ Adding a project
