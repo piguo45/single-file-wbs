@@ -13,6 +13,9 @@
   ⑦ 「時間」タブに戻すと製品のガントが再描画される（JS エラー 0）
   ⑧ チェックを外すと○が消える
   ⑨ ガードレール：循環は結べない／違反になる結びは確認のうえ後続ごとずらす
+  ⑩ 依存タブの間だけ左の情報表が隠れ、時間タブに戻すと復帰する
+  ⑪ 「○を選ぶ」パネルの開閉（既定は畳む・Esc で閉じる）と凡例の「?」
+  ⑫ 縦の並び（packed/rows）を変えても○と矢印の数は変わらない
 
 使い方:
     uv run python scripts/deps_mock/smoke.py
@@ -81,7 +84,42 @@ with sync_playwright() as p:
     n = pg.locator(NODES).count()
     check(n == N_DEPS, f"② ○の数＝_deps を持つ葉の数（{n} == {N_DEPS}）")
     check(pg.locator('#rtabs .rtab[data-view="deps"].on').count() == 1, "② 「依存」タブが選択の見た目になる")
-    check(pg.locator("#depsPick input.dpick").count() == 33, "② チェックリストに葉が33件ある")
+
+    # ⑩ 左の情報表は依存タブの間だけ隠れる（右ペインを画面幅いっぱいに）
+    check(pg.eval_on_selector("#left", "el => getComputedStyle(el).display") == "none",
+          "⑩ 依存タブでは左の情報表が隠れる")
+    check(pg.locator(".htab-sp .ctglb").count() >= 0 and
+          pg.eval_on_selector("#leftHead", "el => el.getClientRects().length") == 0,
+          "⑩ 左ヘッダ・列折りたたみ帯も出ていない（#left ごと隠れる）")
+
+    # ⑪ 「○を選ぶ」パネルは既定で畳んであり、ボタンで開き Esc で閉じる
+    check(pg.locator("#depsPick").count() == 0, "⑪ 既定ではチェックリストは畳んである（図だけ）")
+    check("15/33" in pg.locator("#depsPickBtn").inner_text(), "⑪ ボタンに 15/33 が出る")
+    check(pg.locator("#depsHelp[title]").count() == 1, "⑪ 凡例はヘッダ右の「?」の title にある")
+    pg.click("#depsPickBtn")
+    pg.wait_for_timeout(200)
+    check(pg.locator("#depsPick").count() == 1, "⑪ ボタンでパネルが開く")
+    check(pg.locator("#depsPick input.dpick").count() == 33, "⑪ パネルのチェックリストに葉が33件ある")
+    check(round(pg.eval_on_selector("#depsPick", "el => el.getBoundingClientRect().width")) == 230,
+          "⑪ パネルの幅は 230px")
+    pg.keyboard.press("Escape")
+    pg.wait_for_timeout(200)
+    check(pg.locator("#depsPick").count() == 0, "⑪ Esc でパネルが閉じる")
+
+    # ⑫ 縦の並びの切替（既定 packed → rows）で○と矢印の数は変わらない
+    n0, e_lay = pg.locator(NODES).count(), pg.locator(EDGES).count()
+    check(pg.evaluate("() => window.__DEPS.layout") == "packed", "⑫ 既定の並びは packed（詰める）")
+    h_packed = int(pg.eval_on_selector("#depsSvg", "el => el.getAttribute('height')"))
+    pg.click("#depsLayoutBtn")
+    pg.wait_for_timeout(200)
+    check(pg.evaluate("() => window.__DEPS.layout") == "rows", "⑫ ボタンで rows（行ごと）に変わる")
+    h_rows = int(pg.eval_on_selector("#depsSvg", "el => el.getAttribute('height')"))
+    check(pg.locator(NODES).count() == n0 and pg.locator(EDGES).count() == e_lay,
+          f"⑫ 並びを変えても○{n0}個・矢印{e_lay}本のまま")
+    check(h_rows > h_packed, f"⑫ rows は packed より縦に長い（{h_packed}px → {h_rows}px）")
+    pg.click("#depsLayoutBtn")            # 既定（packed）に戻して以降の検査を続ける
+    pg.wait_for_timeout(200)
+    check(pg.evaluate("() => window.__DEPS.layout") == "packed", "⑫ もう一度押すと packed に戻る")
 
     # ③ 余裕0（赤い輪）／④ 違反
     crit = pg.locator(NODES + "[data-crit]").count()
@@ -123,10 +161,11 @@ with sync_playwright() as p:
         const p = g.querySelector('path'), L = p.getTotalLength();
         const r = document.getElementById('depsSvg').getBoundingClientRect();
         const box = document.getElementById('right').getBoundingClientRect();
-        const pick = document.getElementById('depsPick').getBoundingClientRect();
+        const pick = document.getElementById('depsPick');    // 畳んでいれば無い
+        const lim = pick ? pick.getBoundingClientRect().right : box.left;
         for(let f = 0.12; f <= 0.88; f += 0.02){
           const pt = p.getPointAtLength(L * f), x = r.left + pt.x, y = r.top + pt.y;
-          if(x < Math.max(box.left, pick.right) + 2 || x > box.right - 2)continue;
+          if(x < Math.max(box.left, lim) + 2 || x > box.right - 2)continue;
           if(y < box.top + 2 || y > box.bottom - 2)continue;
           const stack = document.elementsFromPoint(x, y);
           if(stack.some(el => el.closest && el.closest('g.dedge') === g))return { x: x, y: y };
@@ -163,6 +202,8 @@ with sync_playwright() as p:
           "⑥ 追記した _planLog は by:\"mock\" で from/to を持つ")
 
     # ⑧ チェックを外すと○が消える（依存が付いているので確認ダイアログ＝OK で進む）
+    pg.click("#depsPickBtn")              # パネルを開く（既定は畳んである）
+    pg.wait_for_timeout(200)
     pg.locator('#depsPick input.dpick[data-id="2.4.2"]').uncheck()
     pg.wait_for_timeout(250)
     n2 = pg.locator(NODES).count()
@@ -178,6 +219,10 @@ with sync_playwright() as p:
     check(pg.locator("#grows .grow").count() > 0, "⑦ 時間タブに戻すと製品のガントが再描画される")
     check(pg.locator("#depsSvg").count() == 0, "⑦ 依存タブの図は消えている")
     check(pg.locator('#rtabs .rtab[data-view="deps"]').count() == 1, "⑦ 「依存」タブは残っている")
+    check(pg.eval_on_selector("#left", "el => getComputedStyle(el).display") != "none",
+          "⑩ 時間タブに戻すと左の情報表が元に戻る")
+    check(pg.eval_on_selector("#left", "el => el.getAttribute('style') || ''").find("display: none") < 0,
+          "⑩ #left の style に display:none を残さない（製品の指定に戻す）")
 
     shots = ROOT / ".tmp_deps"                    # 目で見たい時のスクショ置き場（コミットしない）
     shots.mkdir(exist_ok=True)

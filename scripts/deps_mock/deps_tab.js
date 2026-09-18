@@ -220,12 +220,42 @@
     return L.join("\n");
   }
 
+  // ===== 画面の状態（localStorage は汚さない＝製品の記憶に触らない） =====
+  var selected = null;       // 選択中の○（番号）。null＝未選択
+  var pickOpen = false;      // 「○を選ぶ」パネルが開いているか（既定＝畳む＝図だけ）
+  var layout = "packed";     // 縦の並び。"packed"＝段の中で上から詰める（既定）／"rows"＝1葉1行
+  var PACK_ROW = 44;         // packed のときの行高
+
+  // 凡例（ヘッダ右の「?」のツールチップ＝既存の title の作法。パネルからは外した）
+  var LEGEND = "○＝作業（中＝番号・下＝名前）\n"
+    + "線＝開始日として選べる範囲（＝余裕）。目盛りは1日・月曜が長い\n"
+    + "赤い輪＝余裕0（クリティカルパス）\n"
+    + "赤い○＝影響あり（違反・前工程の実遅れで線からはみ出した）\n"
+    + "◇＝マイルストーン（線の右端の根拠）\n"
+    + "○をクリック→別の○をクリック＝依存を結ぶ／矢印をクリック＝外す\n"
+    + "選択中に線の目盛りをクリック＝その日を開始に（Esc で解除）";
+
+  // 依存タブの間だけ左の情報表を隠す（右ペインを画面幅いっぱいに使う）。
+  // 製品は render のたびに #left を "block" に戻すので、塗り直しのたびに掛け直す。
+  function setLeftHidden(hide){
+    var l = document.getElementById("left");
+    if(l)l.style.display = hide ? "none" : "";               // "" ＝製品の指定に戻す
+  }
+  function pickCount(proj){                                  // ボタンに出す「○を置いた葉 / 葉ぜんぶ」
+    var ls = leavesOf(proj.tasks, []);
+    return { on:ls.filter(hasDeps).length, total:ls.length };
+  }
+
   // ===== 図（SVG）を組む =====
-  var selected = null;     // 選択中の○（番号）。null＝未選択
   function figure(g){
     var n = g.order.length;
     if(!n)return '<div style="padding:24px;color:' + C.muted + '">'
-      + '○を置く作業がありません。左のチェックリストで選んでください（チェック＝<code>_deps: []</code> を足す）。</div>';
+      + '○を置く作業がありません。ヘッダ左の「○を選ぶ」から選んでください（チェック＝<code>_deps: []</code> を足す）。</div>';
+    // 縦の並びは2通り（brief の未決。どちらが読みやすいかを触って決めるための切替）
+    //   packed = 段の中で上から詰める（1段に N 個・行高 44px）＝縦が短く、段＝列として読める
+    //   rows   = 1葉1行（段→開始日の順）＝v1 の階段状
+    var packed = (g.layout !== "rows");
+    var seen = {};                                           // 段ごとに何個置いたか（packed の縦位置）
     var pos = {};                                            // 番号 → ○と線の座標
     g.order.forEach(function(id, i){
       var d = g.info[id];
@@ -234,12 +264,16 @@
       var span = Math.max(0, diffD(d.winStart, d.ls));
       var shown = Math.min(span, MAXD);
       var L = X0 + d.rank * COLW + 20;                        // 線の左端＝その段の基準線
-      var y = TOP + i * ROW + 22;
+      var k = seen[d.rank] = (seen[d.rank] == null ? 0 : seen[d.rank] + 1);
+      var y = packed ? (TOP + k * PACK_ROW + 22) : (TOP + i * ROW + 22);
       var off = Math.max(-6, Math.min(diffD(d.winStart, d.start), shown));  // ○の位置＝いまの開始日（左にはみ出しは6日で頭打ち）
       pos[id] = { x:L + off * DAYPX, y:y, L:L, shown:shown, span:span };
     });
+    // 図の高さ＝いちばん背の高い段（packed）／葉の数（rows）
+    var rowsUsed = packed ? (Math.max.apply(null, g.order.map(function(id){ return seen[g.info[id].rank]; })) + 1) : n;
+    var step = packed ? PACK_ROW : ROW;
     var mx = X0 + (g.maxRank + 1) * COLW + 40;               // ◇の x（いちばん右の段のさらに右）
-    var my = TOP + ROW * n / 2;
+    var my = TOP + step * rowsUsed / 2;
     var body = "";
 
     for(var k = 0; k <= g.maxRank; k++)                       // 段の見出し
@@ -260,7 +294,8 @@
     g.order.forEach(function(id){
       if(g.info[id].succ.length)return;
       var a = pos[id];
-      body += curve(a.x + R + 1, a.y, mx - 13, my, C.ms, 1.1, 0.35, "");
+      // 選択中は◇への線も一緒に沈める（依存の矢印だけ濃く見せるため）
+      body += curve(a.x + R + 1, a.y, mx - 13, my, C.ms, 1.1, selected ? 0.12 : 0.35, "");
     });
     var msCol = (g.ms && typeof g.ms.color === "string" && /^#[0-9a-fA-F]{3,8}$/.test(g.ms.color)) ? g.ms.color : C.ms;
     var msLbl = g.ms ? (String(g.ms.label||"") + "　" + md(g.ms.date)) : "（マイルストーン無し）";
@@ -308,7 +343,7 @@
         + esc(cut(d.name, 9)) + '</text></g>';
     });
 
-    var W = mx + 220, H = TOP + ROW * n + 20;
+    var W = mx + 220, H = TOP + step * rowsUsed + 20;
     return '<svg id="depsSvg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H
       + '" style="display:block;background:#fff">' + body + '</svg>';
   }
@@ -327,19 +362,18 @@
           + '</span></label>';
       });
     });
-    var legend = '<div style="color:' + C.muted + ';font-size:10px;line-height:1.6;margin-bottom:8px">'
-      + '○＝作業（中＝番号・下＝名前）<br>線＝開始日として選べる範囲（＝余裕）<br>'
-      + '<span style="color:' + C.red + '">赤い輪</span>＝余裕0（クリティカルパス）<br>'
-      + '<span style="color:' + C.red + '">赤い○</span>＝影響あり（違反・前工程の実遅れ）<br>◇＝マイルストーン</div>';
-    return '<div id="depsPick" style="position:sticky;left:0;z-index:2;flex:0 0 230px;width:230px;'
-      + 'border-right:1px solid #e5e7eb;padding:8px 10px;font-size:12px;background:#fff;align-self:stretch">'
-      + legend
-      + '<div style="font-weight:600;margin-bottom:4px">○を置く作業を選ぶ <span style="color:' + C.muted
-      + ';font-weight:400">（葉だけ・' + on + "/" + total + '）</span></div>' + h
+    // パネルは図の左に重ねず、左端に貼り付く1枚（横スクロールでも残る・縦は上に貼り付く）
+    return '<div id="depsPick" style="position:sticky;left:0;top:0;z-index:3;flex:0 0 230px;width:230px;'
+      + 'border-right:1px solid #e5e7eb;padding:8px 10px;font-size:12px;background:#fff;align-self:flex-start;'
+      + 'max-height:100%;overflow:auto">'
+      + '<div style="display:flex;align-items:center;margin-bottom:2px">'
+      + '<span style="font-weight:600;white-space:nowrap">○を置く作業を選ぶ</span>'
+      + '<button type="button" id="depsPickClose" title="閉じる（Esc）" style="margin-left:auto;font:inherit;'
+      + 'font-size:11px;line-height:1;padding:2px 5px;border:1px solid #9aa2ad;border-radius:4px;'
+      + 'background:#fff;cursor:pointer;color:#445">✕</button></div>'
+      + '<div style="color:' + C.muted + ';font-size:10px;margin-bottom:4px">葉だけ・' + on + "/" + total + '</div>' + h
       + '<div style="margin-top:12px;color:' + C.muted + ';font-size:10px;line-height:1.5">'
-      + 'チェック＝ <code>_deps: []</code> を足す／外す＝キーと参照を消す。'
-      + '○をクリック→別の○をクリックで依存を結ぶ（Esc で解除）。選択中に線の目盛りをクリック＝その日を開始に。'
-      + '矢印をクリック＝依存を外す。</div></div>';
+      + 'チェック＝ <code>_deps: []</code> を足す／外す＝キーと参照を消す（依存が付いていれば確認）。</div></div>';
   }
 
   // ===== タブと描画の差し込み =====
@@ -359,21 +393,39 @@
       else if(isDeps)el.classList.remove("on");
     });
   }
+  var BTN = "font:inherit;font-size:11px;line-height:1.3;padding:2px 8px;border:1px solid #9aa2ad;"
+    + "border-radius:4px;background:#fff;cursor:pointer;color:#445";   // 製品の操作ボタンと同じトーン
   function paint(home){                                       // 右ペインを依存タブの図に差し替える（home=true でスクロールも先頭へ）
     var proj = firstProject(), rh = document.getElementById("rightHead"), rb = document.getElementById("rightBody");
     if(!rh || !rb)return;
+    // window.__DEPS.layout に外から代入された値を拾う（覗き窓＝切替の口も兼ねる）
+    var prev = window.__DEPS;
+    if(prev && (prev.layout === "rows" || prev.layout === "packed"))layout = prev.layout;
     var g = proj ? compute(proj) : null;
+    if(g)g.layout = layout;
     window.__DEPS = g;                                        // 計算結果の覗き窓（smoke.py が CPM の値を直接見る）
+    var cnt = proj ? pickCount(proj) : { on:0, total:0 };
     painting = true;
+    setLeftHidden(true);                                      // 左の情報表を隠して右ペインを画面幅いっぱいに（案A）
     rh.className = ""; rh.style.width = ""; rh.style.height = "";
-    rh.innerHTML = '<div style="height:26px;display:flex;align-items:center;gap:10px;padding:0 10px;'
+    rh.innerHTML = '<div style="height:26px;display:flex;align-items:center;gap:8px;padding:0 8px;'
       + 'background:#eef0f3;border-bottom:2px solid #d7dbe0;font-size:11px;white-space:nowrap;'
       + 'overflow:hidden;color:' + C.muted + '">'
+      // 図の左上＝ヘッダ左端に「○を選ぶ」。押すと幅230pxのパネルが開く（既定は畳む）
+      + '<button type="button" id="depsPickBtn" title="○を置く作業を選ぶ（_deps キーの有無）" style="' + BTN
+      + (pickOpen ? ";background:#eef4ff;border-color:" + C.accent + ";color:" + C.accent : "") + '">'
+      + '○を選ぶ（' + cnt.on + "/" + cnt.total + '）</button>'
       + '<b style="color:' + C.text + '">依存（構造）</b>'
+      + '<button type="button" id="depsLayoutBtn" title="縦の並びを変える（詰める＝段の中で上から／行ごと＝1葉1行）"'
+      + ' style="margin-left:8px;' + BTN + '">並び：' + (layout === "packed" ? "詰める" : "行ごと") + '</button>'
+      + '<span id="depsHelp" title="' + esc(LEGEND) + '" style="margin-left:6px;width:16px;height:16px;'
+      + 'display:inline-flex;align-items:center;justify-content:center;border:1px solid #9aa2ad;'
+      + 'border-radius:50%;cursor:help;color:#445">?</span>'
       + '<span style="margin-left:auto">モック：JSON には保存しません</span></div>';
     rb.style.width = ""; rb.style.height = "";
     rb.innerHTML = '<div id="depsWrap" style="display:flex;align-items:flex-start;min-height:100%">'
-      + (g ? picker(g) : "") + '<div style="flex:0 0 auto">' + (g ? figure(g) : "計画（tasks）がありません") + "</div></div>";
+      + ((g && pickOpen) ? picker(g) : "")
+      + '<div style="flex:0 0 auto">' + (g ? figure(g) : "計画（tasks）がありません") + "</div></div>";
     var right = document.getElementById("right");
     if(right){
       right.classList.remove("pview");                        // 進捗ビューの横スクロール止めを外す（図は横に長い）
@@ -409,13 +461,28 @@
       if(!depsOn){ depsOn = true; selected = null; addTab(); paint(true); }
     }else if(depsOn){
       depsOn = false; selected = null; addTab();
+      setLeftHidden(false);                                   // 左の情報表を元の幅・表示に戻す
       setTimeout(function(){ if(typeof PM.render === "function")PM.render(); }, 0);   // 製品のガントへ戻す
     }
   }, true);
 
-  // Esc で選択解除
+  // Esc＝まずパネルを閉じ、開いていなければ選択解除
   document.addEventListener("keydown", function(e){
-    if(e.key === "Escape" && depsOn && selected){ selected = null; repaint(); }
+    if(e.key !== "Escape" || !depsOn)return;
+    if(pickOpen){ pickOpen = false; repaint(); return; }
+    if(selected){ selected = null; repaint(); }
+  });
+
+  // ヘッダのボタン（○を選ぶ／並びの切替）。パネルの ✕ でも閉じる
+  document.addEventListener("click", function(e){
+    if(!depsOn || !e.target.closest)return;
+    if(e.target.closest("#depsPickBtn")){ pickOpen = !pickOpen; repaint(); return; }
+    if(e.target.closest("#depsPickClose")){ pickOpen = false; repaint(); return; }
+    if(e.target.closest("#depsLayoutBtn")){
+      layout = (layout === "packed" ? "rows" : "packed");
+      if(window.__DEPS)window.__DEPS.layout = layout;         // 覗き窓も合わせる
+      repaint(); return;
+    }
   });
 
   document.addEventListener("click", function(e){
