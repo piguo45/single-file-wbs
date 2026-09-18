@@ -1420,6 +1420,7 @@ Avoid the following when entering data (nothing crashes, but display degrades).
 A skill that keeps this tool's own development artefacts consistent with AI. **This section is the single source**
 (the user's own `~/.claude/commands/pm.md` reads this section, and locally `~/.claude/CLAUDE-single-file-wbs.md` is a symlink to this file; this repo gitignores `.claude/`, so no command definition is checked in).
 Pick the mode **from the context of the conversation** (no need to type `/pm` explicitly). The human judges; the skill drives and records.
+**AI-to-AI discussion (reviews, observations, hand-offs) happens in messages; only settled facts (issues, decisions, actuals) are written to the JSON.** Messages are history, not the source of truth.
 
 **The source of truth is the JSON this merged viewer reads** (`projects[].issues` and `projects[].tasks`).
 Issues and the development plan live in the same file, and are **never duplicated into GitHub Issues** (you would lose track of which one is real).
