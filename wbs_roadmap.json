@@ -1382,36 +1382,108 @@
         },
         {
           "id": "5",
-          "name": "v1.4: 依存追加",
+          "name": "v2.1: 依存タブ（構造の軸）",
           "children": [
             {
               "id": "5.1",
-              "name": "依存タブ：動くモック→実装(#66)",
-              "qty": 1,
-              "hours": 12,
-              "assignee": "Claude",
-              "plan": {
-                "start": "2026-10-05",
-                "end": "2026-10-09"
-              },
-              "actual": {
-                "start": "2026-09-18",
-                "end": null
-              },
-              "note": "#66 依存タブ。2026-09-18 設計確定（docs/design/brief-deps.md）。まず製品に差し込んだ動くモック（描画だけ・保存なし）で操作感を確かめ、承認後に実装（v2.1.0）",
-              "_planLog": [
+              "name": "依存タブ 第1歩：保存できる切り出し(#66)",
+              "note": "#66 依存タブ。2026-09-18 設計確定（docs/design/brief-deps.md）。まず製品に差し込んだ動くモック（描画だけ・保存なし）で操作感を確かめ、承認後に実装（v2.1.0）。ブランチ feat/deps-tab。モック第3版（scripts/deps_mock/deps_tab.js）を本体の独立節として移植し、実データで使える状態にする",
+              "children": [
                 {
-                  "at": "2026-09-06T00:00:00Z",
-                  "from": {
-                    "start": "2026-06-23",
-                    "end": "2026-06-27"
+                  "id": "5.1.1",
+                  "name": "データ層：_deps/_pos 読み書き・参照追従・check.py",
+                  "qty": 1,
+                  "hours": 6,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-19",
+                    "end": "2026-09-22"
                   },
-                  "to": {
-                    "start": "2026-10-05",
-                    "end": "2026-10-09"
+                  "actual": {
+                    "start": null,
+                    "end": null
                   },
-                  "by": "claude-fable-5-1",
-                  "reason": "v1.4.0を依存機能なしでリリース(7/12)。未着手のまま期限超過のため再設定"
+                  "note": "round-trip（保存で保持）・id変更/削除/集計化で _deps を付け替え・check.py に参照切れ/循環/参照されているのに _deps なし。Opus"
+                },
+                {
+                  "id": "5.1.2",
+                  "name": "描画：方眼・自動配置・最長経路・違反・◇・ズーム",
+                  "qty": 1,
+                  "hours": 10,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-19",
+                    "end": "2026-09-24"
+                  },
+                  "actual": {
+                    "start": null,
+                    "end": null
+                  },
+                  "note": "モック第3版の移植。_deps の無い JSON では一切走らせない（C1）。独立節・関数ごとに1行コメント。Opus"
+                },
+                {
+                  "id": "5.1.3",
+                  "name": "操作：図に載せる・ゴム線・✕・ドラッグ/_pos・整列・Ctrl+Z",
+                  "qty": 1,
+                  "hours": 8,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-24",
+                    "end": "2026-09-26"
+                  },
+                  "actual": {
+                    "start": null,
+                    "end": null
+                  },
+                  "note": "編集モードの門番・既存の自動保存キューに載せる（保存パスは触らない）。Opus"
+                },
+                {
+                  "id": "5.1.4",
+                  "name": "テスト：e2e・ゴールデン/ピクセル・配色監査",
+                  "qty": 1,
+                  "hours": 6,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-25",
+                    "end": "2026-09-29"
+                  },
+                  "actual": {
+                    "start": null,
+                    "end": null
+                  },
+                  "note": "決定性・最長経路（独立計算と一致）・違反・結ぶ/外す/置く・round-trip・時間タブ復帰。赤の使い分けを形で冗長化して監査に登録。Sonnet"
+                },
+                {
+                  "id": "5.1.5",
+                  "name": "仕様書：CLAUDE.md ja/en・AI依頼例3・demo に依存サンプル",
+                  "qty": 1,
+                  "hours": 4,
+                  "assignee": "Claude",
+                  "plan": {
+                    "start": "2026-09-29",
+                    "end": "2026-09-30"
+                  },
+                  "actual": {
+                    "start": null,
+                    "end": null
+                  },
+                  "note": "データ形式・画面・操作・AI の決まり・異常系（切れた参照・循環）。wbs_demo.json に _deps を足して demo.html 再生成。Sonnet"
+                },
+                {
+                  "id": "5.1.6",
+                  "name": "検収・実機スモーク・ブランチで実データ運用開始",
+                  "qty": 1,
+                  "hours": 2,
+                  "assignee": "ぴぐお",
+                  "plan": {
+                    "start": "2026-10-01",
+                    "end": "2026-10-01"
+                  },
+                  "actual": {
+                    "start": null,
+                    "end": null
+                  },
+                  "note": "保存ダイアログ通過→依存を1本結ぶ→保存済→再読込で残る、を実機で"
                 }
               ]
             },
@@ -1430,6 +1502,38 @@
                 "end": "2026-07-12"
               },
               "note": "リリースノート・スクショ・gitタグ・GitHub Releases"
+            },
+            {
+              "id": "5.3",
+              "name": "ドッグフーディング 2週間（D1 の判定）",
+              "qty": 1,
+              "hours": 8,
+              "assignee": "ぴぐお",
+              "plan": {
+                "start": "2026-10-02",
+                "end": "2026-10-15"
+              },
+              "actual": {
+                "start": null,
+                "end": null
+              },
+              "note": "実データで依存を入れ続けるか。矢印の既定・整列の使い勝手・図が腐らないかを記録"
+            },
+            {
+              "id": "5.4",
+              "name": "v2.1.0 リリース",
+              "qty": 1,
+              "hours": 3,
+              "assignee": "ぴぐお",
+              "plan": {
+                "start": "2026-10-16",
+                "end": "2026-10-16"
+              },
+              "actual": {
+                "start": null,
+                "end": null
+              },
+              "note": "版表記・demo 再生成・リリースノート・GitHub Release・Pages"
             }
           ]
         },
