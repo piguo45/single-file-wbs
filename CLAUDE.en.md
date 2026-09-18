@@ -873,6 +873,7 @@ When what you are waiting on is **an issue rather than a person**, put an **issu
 **Read only** — change nothing. Collect **both waits and open questions** (`⚠ Nudge` is one mark):
 
 ```
+No changes
 Waiting
   Timesheet system replacement #2 Cross-midnight punches break in the data migration
     Dev vendor owes "the revised date-boundary spec" by 9/8 (1 day past)
@@ -984,6 +985,7 @@ Put **`decided` (the day) and `a` (the approach)** into that entry. Never add an
 **Read only** — change nothing. Gather every `decisions` entry with **`decided: null`** across all projects and sort by **days since `since`, longest first**:
 
 ```
+No changes
 20d Timesheet system replacement #1 Keep the current rounding rule or move to the statutory one (HR to decide)
 16d Migration project #2 Whether to migrate the legacy paper forms (business team to decide)
 12d Migration project #5 Whether to provision a second verification environment (PL to decide)
@@ -1165,6 +1167,7 @@ Read each issue's `ifIgnored` / `ifDone` (size of impact) and `due` (nearness), 
 **Read only** — change nothing. Take the period from `star` (or the last 7 days) and collect the issues matching the ★ rules, grouped per issue:
 
 ```
+No changes
 #1 Mass character-encoding errors in the migration test
    9/5 incident → 9/7 decided the approach (investigate the cause, fix the conversion step)
 #3 Encoding-conversion spec still unanswered by the dev team
@@ -1224,6 +1227,7 @@ Append one entry to the `projects` array (it may start empty):
 **Read only** — change nothing. Count `★ Updated` and `⚠ Overdue` per project:
 
 ```
+No changes
 Timesheet system replacement   ★ Updated 1 (#2 cross-midnight conversion, decided 9/2) / ⚠ Overdue 1 (#1 still has 1 open question, past 9/3)
 Migration project              ★ Updated 3 (#1 investigation, #3 set to waiting, #7 closed as won't fix) / ⚠ Overdue 1
 ```
@@ -1258,6 +1262,7 @@ Remove it from the source project's `issues` and append it to the destination's.
 **Read only** — change nothing. Take `{ "wbs": … }` from the issue's `links`, walk **the same project's `tasks`**, and read that leaf's `plan` / `actual`:
 
 ```
+No changes
 #3 Encoding-conversion spec still unanswered by the dev team
   WBS 2.3 Encoding conversion (owner Piguo, 16h)
     Planned 2026-09-14 – 2026-09-18
@@ -1280,6 +1285,7 @@ Remove it from the source project's `issues` and append it to the destination's.
 Reading `wbs_sample_issues.json` as of 2026-09-07, no leaf is late, so the answer is **nothing matched**:
 
 ```
+No changes
 No tasks are running late (Migration project plans end 9/18, 10/2 and 10/20 — none reached yet).
 Timesheet system replacement: no plan (WBS), so lateness cannot be judged.
 
