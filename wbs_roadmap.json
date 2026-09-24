@@ -1250,11 +1250,11 @@
             {
               "id": "4.13",
               "name": "0バイト化の再発調査＋復旧案内(#107)",
-              "note": "#107：https://github.com/piguo45/single-file-wbs/issues/107 6/29・6/30に2件（OneDrive側roadmap／WSL側wbs.json）。原因未特定。空データでの編集ON経路を塞ぐ＋0バイト読込時に復旧手順を表示",
+              "note": "#107：https://github.com/piguo45/single-file-wbs/issues/107 6/29・6/30に2件（同期フォルダ側roadmap／ローカル側wbs.json）。原因未特定。空データでの編集ON経路を塞ぐ＋0バイト読込時に復旧手順を表示",
               "children": [
                 {
                   "id": "4.13.1",
-                  "name": "実機で再現切り分け(wsl/OneDrive)",
+                  "name": "実機で再現切り分け(同期/ローカル)",
                   "qty": 1,
                   "hours": 2,
                   "assignee": "ぴぐお",
@@ -3219,7 +3219,7 @@
               "a": ""
             },
             {
-              "q": "AWS の置き場＝piguolabo 組織に専用アカウント（例 piguo-prod-wbs）を新設するか",
+              "q": "AWS の置き場＝専用アカウントを新設するか（組織・アカウント名は手元の wbs.json に）",
               "since": "2026-09-15",
               "until": null,
               "decided": null,
@@ -3693,7 +3693,7 @@
                 "start": "2026-09-05",
                 "end": null
               },
-              "note": "課題の区切り方・問題との違い・Todoとの違い（ナレッジで整理中）→ スキーマ設計の入力。https://github.com/piguo45/life-os/issues/96"
+              "note": "課題の区切り方・問題との違い・Todoとの違い（ナレッジで整理中）→ スキーマ設計の入力（別リポのナレッジで整理中）"
             },
             {
               "id": "1.2",
