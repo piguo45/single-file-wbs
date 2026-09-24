@@ -1,0 +1,93 @@
+{
+  "name": "依存タブの確認",
+  "star": { "from": "2026-06-09", "to": "2026-06-15" },
+  "projects": [
+    {
+      "name": "依存の確認",
+      "milestones": [
+        { "date": "2026-07-10", "label": "リリース", "color": "#cc79a7" }
+      ],
+      "tasks": [
+        {
+          "id": "1",
+          "name": "1 開発",
+          "children": [
+            { "id": "1.1", "name": "要件整理", "qty": 1, "hours": 40, "assignee": "ぴぐお",
+              "plan": { "start": "2026-06-01", "end": "2026-06-05" },
+              "actual": { "start": "2026-06-01", "end": "2026-06-05" }, "note": "",
+              "_deps": [] },
+            { "id": "1.2", "name": "設計", "qty": 1, "hours": 40, "assignee": "ぴぐお",
+              "plan": { "start": "2026-06-08", "end": "2026-06-12" },
+              "actual": { "start": "2026-06-08", "end": "2026-06-12" }, "note": "",
+              "_deps": ["1.1"] },
+            { "id": "1.3", "name": "実装", "qty": 1, "hours": 40, "assignee": "佐藤",
+              "plan": { "start": "2026-06-15", "end": "2026-06-19" },
+              "actual": { "start": "2026-06-15", "end": null },
+              "note": "変換ロジックはここで書く\n外字の扱いは別途決める\n3行目はホバーに出さない",
+              "_deps": ["1.2"] },
+            { "id": "1.4", "name": "データ移送", "qty": 1, "hours": 24, "assignee": "佐藤",
+              "plan": { "start": "2026-06-08", "end": "2026-06-10" },
+              "actual": { "start": "2026-06-08", "end": "2026-06-14" }, "note": "",
+              "_deps": ["1.1"] },
+            { "id": "1.5", "name": "結合テスト", "qty": 1, "hours": 40, "assignee": "ぴぐお/佐藤",
+              "plan": { "start": "2026-06-22", "end": "2026-06-26" },
+              "actual": { "start": null, "end": null }, "note": "",
+              "_deps": ["1.3", "1.4"] },
+            { "id": "1.6", "name": "帳票の差し替え", "qty": 1, "hours": 32, "assignee": "田中",
+              "plan": { "start": "2026-06-17", "end": "2026-06-20" },
+              "actual": { "start": null, "end": null }, "note": "",
+              "_pos": [12, 8],
+              "_ai": { "memo": "依存 AI 推定: 実装の完了物を差し替えるため実装の後に置いた" },
+              "_deps": ["1.3"] },
+            { "id": "1.7", "name": "本番切替", "qty": 1, "hours": 40, "assignee": "ぴぐお",
+              "plan": { "start": "2026-06-29", "end": "2026-07-03" },
+              "actual": { "start": null, "end": null }, "note": "",
+              "_deps": ["1.5"] },
+            { "id": "1.8", "name": "移送の検証", "qty": 1, "hours": 40, "assignee": "田中",
+              "plan": { "start": "2026-06-12", "end": "2026-06-16" },
+              "actual": { "start": null, "end": null }, "note": "",
+              "_deps": ["1.4"] },
+            { "id": "1.9", "name": "図に載せない作業", "qty": 1, "hours": 8, "assignee": "",
+              "plan": { "start": "2026-06-24", "end": "2026-06-25" },
+              "actual": { "start": null, "end": null }, "note": "" }
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "id": 1,
+          "title": "帳票の差し替えが実装の完了を追い越している",
+          "priority": "high",
+          "opened": "2026-06-10",
+          "due": "2026-07-10",
+          "ifIgnored": "7/10 の本番切替で古い帳票が出る",
+          "ifDone": "",
+          "closeWhen": "差し替え後の帳票で、リハーサルの出力が合っていること",
+          "decisions": [
+            { "q": "差し替えを実装より先に始めるか", "since": "2026-06-10",
+              "until": "2026-06-18", "decided": null, "a": "" }
+          ],
+          "pending": {
+            "kind": "waiting", "since": "2026-06-11", "who": "業務部",
+            "until": "2026-06-19", "what": "差し替え後の帳票レイアウトの確認"
+          },
+          "closed": null,
+          "links": [{ "wbs": "1.6" }],
+          "actions": [
+            { "date": "2026-06-10", "text": "事象を確認", "assignee": "田中", "done": true }
+          ],
+          "note": ""
+        }
+      ]
+    },
+    {
+      "name": "依存を書いていない案件",
+      "milestones": [],
+      "tasks": [
+        { "id": "1", "name": "調査", "qty": 1, "hours": 16, "assignee": "ぴぐお",
+          "plan": { "start": "2026-06-10", "end": "2026-06-12" },
+          "actual": { "start": null, "end": null }, "note": "" }
+      ]
+    }
+  ]
+}

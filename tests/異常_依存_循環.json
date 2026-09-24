@@ -1,0 +1,27 @@
+{
+  "name": "依存の循環",
+  "projects": [
+    {
+      "name": "循環の確認",
+      "milestones": [{ "date": "2026-07-01", "label": "締切" }],
+      "tasks": [
+        { "id": "1", "name": "A", "qty": 1, "hours": 8, "assignee": "",
+          "plan": { "start": "2026-06-01", "end": "2026-06-03" },
+          "actual": { "start": null, "end": null }, "note": "",
+          "_deps": ["3"] },
+        { "id": "2", "name": "B", "qty": 1, "hours": 8, "assignee": "",
+          "plan": { "start": "2026-06-04", "end": "2026-06-06" },
+          "actual": { "start": null, "end": null }, "note": "",
+          "_deps": ["1"] },
+        { "id": "3", "name": "C", "qty": 1, "hours": 8, "assignee": "",
+          "plan": { "start": "2026-06-07", "end": "2026-06-09" },
+          "actual": { "start": null, "end": null }, "note": "",
+          "_deps": ["2"] },
+        { "id": "4", "name": "自分を指す", "qty": 1, "hours": 8, "assignee": "",
+          "plan": { "start": "2026-06-10", "end": "2026-06-12" },
+          "actual": { "start": null, "end": null }, "note": "",
+          "_deps": ["4"] }
+      ]
+    }
+  ]
+}

@@ -190,6 +190,46 @@
   #leftHead{top:var(--tab-h);border-right:2px solid var(--border)}
   #rightHead{top:var(--tab-h)}
   #rightHead.phead{height:var(--header-h)}
+  /* 依存タブ(#66)：色は既存トークンだけ（新色なし）。SVGのプレゼンテーション属性は var() を解決しないのでクラス＋CSSで塗る
+     ＝赤(#e11d48)は「最長経路＝輪と太線／違反＝塗り」の2役だが、形（輪 vs 塗り）で読み分ける（brief §3） */
+  #rightHead.dhead{height:26px;display:flex;align-items:center;gap:8px;padding:0 8px;font-size:11px;
+    white-space:nowrap;overflow:hidden;color:var(--muted)}
+  #rightHead.dhead b{color:var(--text)}
+  #rightHead.dhead .dzoom{font:inherit;font-size:11px;line-height:1.3;padding:1px 8px;border:1px solid var(--btn-border);
+    border-radius:4px;background:#fff;cursor:pointer;color:var(--text)}
+  #rightHead.dhead .dzoom.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  #rightHead.dhead .dhelp{width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;
+    border:1px solid var(--btn-border);border-radius:50%;cursor:help;color:var(--text)}
+  .dfig{padding:6px 8px 14px}
+  .dfig .dcap{font-size:11px;color:var(--muted);margin:0 0 2px 2px}
+  .dfig .dwarn{color:#e11d48}                                    /* 図に出せなかった葉の件数＝黙って落とさない */
+  .dempty{padding:24px;color:var(--muted);font-size:12px}
+  .dsvg{display:block;background:#fff}
+  .dsvg .dgrid{stroke:var(--grid)}
+  .dsvg .dedge{opacity:.5}                                       /* 既定は薄く全部・ホバーと最長経路だけ濃く（brief §3） */
+  .dsvg .dedge:hover,.dsvg .dedge.dcrit{opacity:1}
+  .dsvg .dline{stroke:var(--btn-border);stroke-width:1.4}
+  .dsvg .dmsline{stroke:#e11d48;stroke-width:2.8}   /* ◇へ引く線＝最長経路の終点からだけ（CSSが属性に勝つのでクラスで塗る） */
+  .dsvg .darw{fill:var(--btn-border)}
+  .dsvg .dnum{fill:var(--muted);font-size:11px;text-anchor:middle}
+  .dsvg .dcrit .dline{stroke:#e11d48;stroke-width:2.8}
+  .dsvg .dcrit .darw{fill:#e11d48}
+  .dsvg .dcrit .dnum{fill:#e11d48;font-size:12px;font-weight:700}
+  .dsvg .dnode{cursor:pointer}
+  .dsvg .dcore{fill:#fff;stroke:var(--plan-edge);stroke-width:1.8}
+  .dsvg .dnode.crit .dcore{stroke:#e11d48;stroke-width:3}        /* 最長経路＝赤い輪（塗らない） */
+  .dsvg .dnode.bad .dcore{fill:#e11d48;stroke:#e11d48}           /* 違反＝赤の塗り（意味は1つ） */
+  .dsvg .dnid{fill:var(--plan-edge);font-size:11px;font-weight:600;text-anchor:middle;pointer-events:none}
+  .dsvg .dnode.crit .dnid{fill:#e11d48}
+  .dsvg .dnode.bad .dnid{fill:#fff}
+  .dsvg .dname{fill:var(--text);font-size:10.5px;text-anchor:middle}
+  .dsvg .dnode.crit .dname,.dsvg .dnode.bad .dname{fill:#e11d48}
+  .dsvg .dnode:hover .dname{font-weight:600}
+  .dsvg .dmsl{font-size:11px;fill:var(--text)}
+  .dsvg .dmss{font-size:10px;fill:var(--muted)}
+  .dsvg .dtot{font-size:12px;font-weight:700;fill:#e11d48;text-anchor:end}
+  .dsvg .dpath{font-size:10px;fill:var(--muted);text-anchor:end}
+  #depsPop div{white-space:pre-wrap}
   #pctaxis{position:relative;height:100%}
   #pctaxis .pcta-in,#progbody .prw-bars{position:absolute;left:var(--pv-pad);right:var(--pv-pad);top:0;bottom:0}  /* 0/100%の両脇に余白（軸ラベル・バーを内側にインセット） */
   #pctaxis .ptk{position:absolute;bottom:5px;font-size:11px;color:var(--ym-fg);transform:translateX(-50%)}   /* 文字サイズ・濃さを時間ビューの年月と同じに */
@@ -235,9 +275,10 @@
   .rs-arr.top{top:-3px}
   .rsbdg{font:inherit;font-size:10px;padding:0 4px;margin-left:4px;border:none;background:transparent;color:#6b7280;cursor:pointer;border-radius:4px}  /* ↷N=修正回数。クリックで吹き出し */
   .rsbdg:hover{background:#eef4ff;color:var(--accent)}
-  #rsPop,#rsForm{position:fixed;z-index:60;background:#fff;border:1px solid var(--btn-border);border-radius:8px;
+  #rsPop,#rsForm,#depsPop{position:fixed;z-index:60;background:#fff;border:1px solid var(--btn-border);border-radius:8px;
     box-shadow:0 3px 12px rgba(0,0,0,.18);padding:8px 12px;font-size:12px;line-height:1.7;color:var(--text);max-width:min(560px,calc(100vw - 24px))}
   #rsPop{max-height:min(400px,calc(100vh - 24px));overflow:auto}  /* 履歴が多い時は縦スクロール（#215） */
+  #depsPop{max-height:min(420px,calc(100vh - 24px));overflow:auto;line-height:1.6}  /* ○の吹き出し（#66）＝ホバーと同じ内容を固定して読む */
   #rsPop .rsp-row{white-space:normal}                              /* 行全体は折返し可・日付部分だけ.rsp-metaでnowrap維持（#215） */
   #rsPop .rsp-meta{white-space:nowrap}
   #rsPop .rsp-reason{white-space:normal;overflow-wrap:anywhere}    /* 理由の自由文だけ折り返す（日付の並びが割れると±N日が読みにくいため） */
@@ -614,6 +655,7 @@
     render:()=>{if(lastData)render(lastData);},
     gotoWbs(pname,tid){                                                      // 課題→計画：表示を切替→展開→スクロール
       if(!lastData)return false;
+      if(activeView==="deps"){activeView="time";lsSet("wbsView","time");}     // 依存タブは左の情報表を隠す＝飛び先の行が見えない。時間タブへ戻してから飛ぶ(#66)
       expandTo(pname,tid);
       PM.emit("view","plan");
       render(lastData);
@@ -661,6 +703,30 @@
       rsTitle:n=>`変更履歴（${n}回）`,rsBy:"理由",rsOrig:"当初",rsNow:"現在",rsVs:"当初比",rsD:n=>`${n>0?"+":""}${n}日`,
       rsForm:"リスケ（履歴に記録）",rsCur:"現予定",rsNewS:"新開始",rsNewE:"新終了",rsReasonPh:"理由（任意・例: #504の遅延で後ろ倒し）",
       rsOk:"リスケ確定",rsCancel:"取消",rsBadDate:"日付が不正です（YYYY-MM-DD・1900〜2099年）",
+      // 依存タブ(#66)。組み立て文は関数で持つ（rsTitle/endDelayTip と同じ作法＝ja/en で語順が変わっても壊れない）
+      viewDeps:"依存",dpTitle:"依存（構造）",dpZoom:"ズーム",
+      dpEmpty:"図に載せる作業がありません。葉に <code>_deps</code>（前工程の id の配列）を書くと図に出ます。",
+      dpNoPlan:n=>`予定日が無いため図に出せない作業が ${n} 件あります`,
+      dpLong:n=>`最長経路 ${n} 日`,
+      dpHead:(id,name,d,load)=>`${id} ${name}　${d}日（${load}人日）`,
+      dpSpan:(s,e)=>`開始 ${s} → 終了 ${e}`,
+      dpViol:(id,d,n)=>`違反：前工程 ${id} の終了 ${d} 以前に始まる予定（${n}日ぶん重なる）`,
+      dpLate:(id,d,n)=>`違反：前工程 ${id} が実績で ${d} まで延び、開始が追い越された（${n}日ぶん）`,
+      dpThru:(a,b)=>`この○を通る最長経路 ${a}日（図の最長経路 ${b}日）`,
+      dpMsDiff:(m,d)=>`予定との差：◇まで 残り ${m}日・差 ${d}日`,
+      dpMsTip:(l,d,m,n,diff)=>`${l} ${d}\n予定では残り ${m}日・最長経路 ${n}日・差 ${diff}日`,
+      dpMsSub:(m,diff)=>`予定では残り ${m}日・差 ${diff}日`,
+      dpEdgeTip:(a,b,d,s,e)=>`${a} → ${b}\n${d}日（${s}〜${e}）`,
+      dpPred:"前工程：",dpSucc:"後続：",dpNone:"なし",dpNote:"備考：",dpAi:"AI推定：",dpJoin:"・",
+      dpIssue:(n,m)=>`課題 #${n}${m?`（${m}）`:""}`,dpUndec:"未決",dpWait:"待ち",dpIssDone:"完了",
+      dpJump:"ダブルクリック＝時間タブで見る",
+      dpLegend:"○＝作業（中＝番号・下＝名前）。直径＝1マス、周りは必ず1マス空ける\n"
+        +"矢印＝依存（前→後）。上の数字＝前の作業の暦日数（予定の期間）\n"
+        +"赤い輪と太い赤矢印＝最長経路（右下に合計日数と経路）\n"
+        +"赤く塗った○＝違反（後続の開始が前工程の終了以前・実績の遅れ込み）\n"
+        +"◇＝案件の最遅マイルストーン（横に予定の残りと差）\n"
+        +"○にホバー＝数字・備考・AI推定の根拠・課題の印／クリックで吹き出しを固定（Esc で閉じる）\n"
+        +"○をダブルクリック＝時間タブのその行へ",
       wd:["日","月","火","水","木","金","土"],locale:"ja-JP",active:"進行中",newTask:"新規作業",
       addTask:"＋タスク",addTaskTip:"タスクを追加",up:"上へ",down:"下へ",addBelow:"下に作業を追加",del:"削除",
       addChild:"子タスクを追加（入れ子にする）",addChildLabel:"＋子",
@@ -705,6 +771,30 @@
       rsTitle:n=>`Reschedule history (${n})`,rsBy:"Reason",rsOrig:"Baseline",rsNow:"Now",rsVs:"vs baseline",rsD:n=>`${n>0?"+":""}${n}d`,
       rsForm:"Reschedule (recorded)",rsCur:"Current",rsNewS:"New start",rsNewE:"New end",rsReasonPh:"Reason (optional, e.g. pushed back by #504)",
       rsOk:"Confirm",rsCancel:"Cancel",rsBadDate:"Invalid date (YYYY-MM-DD, 1900–2099)",
+      // Dependency tab (#66). Composed lines are functions, like rsTitle/endDelayTip
+      viewDeps:"Deps",dpTitle:"Dependencies (structure)",dpZoom:"Zoom",
+      dpEmpty:"No task is on the chart. Add <code>_deps</code> (an array of predecessor ids) to a leaf to put it here.",
+      dpNoPlan:n=>`${n} task(s) are not drawn (no planned dates)`,
+      dpLong:n=>`Longest path ${n} d`,
+      dpHead:(id,name,d,load)=>`${id} ${name}  ${d}d (${load} p-d)`,
+      dpSpan:(s,e)=>`Start ${s} → End ${e}`,
+      dpViol:(id,d,n)=>`Conflict: planned to start on or before the end of predecessor ${id} (${d}) — ${n}d overlap`,
+      dpLate:(id,d,n)=>`Conflict: predecessor ${id} actually runs to ${d}, past this start (${n}d)`,
+      dpThru:(a,b)=>`Longest path through this node ${a}d (chart longest ${b}d)`,
+      dpMsDiff:(m,d)=>`vs plan: ${m}d left to ◇, difference ${d}d`,
+      dpMsTip:(l,d,m,n,diff)=>`${l} ${d}\n${m}d left as planned, longest path ${n}d, difference ${diff}d`,
+      dpMsSub:(m,diff)=>`${m}d left as planned, difference ${diff}d`,
+      dpEdgeTip:(a,b,d,s,e)=>`${a} → ${b}\n${d}d (${s}–${e})`,
+      dpPred:"Predecessors: ",dpSucc:"Successors: ",dpNone:"none",dpNote:"Notes: ",dpAi:"AI estimate: ",dpJoin:", ",
+      dpIssue:(n,m)=>`Issue #${n}${m?` (${m})`:""}`,dpUndec:"undecided",dpWait:"waiting",dpIssDone:"closed",
+      dpJump:"Double-click to open it on the Time tab",
+      dpLegend:"○ = a task (number inside, name below). Diameter = 1 cell; one empty cell all around\n"
+        +"Arrow = dependency (before → after). The number above = calendar days of the earlier task (planned span)\n"
+        +"Red ring and thick red arrow = the longest path (total days and route at bottom right)\n"
+        +"Red filled ○ = conflict (it starts on or before its predecessor ends, actual delay included)\n"
+        +"◇ = the latest milestone of the project (days left and difference beside it)\n"
+        +"Hover a ○ for the numbers, notes, AI reasoning and issue marks; click to pin the bubble (Esc closes)\n"
+        +"Double-click a ○ to jump to its row on the Time tab",
       wd:["Su","Mo","Tu","We","Th","Fr","Sa"],locale:"en-US",active:"active",newTask:"New task",
       addTask:"+Task",addTaskTip:"Add a task",up:"Move up",down:"Move down",addBelow:"Add task below",del:"Delete",
       addChild:"Add a child task (nest)",addChildLabel:"+sub",
@@ -737,7 +827,8 @@
   const t=k=>I18N[lang][k];
   let fileHandle=null, lock=false, lastData=null, pendingCenter=true;
   let editMode=false, curProjects=null, refreshTimer=null;                 // 編集モード関連
-  let activeView="time";if(lsGet("wbsView")==="progress")activeView="progress";  // 右ペイン:時間(ガント)/進捗(完了率)。既定=時間
+  const VIEWS=["time","progress","deps"];                                        // 右ペイン:時間(ガント)/進捗(完了率)/依存(構造・#66)
+  let activeView="time";{const v=lsGet("wbsView");if(v==="progress"||v==="deps")activeView=v;}  // 既定=時間（知らない値は時間へ落とす）
   // 状態フィルタ(#91)：表示専用＝rows(行)を間引くだけ。データ(wbs.json)も横軸(時間範囲)も不変。既存_calcで3排他状態を判定
   const STATES=[{k:"todo",test:c=>!c.actualStart},{k:"wip",test:c=>!!c.actualStart&&!c.allDone},{k:"done",test:c=>!!c.allDone}];
   const stateOn=new Set(STATES.map(s=>s.k));   // 既定=全ON（既存の見た目と一致＝goldenを割らない）
@@ -1232,10 +1323,16 @@
       document.querySelector(".htab-sp").innerHTML=ctgl;
       // 右ペインはタブで二択：アクティブな方"だけ"をDOM注入（非アクティブ側は文字列のまま捨てる＝重いDOM挿入は1ビューぶん）
       const rh=$("rightHead"); const rb=$("rightBody");
+      const VIEW_LBL={time:"viewTime",progress:"viewProg",deps:"viewDeps"};
       $("rtabs").innerHTML=
-        ["time","progress"].map(v=>`<button class="rtab${v===activeView?" on":""}" data-view="${v}">${esc(t(v==="time"?"viewTime":"viewProg"))}</button>`).join("");
+        VIEWS.map(v=>`<button class="rtab${v===activeView?" on":""}" data-view="${v}">${esc(t(VIEW_LBL[v]))}</button>`).join("");
       $("right").classList.toggle("pview",activeView==="progress");  // 進捗ビューは横スクロール無し＝幅に収めて全表示（左の折りたたみで幅が変われば追従）
-      if(activeView==="progress"){
+      if(activeView==="deps"){                                        // 依存タブ(#66)：図は全幅（左の情報表は updateSummaryAndScroll で隠す）
+        rh.className="dhead"; rh.style.width="";
+        rh.innerHTML=depsHeadHtml();
+        rb.style.width=""; rb.style.height="";
+        rb.innerHTML=depsBodyHtml(projects,TODAY);                     // C1：依存の計算はこの枝からしか呼ばない
+      }else if(activeView==="progress"){
         rh.className="head phead"; rh.style.width="";
         rh.innerHTML=`<div id="pctaxis"><div class="pcta-in">`+[0,20,40,60,80,100].map(p=>`<span class="ptk${p===0?" e0":p===100?" e100":""}" style="left:${p}%">${p}%</span>`).join("")+`</div></div>`;
         rb.style.width=""; rb.style.height=rowsH+"px";
@@ -1256,10 +1353,11 @@
     // フィルタバー・担当リスト・右上サマリを更新し、スクロール位置を復元する
     function updateSummaryAndScroll(){
       $("empty").style.display="none";
-      $("filterBar").style.display="flex";   // フィルタバー(#91)：データ読込時のみ表示
+      const dv=activeView==="deps";           // 依存タブ(#66)は図を全幅に＝左の情報表を隠し、行に効かないフィルタバーも畳む（brief B6）
+      $("filterBar").style.display=dv?"none":"flex";   // フィルタバー(#91)：データ読込時のみ表示
       asgList=[...new Set(allLeaves.map(n=>n.assignee||""))].sort();  // 担当(#93)：データからユニーク担当を動的収集
       renderStateFilter();                                          // 担当リスト反映のためrender毎に再構築（開閉状態は保持）
-      $("left").style.display="block";
+      $("left").style.display=dv?"none":"block";
       $("right").style.display="block";
       const _ps=allLeaves.map(n=>n._calc.planStart),_pe=allLeaves.map(n=>n._calc.planEnd);
       const _ev=allLeaves.reduce((a,n)=>a+n._calc.load*((n._calc.progress||0)/100),0);
@@ -1298,6 +1396,313 @@
     injectDOM();
     updateSummaryAndScroll();
   }
+
+  // ===== 依存タブ（構造の軸・#66）＝右ペインの3つ目。葉の `_deps`（前工程 id の配列）と `_pos`（手置きの[列,行]）だけを読む =====
+  // 仕様は docs/design/brief-deps.md v0.2（§3 画面・§5 計算）。ここは読む専用の view＝結ぶ/外す/置く（§4）は持たない。
+  // C1（§7）：この節の関数は injectDOM の activeView==="deps" の枝からだけ呼ぶ。時間/進捗の描画パス・_calc には何も足さない。
+  const DCELL=44, DNR=21, DPAD=44, DSTEP=2, DCOL=4;   // マスの1辺／○の半径（直径≒1マス）／外側の余白／置けるマスは1マスおき／段の横間隔
+  const dcx=c=>DPAD+c*DCELL+DCELL/2, dcy=r=>DPAD+r*DCELL+DCELL/2;            // 列/行→中心座標
+  const dcut=(s,n)=>{const v=String(s??"");return v.length>n?v.slice(0,n)+"…":v;};  // 名前・備考を n 字で切る（全文はホバー/吹き出し）
+  const dn=v=>Number(v)||0;                                                  // 数値でなければ 0（NaN を図に持ち込まない）
+  let depsZoom=1;{const z=lsGet("wbsDepsZoom");if(z==="50"||z==="75")depsZoom=dn(z)/100;}  // 50/75/100%（既定=100・記憶）
+  let depsPopKey=null;                                                       // 開いている吹き出しの○（"案件名|id"）。同じ○の再クリックで閉じる
+
+  // --- データの取り出し（葉だけが○になる。集計ノードは図に載せない） ---
+  const dLeaves=(ns,out)=>{for(const n of arrOf(ns)){if(!okNode(n))continue;if(kidsOf(n).length)dLeaves(n.children,out);else out.push(n);}return out;};
+  const dHasDeps=n=>Array.isArray(n&&n._deps);                               // 図に載る＝`_deps` キーがある（`[]`＝前工程なし）
+  const dPlan=n=>{const p=okNode(n.plan)?n.plan:{};return {s:isDate(p.start)?p.start:null,e:isDate(p.end)?p.end:null};};
+  const dPos=n=>{const p=n&&n._pos;                                          // 手で置いた位置。偶数マス以外は無視（1マスおきの規則を壊さない）
+    if(!Array.isArray(p)||p.length!==2)return null;
+    const c=Math.round(dn(p[0])),r=Math.round(dn(p[1]));
+    return (c>=0&&r>=0&&!(c%DSTEP)&&!(r%DSTEP))?[c,r]:null;};
+
+  // --- 計算（brief §5・決定論的）。前工程・段・日数・違反・最長経路・◇までの残りを1回で出す ---
+  function depsGraph(proj,TODAY){
+    const all=dLeaves(proj.tasks,[]);
+    const listed=all.filter(dHasDeps);
+    const nodes=listed.filter(n=>{const p=dPlan(n);return p.s&&p.e;});        // 日数が出せない葉は描けない（件数は図の見出しで断る）
+    if(!nodes.length)return null;
+    const byId={},pred={},succ={},ids=[];
+    nodes.forEach(n=>{const id=String(n.id);if(byId[id])return;byId[id]=n;pred[id]=[];succ[id]=[];ids.push(id);});
+    nodes.forEach(n=>{                                                       // 前工程（自己参照・行き先なしは警告して無視＝描けないより描く）
+      const id=String(n.id); if(byId[id]!==n)return;
+      n._deps.forEach(raw=>{
+        const p=String(raw);
+        if(p===id){console.warn("[deps] 自己参照を無視: "+id);return;}
+        if(!byId[p]){console.warn("[deps] 参照先が無いので無視: "+id+" → "+p);return;}
+        if(pred[id].indexOf(p)<0)pred[id].push(p);
+      });
+    });
+    const ancestor=(from,goal,seen)=>{                                       // from の前工程を辿って goal に着くか（循環の検出）
+      if(from===goal)return true;
+      if(seen[from])return false; seen[from]=1;
+      return pred[from].some(p=>ancestor(p,goal,seen));
+    };
+    ids.forEach(id=>{pred[id]=pred[id].filter(p=>{                           // 循環は落として警告（無限ループにしない）
+      if(ancestor(p,id,{})){console.warn("[deps] 循環を無視: "+p+" → "+id);return false;}
+      return true;});});
+    ids.forEach(id=>pred[id].forEach(p=>succ[p].push(id)));
+
+    const rank={};                                                           // 段＝トポロジカル順（前工程の段＋1）
+    const rk=id=>{
+      if(rank[id]!=null)return rank[id];
+      rank[id]=0;                                                            // 循環は上で落としてあるので再入しない
+      rank[id]=pred[id].length?Math.max(...pred[id].map(rk))+1:0;
+      return rank[id];};
+    ids.forEach(rk);
+    const days={};                                                           // 日数＝予定の期間（暦日）＝end − start + 1（矢印の数字）
+    ids.forEach(id=>{const p=dPlan(byId[id]);days[id]=Math.max(1,diff(p.s,p.e)+1);});
+    const effEnd=n=>{                                                        // 実質の終了日＝予定終了と実績終了の遅い方（進行中で本日超過なら本日）
+      const p=dPlan(n),a=okNode(n.actual)?n.actual:{};
+      const ae=isDate(a.end)?a.end:null, as=isDate(a.start)?a.start:null;
+      if(ae)return ae>p.e?ae:p.e;
+      if(as&&TODAY>p.e)return TODAY;
+      return p.e;};
+    const info={};                                                           // 違反＝後続の予定開始 ≤ 前工程の実質の終了日（予定で割れた/実遅れで割れたを分けて持つ）
+    ids.forEach(id=>{
+      const n=byId[id],p=dPlan(n);let viol=null,late=null;
+      pred[id].forEach(q=>{
+        const pe=dPlan(byId[q]).e, ee=effEnd(byId[q]);
+        if(p.s<=pe){if(!viol)viol={from:q,end:pe,gap:diff(p.s,pe)+1};}
+        else if(p.s<=ee){if(!late)late={from:q,end:ee,gap:diff(p.s,ee)+1};}
+      });
+      info[id]={node:n,id,name:nmOf(n.name),start:p.s,end:p.e,days:days[id],
+        load:dn(n.qty)*dn(n.hours)/8,rank:rank[id],pred:pred[id],succ:succ[id],viol,late};
+    });
+
+    const order=ids.slice().sort((a,b)=>(rank[a]-rank[b])||(a<b?-1:1));      // 段の浅い順→番号順（以降の走査を決定的にする）
+    const up={},upFrom={};                                                   // up=ここまでの日数の和／down=この先の和（ホバーの「この○を通る」に使う）
+    order.forEach(id=>{
+      let best=0,from=null;
+      pred[id].forEach(q=>{if(up[q]>best||(up[q]===best&&from===null)){best=up[q];from=q;}});
+      up[id]=best+days[id];upFrom[id]=from;});
+    const down={};
+    order.slice().reverse().forEach(id=>{
+      let best=0; succ[id].forEach(q=>{if(down[q]>best)best=down[q];});
+      down[id]=best+days[id];});
+    let tail=null;                                                           // 経路の終点＝up が最大の○（同値なら番号の小さい方＝決定的）
+    order.forEach(id=>{if(!tail||up[id]>up[tail]||(up[id]===up[tail]&&id<tail))tail=id;});
+    const path=[],pathSet={},pathEdges={};
+    for(let v=tail;v;v=upFrom[v]){path.unshift(v);pathSet[v]=1;}
+    for(let i=1;i<path.length;i++)pathEdges[path[i-1]+">"+path[i]]=1;
+
+    let lastMs=null;                                                         // ◇＝案件の最遅マイルストーン（「予定では残り M 日」は両端を含む）
+    arrOf(proj.milestones).forEach(m=>{if(okNode(m)&&isDate(m.date)&&(!lastMs||m.date>lastMs.date))lastMs=m;});
+    const msDays=(lastMs&&path.length)?diff(info[path[0]].start,lastMs.date)+1:null;
+    return {proj,ids,order,byId,info,pred,succ,rank,days,up,down,path,pathSet,pathEdges,
+      pathDays:tail?up[tail]:0,ms:lastMs,msDays,skipped:listed.length-nodes.length,
+      issues:depsIssues(proj),maxRank:ids.length?Math.max(...ids.map(id=>rank[id])):0};
+  }
+
+  // 課題の印（links[].wbs からの逆引き）。計画側のデータには何も書かない＝描くたびに作る。完了の課題は番号と完了だけ（印①〜⑤は出さない）
+  function depsIssues(proj){
+    const out=[];
+    arrOf(proj.issues).forEach(is=>{
+      if(!okNode(is))return;
+      const marks=[];
+      if(okNode(is.closed))marks.push(t("dpIssDone"));
+      else{
+        if(arrOf(is.decisions).some(d=>okNode(d)&&!d.decided))marks.push(t("dpUndec"));
+        if(okNode(is.pending)&&is.pending.kind==="waiting")marks.push(t("dpWait"));
+      }
+      arrOf(is.links).forEach(l=>{
+        if(!okNode(l)||typeof l.wbs!=="string")return;
+        if(l.project!=null&&nmOf(l.project)!==nmOf(proj.name))return;         // 別案件の葉を指すリンクはこの図の話ではない
+        out.push({wbs:l.wbs,id:is.id,marks});
+      });
+    });
+    return out;
+  }
+
+  // --- 自動配置：段の中の並びを重心法で決める（前工程/後続の平均行に寄せ、左右に数回往復＝交差が減る・決定的） ---
+  function depsLanes(g){
+    const lanes=[];
+    for(let k=0;k<=g.maxRank;k++)lanes.push([]);
+    g.ids.slice().sort((a,b)=>{                                              // 初期順＝開始日→番号（同じ入力なら必ず同じ絵）
+      const A=g.info[a],B=g.info[b];
+      return (A.start<B.start?-1:A.start>B.start?1:0)||(a<b?-1:1);
+    }).forEach(id=>lanes[g.info[id].rank].push(id));
+    const rowOf={};
+    const rows=()=>lanes.forEach(L=>L.forEach((id,i)=>{rowOf[id]=i;}));
+    rows();
+    const bary=(id,side)=>{                                                  // 前工程（up）／後続（down）の平均行
+      const rel=side==="up"?g.pred[id]:g.succ[id];
+      return rel.length?rel.reduce((s,q)=>s+rowOf[q],0)/rel.length:rowOf[id];};
+    const sortLane=(L,side)=>{                                               // 重心で並べ替え（同じ重心なら元の順＝安定）
+      const key={};
+      L.forEach((id,i)=>{key[id]=[bary(id,side),i];});
+      L.sort((a,b)=>(key[a][0]-key[b][0])||(key[a][1]-key[b][1]));
+      rows();};
+    for(let pass=0;pass<4;pass++){                                           // 4往復で十分（葉が数十なら一瞬）
+      for(let k=1;k<=g.maxRank;k++)sortLane(lanes[k],"up");
+      for(let k=g.maxRank-1;k>=0;k--)sortLane(lanes[k],"down");
+    }
+    return lanes;
+  }
+  // 手置き（_pos）を先に確定し、残りを 列＝段×4・行＝段の中の並び×2 の格子へ置く（○の周りは必ず1マス空く）
+  function depsLayout(g){
+    const lanes=depsLanes(g),pos={},used={};
+    const free=(c,r)=>!used[c+","+r], take=(c,r)=>{used[c+","+r]=1;};
+    g.ids.forEach(id=>{const p=dPos(g.info[id].node);if(p&&free(p[0],p[1])){pos[id]=p;take(p[0],p[1]);}});
+    lanes.forEach((L,k)=>L.forEach((id,i)=>{
+      if(pos[id])return;
+      let c=k*DCOL,r=i*DSTEP;
+      while(!free(c,r))r+=DSTEP;                                             // 埋まっていたら下へ（決定的）
+      pos[id]=[c,r];take(c,r);}));
+    let maxC=0,maxR=0;
+    g.ids.forEach(id=>{maxC=Math.max(maxC,pos[id][0]);maxR=Math.max(maxR,pos[id][1]);});
+    g.pos=pos;g.maxC=maxC;g.maxR=maxR;
+    g.msCell=[maxC+DSTEP,g.path.length?pos[g.path[g.path.length-1]][1]:0];    // ◇は最右列・最長経路の終点の行
+    return g;
+  }
+
+  // --- 図の部品 ---
+  const dEdgePts=(x1,y1,x2,y2,r1,r2)=>{                                      // ○の縁から縁までの線（中心同士を結んで半径ぶん詰める）
+    const dx=x2-x1,dy=y2-y1,L=Math.sqrt(dx*dx+dy*dy)||1;
+    return [x1+dx/L*r1,y1+dy/L*r1,x2-dx/L*r2,y2-dy/L*r2];};
+  const dArrow=e=>{                                                          // 矢印の頭（線の向きに合わせた三角形）
+    const dx=e[2]-e[0],dy=e[3]-e[1],L=Math.sqrt(dx*dx+dy*dy)||1;
+    const ux=dx/L,uy=dy/L,nx=-uy,ny=ux,b=9,w=4.2;
+    return `<polygon class="darw" points="${e[2]},${e[3]} ${e[2]-ux*b+nx*w},${e[3]-uy*b+ny*w} ${e[2]-ux*b-nx*w},${e[3]-uy*b-ny*w}"></polygon>`;};
+  const dSegDist=(px,py,x1,y1,x2,y2)=>{                                      // 点と線分の距離（数字を逃がす判定に使う）
+    const dx=x2-x1,dy=y2-y1,L2=dx*dx+dy*dy;
+    const u=L2?clamp(((px-x1)*dx+(py-y1)*dy)/L2,0,1):0;
+    const qx=x1+u*dx,qy=y1+u*dy;
+    return Math.sqrt((px-qx)*(px-qx)+(py-qy)*(py-qy));};
+  function dLabelAt(e,g,p,id){                                               // 数字の位置＝根元側 1/3 の法線方向。近くに他の矢印があれば余分に逃がす
+    const dx=e[2]-e[0],dy=e[3]-e[1],L=Math.sqrt(dx*dx+dy*dy)||1;
+    const mx=e[0]+dx/3,my=e[1]+dy/3;
+    let nx=-dy/L,ny=dx/L;
+    if(ny>0){nx=-nx;ny=-ny;}                                                 // いつも線の上側へ
+    let off=11,near=0;
+    g.ids.forEach(o=>g.pred[o].forEach(q=>{
+      if(q===p&&o===id)return;
+      if(dSegDist(mx+nx*off,my+ny*off,dcx(g.pos[q][0]),dcy(g.pos[q][1]),dcx(g.pos[o][0]),dcy(g.pos[o][1]))<12)near++;}));
+    if(near)off+=9;
+    return [mx+nx*off,my+ny*off+3];}
+
+  // ○のホバー/吹き出しの中身（数字＋備考の先頭2行＋AI 推定の根拠＋紐づく課題の印・#66 決定 2026-09-19）
+  function depsTip(g,d){
+    const L=[t("dpHead")(d.id,d.name,d.days,Math.round(d.load*10)/10),
+             t("dpSpan")(mdSlash(d.start),mdSlash(d.end))];
+    if(d.viol)L.push(t("dpViol")(d.viol.from,mdSlash(d.viol.end),d.viol.gap));
+    else if(d.late)L.push(t("dpLate")(d.late.from,mdSlash(d.late.end),d.late.gap));
+    const thru=g.up[d.id]+g.down[d.id]-d.days;
+    L.push(t("dpThru")(thru,g.pathDays));
+    if(g.msDays!=null)L.push(t("dpMsDiff")(g.msDays,g.msDays-thru));
+    const nm=id=>id+" "+dcut(g.info[id].name,10);
+    L.push(t("dpPred")+(d.pred.length?d.pred.map(nm).join(t("dpJoin")):t("dpNone")));
+    L.push(t("dpSucc")+(d.succ.length?d.succ.map(nm).join(t("dpJoin")):t("dpNone")));
+    String(d.node.note??"").split("\n").filter(s=>s.trim()).slice(0,2).forEach(s=>L.push(t("dpNote")+dcut(s,60)));
+    const memo=okNode(d.node._ai)?d.node._ai.memo:null;
+    if(typeof memo==="string"&&memo.trim())L.push(t("dpAi")+dcut(memo,120));
+    g.issues.filter(o=>o.wbs===d.id).forEach(o=>L.push(t("dpIssue")(o.id,o.marks.join(t("dpJoin")))));
+    L.push(t("dpJump"));
+    return L.join("\n");}
+
+  // 1案件ぶんの図（方眼・◇・矢印・○・右下の最長経路）。座標は素の px で作り、ズームは外側の <g> の scale 1つで効かせる
+  function depsFigure(g){
+    const W=DPAD*2+(g.msCell[0]+5)*DCELL, H=DPAD*2+(Math.max(g.maxR,g.msCell[1])+3)*DCELL;
+    let b="";
+    for(let x=DPAD;x<=W-DPAD;x+=DCELL)b+=`<line class="dgrid" x1="${x}" y1="${DPAD}" x2="${x}" y2="${H-DPAD}"></line>`;
+    for(let y=DPAD;y<=H-DPAD;y+=DCELL)b+=`<line class="dgrid" x1="${DPAD}" y1="${y}" x2="${W-DPAD}" y2="${y}"></line>`;
+    const mx=dcx(g.msCell[0]),my=dcy(g.msCell[1]);
+    if(g.ms){                                                                // ◇＝最遅マイルストーン。色は #hex のみ許可（属性インジェクション防止・既定は MS_COLORS[0]）
+      const col=isColor(g.ms.color)?g.ms.color:MS_COLORS[0], lbl=String(g.ms.label??"");
+      const dd=g.msDays!=null?g.msDays-g.pathDays:0;
+      b+=`<g class="dms"><title>${esc(g.msDays!=null?t("dpMsTip")(lbl,mdSlash(g.ms.date),g.msDays,g.pathDays,dd):lbl+" "+mdSlash(g.ms.date))}</title>`
+        +`<polygon points="${mx},${my-15} ${mx+15},${my} ${mx},${my+15} ${mx-15},${my}" fill="#fff" stroke="${esc(col)}" stroke-width="2"></polygon>`
+        +`<text class="dmsl" x="${mx+22}" y="${my+4}">${esc(lbl+"　"+mdSlash(g.ms.date))}</text>`
+        +(g.msDays!=null?`<text class="dmss" x="${mx+22}" y="${my+19}">${esc(t("dpMsSub")(g.msDays,dd))}</text>`:"")
+        +`</g>`;
+      if(g.path.length){                                                     // ◇へ引く線は最長経路の終点からだけ（全部から引くと図を横断して読めない）
+        const tl=g.path[g.path.length-1];
+        const e0=dEdgePts(dcx(g.pos[tl][0]),dcy(g.pos[tl][1]),mx,my,DNR,16);
+        b+=`<line class="dmsline" x1="${e0[0]}" y1="${e0[1]}" x2="${e0[2]}" y2="${e0[3]}"></line>`;
+      }
+    }
+    g.ids.forEach(id=>g.pred[id].forEach(p=>{                                // 矢印＝依存だけ・直線・上に前の作業の日数
+      const e=dEdgePts(dcx(g.pos[p][0]),dcy(g.pos[p][1]),dcx(g.pos[id][0]),dcy(g.pos[id][1]),DNR,DNR+1);
+      const crit=!!g.pathEdges[p+">"+id], lb=dLabelAt(e,g,p,id);
+      b+=`<g class="dedge${crit?" dcrit":""}" data-from="${esc(p)}" data-to="${esc(id)}">`
+        +`<title>${esc(t("dpEdgeTip")(p+" "+dcut(g.info[p].name,10),id+" "+dcut(g.info[id].name,10),g.days[p],mdSlash(g.info[p].start),mdSlash(g.info[p].end)))}</title>`
+        +`<line class="dline" x1="${e[0]}" y1="${e[1]}" x2="${e[2]}" y2="${e[3]}"></line>`
+        +dArrow(e)
+        +`<text class="dnum" x="${lb[0]}" y="${lb[1]}">${g.days[p]}</text></g>`;}));
+    g.order.forEach(id=>{                                                    // ○＝作業（中に番号・下に名前）
+      const d=g.info[id],p=g.pos[id],x=dcx(p[0]),y=dcy(p[1]);
+      const crit=!!g.pathSet[id], bad=!!(d.viol||d.late);
+      b+=`<g class="dnode${crit?" crit":""}${bad?" bad":""}" data-proj="${esc(nmOf(g.proj.name))}" data-id="${esc(id)}"`
+        +` data-key="${esc(nmOf(g.proj.name)+"|"+id)}" data-c="${p[0]}" data-r="${p[1]}"${crit?' data-crit="1"':""}`
+        +`${d.viol?' data-viol="1"':""}${d.late?' data-late="1"':""}>`
+        +`<title>${esc(depsTip(g,d))}</title>`
+        +`<circle class="dcore" cx="${x}" cy="${y}" r="${DNR}"></circle>`
+        +`<text class="dnid" x="${x}" y="${y+4}">${esc(id)}</text>`
+        +`<text class="dname" x="${x}" y="${y+DNR+15}">${esc(dcut(d.name,9))}</text></g>`;});
+    b+=`<text class="dtot" x="${W-DPAD-6}" y="${H-DPAD-8}">${esc(t("dpLong")(g.pathDays))}</text>`
+      +`<text class="dpath" x="${W-DPAD-6}" y="${H-DPAD+8}">${esc(g.path.join(" → "))}</text>`;
+    return `<svg class="dsvg" width="${W*depsZoom}" height="${H*depsZoom}" data-w="${W}" data-h="${H}">`
+      +`<g class="dzoomg" transform="scale(${depsZoom})">${b}</g></svg>`;
+  }
+
+  // --- 右ペインのヘッダと中身（injectDOM の依存タブの枝から呼ぶ） ---
+  function depsHeadHtml(){
+    return `<b>${esc(t("dpTitle"))}</b><span>${esc(t("dpZoom"))}</span>`
+      +[50,75,100].map(z=>`<button type="button" class="dzoom${Math.round(depsZoom*100)===z?" on":""}" data-z="${z}">${z}%</button>`).join("")
+      +`<span class="dhelp" title="${esc(t("dpLegend"))}">?</span>`;
+  }
+  function depsBodyHtml(projects,TODAY){
+    let h="";
+    arrOf(projects).forEach(proj=>{
+      if(!okNode(proj))return;
+      const g=depsGraph(proj,TODAY);                                         // C1：`_deps` を持つ葉が無い案件は null＝計算も描画もしない
+      if(!g)return;
+      depsLayout(g);
+      h+=`<div class="dfig"><div class="dcap">${esc(nmOf(proj.name))}`
+        +(g.skipped?` <span class="dwarn">${esc(t("dpNoPlan")(g.skipped))}</span>`:"")
+        +`</div>${depsFigure(g)}</div>`;
+    });
+    return h||`<div class="dempty">${t("dpEmpty")}</div>`;                    // 文言は I18N（<code> を含むので esc しない＝データは入らない）
+  }
+
+  // --- 操作（読む専用）：ズーム／○のクリックで吹き出しを固定／ダブルクリックで時間タブへ ---
+  $("rightHead").addEventListener("click",e=>{
+    const b=e.target.closest(".dzoom"); if(!b)return;
+    depsZoom=dn(b.getAttribute("data-z"))/100; lsSet("wbsDepsZoom",b.getAttribute("data-z"));
+    if(lastData)render(lastData);
+  });
+  $("rightBody").addEventListener("click",e=>{                               // ホバーと同じ内容を吹き出しで固定（課題側の備考と同じ型・外側クリック/Esc で閉じる）
+    const nd=e.target.closest&&e.target.closest("g.dnode"); if(!nd)return;
+    const key=nd.getAttribute("data-key");
+    if(depsPopKey===key){closeRsUI();return;}                                // 同じ○の再クリック＝閉じる
+    closeRsUI();
+    const ttl=nd.querySelector("title");
+    const el=document.createElement("div"); el.id="depsPop";
+    el.innerHTML=String(ttl?ttl.textContent:"").split("\n").map(s=>`<div>${esc(s)}</div>`).join("");
+    rsPlace(el,nd); depsPopKey=key;
+  });
+  $("rightBody").addEventListener("dblclick",e=>{                            // 時間タブのその行へ（既存の gotoWbs・brief §3 の導線）
+    const nd=e.target.closest&&e.target.closest("g.dnode"); if(!nd)return;
+    closeRsUI();
+    PM.gotoWbs(nd.getAttribute("data-proj"),nd.getAttribute("data-id"));      // タブを時間へ戻すのは gotoWbs 側（課題からのリンク・#wbs= の深いリンクと同じ入口）
+  });
+
+  // 参照の追従（brief §2・A5）：id 変更・葉の削除・集計ノード化で、他の葉の `_deps` が指す先を付け替える／外す。
+  // map は { 旧id: 新id }（新id が null なら参照ごと落とす）。保存は呼び出し側が queueSave() する（保存パスには触らない）。
+  function retargetDeps(proj,map){
+    if(!okNode(proj)||!map)return;
+    dLeaves(proj.tasks,[]).forEach(n=>{
+      if(!dHasDeps(n))return;
+      const out=[];
+      n._deps.forEach(raw=>{
+        const k=String(raw), v=(k in map)?map[k]:k;
+        if(v==null||v==="")return;                                           // 指す先が消えた＝壊れた参照を残さない
+        if(v!==String(n.id)&&out.indexOf(v)<0)out.push(v);                   // 付け替えで自己参照・重複になったら畳む
+      });
+      n._deps=out;
+    });
+  }
+  const dSubtreeIds=node=>{const out=[];(function w(x){if(!okNode(x))return;out.push(String(x.id));kidsOf(x).forEach(w);})(node);return out;};
   function applyData(data,isNew){
     lastData=data;
     if(isNew){collapsed.clear();collapseSnapshot=null;pendingCenter=true;exitEditMode();}   // 新規ファイルは折りたたみリセット＆センタリング＆編集OFF（#10）
@@ -1492,7 +1897,7 @@
     refreshTimer=setTimeout(function tick(){
       const a=document.activeElement;
       if(a&&a.tagName==="INPUT"&&a.closest&&a.closest("#leftRows")){refreshTimer=setTimeout(tick,FOCUS_POLL_MS);return;}
-      if($("rsForm")||$("rsPop")){refreshTimer=setTimeout(tick,FOCUS_POLL_MS);return;}  // リスケフォーム/吹き出しは#leftRows外のbody直下＝上のフォーカス判定に映らないため別途待つ（開いた直後に消える事故の防止・#205）
+      if($("rsForm")||$("rsPop")||$("depsPop")){refreshTimer=setTimeout(tick,FOCUS_POLL_MS);return;}  // リスケフォーム/吹き出しは#leftRows外のbody直下＝上のフォーカス判定に映らないため別途待つ（開いた直後に消える事故の防止・#205）
       if(lastData)render(lastData);
     },RENDER_DEFER_MS);
   }
@@ -1526,7 +1931,10 @@
     }
     if(t.hasAttribute("data-field")){
       const r=resolvePath(t.getAttribute("data-path")); if(!r.node)return;
-      applyField(r.node,t.getAttribute("data-field"),t.value);
+      const f=t.getAttribute("data-field");
+      const oldId=f==="id"?String(r.node.id):null;                            // id を書き換える前に控える（依存の参照追従・#66）
+      applyField(r.node,f,t.value);
+      if(oldId!==null&&oldId!==String(r.node.id))retargetDeps(r.proj,{[oldId]:String(r.node.id)});
     }else if(t.hasAttribute("data-pname")){
       const pi=+t.getAttribute("data-pname"); if(!curProjects||!curProjects[pi])return;
       curProjects[pi].name=t.value;
@@ -1580,12 +1988,15 @@
     else if(act==="del"){
       if(!confirm(t("confirmDel")(r.node.name||"")))return;
       const removed=arr[i]; arr.splice(i,1);
+      const dmap={}; dSubtreeIds(removed).forEach(id=>{dmap[id]=null;});      // 依存の参照追従(#66)：消えた配下ごと、指していた矢印を外す
       if(arr.length===0){                                                    // 案Y降格(#70)：親集計の子が全部消えたら、最後の子の値を親へ戻しリーフ化（工数を消さない）
         const pp=b.getAttribute("data-path").split("/");
         if(pp.length>=3){const pr=resolvePath(pp.slice(0,-1).join("/"));
           if(pr.node){delete pr.node.children;
-            for(const k in removed)if(k!=="id"&&k!=="children"&&k!=="_calc"&&k!=="_leaf")pr.node[k]=removed[k];}}
+            for(const k in removed)if(k!=="id"&&k!=="children"&&k!=="_calc"&&k!=="_leaf")pr.node[k]=removed[k];
+            dmap[String(removed.id)]=String(pr.node.id);}}                    // 親がその作業になった（_deps/_pos も親へ移る）＝外さず付け替える
       }
+      retargetDeps(r.proj,dmap);
     }
     else if(act==="add"){
       const base=String(r.node.id||""), dot=base.lastIndexOf("."), prefix=dot>=0?base.slice(0,dot+1):"";
@@ -1600,6 +2011,7 @@
         for(const k in node)if(k!=="id"&&k!=="name"&&k!=="children"&&k!=="_calc"&&k!=="_leaf")child[k]=node[k];
         Object.keys(node).forEach(k=>{if(k!=="id"&&k!=="name")delete node[k];});
         node.children=[child];
+        retargetDeps(r.proj,{[String(node.id)]:child.id});                    // 集計ノードは○にしない(#66)＝_deps/_pos は子1へ移ったので矢印も子1へ
       }
       collapsed.delete("T|"+r.proj.name+"|"+node.id);                         // 折りたたみ中でも追加が見えるよう展開
     }
@@ -1718,9 +2130,9 @@
 
   // ===== リスケ履歴(#96)：吹き出し（閲覧・クリックで開閉）とリスケフォーム（編集モードの記録） =====
   let rsPopPath=null;                                                        // 開いている吹き出しの対象path（同じトリガー再クリック=閉じる）
-  const closeRsUI=()=>{["rsPop","rsForm"].forEach(id=>{const el=$(id);if(el)el.remove();});rsPopPath=null;};
+  const closeRsUI=()=>{["rsPop","rsForm","depsPop"].forEach(id=>{const el=$(id);if(el)el.remove();});rsPopPath=null;depsPopKey=null;};
   document.addEventListener("click",e=>{                                     // 外側クリックで閉じる（トリガー自身は各ハンドラでトグルするため除外）
-    if(e.target.closest('#rsPop,#rsForm,[data-rslog],[data-act="resched"]'))return;
+    if(e.target.closest&&e.target.closest('#rsPop,#rsForm,#depsPop,[data-rslog],[data-act="resched"],g.dnode'))return;
     closeRsUI();
   },true);
   document.addEventListener("keydown",e=>{if(e.key==="Escape")closeRsUI();});
