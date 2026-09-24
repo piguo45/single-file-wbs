@@ -1592,7 +1592,7 @@
                   },
                   "actual": {
                     "start": "2026-09-24",
-                    "end": null
+                    "end": "2026-09-24"
                   },
                   "note": "deferRender が #rsForm の存在中は延期し、確定/取消で再開。再現＝名前欄を変えた直後に ↷ → 0.8 秒後に消える（codex の repro205.py を e2e に昇格）。保存パスは触らない。Sonnet"
                 }
@@ -3060,7 +3060,11 @@
           "closeWhen": "入力直後に ↷ を押しても、開いたリスケフォームが消えないこと（フォームを開いている間は遅延再描画を待たせる）",
           "decisions": [],
           "pending": null,
-          "closed": null,
+          "closed": {
+            "at": "2026-09-24",
+            "how": "resolved",
+            "note": "名前欄を変えた直後に ↷ を押しても 0.8 秒後にフォームが残る（e2e test_rsform_defer.py 3項目 緑・再現スクリプトでも消えない）。修正は deferRender に #rsForm/#rsPop の待ちを1行"
+          },
           "links": [
             {
               "title": "統合ビューアの差し込み口 §4",
