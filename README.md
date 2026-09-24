@@ -20,7 +20,7 @@
 - **1枚のHTMLと1つのJSON**
   `file://` で開き、保存も同じファイルへ書き戻す（File System Access API）。
 - **人は画面で、AIは素のJSONで、同じ表を編集する**
-  同梱の [`CLAUDE.md`](CLAUDE.md) は読み物ではなく、AI向けの仕様書として置いてある。
+  同梱の [`AGENTS.md`](AGENTS.md) は読み物ではなく、AI向けの仕様書として置いてある。
 - **計画は「いつ・誰が・どれだけ」、課題は「何を・なぜ・どうなったら終わりか」**
   つなぐのは課題側のリンクだけで、画面が両方向に飛ぶ（計画側のデータには何も書かない）。
 
@@ -38,7 +38,7 @@
 3. **「ファイルを開く」** で `wbs_sample_issues.json` を読み込む（同じボタンへのドラッグ&ドロップでも可）
 
 自分のデータはサンプルをコピーして作る。編集して保存し、**「更新」** で反映する。
-画面上から直接編集する **「編集」** モードは、Chrome を起動してから最初の1回だけ同じファイルを選び直す（書き込み許可のため。手順は [`CLAUDE.md`](CLAUDE.md)）。
+画面上から直接編集する **「編集」** モードは、Chrome を起動してから最初の1回だけ同じファイルを選び直す（書き込み許可のため。手順は [`AGENTS.md`](AGENTS.md)）。
 
 ## できること
 
@@ -64,11 +64,11 @@
 - 「#3 を待ちにして、開発部の回答、9/12 まで」→ `pending` に誰を・何を・いつまでが入り、9/12 を過ぎると `⚠ 催促` が出る
 - 「今回の★を報告して」→ 更新期間に動いた課題が箇条書きで出る（JSONは変えない）
 
-作法は [`CLAUDE.md`](CLAUDE.md) に書いてある。AIはこれを読んでからデータを触る。
+作法は [`AGENTS.md`](AGENTS.md) に書いてある。AIはこれを読んでからデータを触る。
 
 ## もっと詳しく
 
-- 仕様とAIの作法 → [`CLAUDE.md`](CLAUDE.md)（英語版は [`CLAUDE.en.md`](CLAUDE.en.md)）
+- 仕様とAIの作法 → [`AGENTS.md`](AGENTS.md)（英語版は [`AGENTS.en.md`](AGENTS.en.md)）
 - 設計文書とADR → [`docs/`](docs/index.md)（[全体概要](docs/design/system-overview.md)、[ADR](docs/adr/)）
 - 回帰網の回し方 → [`tests/e2e/README.md`](tests/e2e/README.md)（計画）、[`tests/e2e_issue/README.md`](tests/e2e_issue/README.md)（課題）
 - 動作環境 → Google Chrome（最新版）推奨。Edge などのChromium系でも動く。Firefox/SafariはFile System Access API未対応のため不可

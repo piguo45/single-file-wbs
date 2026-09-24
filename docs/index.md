@@ -1,14 +1,15 @@
 # ドキュメント一覧
 
 single-file-wbs (WBS Viewer) の設計ドキュメント。
-仕様の単一ソースは [`CLAUDE.md`](../CLAUDE.md)、使い方は [`README.md`](../README.md)。
+仕様の単一ソースは [`AGENTS.md`](../AGENTS.md)、使い方は [`README.md`](../README.md)。
 
-*自動生成（`scripts/refresh_docs_index.py`）: 16ファイル*
+*自動生成（`scripts/refresh_docs_index.py`）: 17ファイル*
 
 ## 設計書
 
 | ドキュメント | 概要 |
 |---|---|
+| [依存タブ（構造の軸）設計メモ — brief-deps v0.2](design/brief-deps.md) | 1. 静的モック（v0.1・8枚）→ 動くモック第1〜2版（案F）→ **第3版＝案G′**（方眼・自動配置・ゴム線・日数・赤の最長経路・図に載せる・矢印... |
 | [single-file-issue v0.1（MVP）設計ブリーフ](design/brief-v0.1.md) | 課題管理表を「JSON 1枚＋単一HTMLビューア＋`CLAUDE.md`」で回す v0.1（MVP）の設計ブリーフ（一次記録）。 |
 | [v0.2 設計ブリーフ：計画（WBS）と課題（Issue）を 1 枚の HTML・1 つの JSON に統合する](design/brief-v0.2-unified.md) | 計画（WBS）と課題（Issue）を1枚の HTML・1つの JSON に統合すると決めた v0.2 の設計ブリーフ（一次記録）。 |
 | [WBS Viewer 全体概要](design/system-overview.md) | `wbs_viewer.html` と周辺ファイルの構成から逆生成した全体像（構成・依存・データの流れ）。 |

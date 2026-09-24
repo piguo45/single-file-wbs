@@ -1,7 +1,7 @@
-# Plan & Issue Tracking Tool (WBS Viewer) - CLAUDE.en.md
+# Plan & Issue Tracking Tool (WBS Viewer) - AGENTS.en.md
 
-> **English translation of [`CLAUDE.md`](CLAUDE.md) (the Japanese original is the primary spec).**
-> **Sync rule: whenever the spec changes, update `CLAUDE.md` and `CLAUDE.en.md` in the same commit.**
+> **English translation of [`AGENTS.md`](AGENTS.md) (the Japanese original is the primary spec).**
+> **Sync rule: whenever the spec changes, update `AGENTS.md` and `AGENTS.en.md` in the same commit.**
 
 A text (JSON) driven management tool. **The plan (WBS) and the issues run in one HTML page and one JSON.**
 The data is one JSON in which **each project (`projects[]`) holds both a plan (`tasks`) and its issues (`issues`)**.
@@ -22,14 +22,14 @@ Connections are written **only in the issue's `links[]`**; the view builds the r
 
 ## Product vision & design principles
 
-> **A local plan plus issue table for the AI-era manager (PL / tech lead) leading a small, elite team that includes AI. Humans edit via the GUI; AI edits via raw JSON and `CLAUDE.md` — the same single sheet.**
+> **A local plan plus issue table for the AI-era manager (PL / tech lead) leading a small, elite team that includes AI. Humans edit via the GUI; AI edits via raw JSON and `AGENTS.md` — the same single sheet.**
 
 - **Target user**: not the enterprise PM of huge projects, but a **manager (PL / tech lead) leading a ~10-person elite team that includes AI**. The author is this persona (dogfooding).
 - **Vision (a bet, owned as such)**: as AI rises, small elite teams wielding AI become the norm, and **everyone becomes a PL/TL**. This tool is for that lead (human **and** PL/TL agent) to manage the plan and the issues. It is a bet on the future, but hedged — even if it misses, it already helps today's leads.
-- **Core differentiator = two first-class interfaces**: human = GUI / AI = raw JSON + the AI-readable `CLAUDE.md`. **Both are first-class.** Every feature works via both the GUI path and the AI/JSON path (custom keys preserved, round-trip).
-- **`CLAUDE.md` is not "documentation" but "the AI's API spec"**: because AI depends on the format, **the schema is kept almost frozen**. When it must change, keep readers backward compatible and update `CLAUDE.md` / `CLAUDE.en.md` together.
+- **Core differentiator = two first-class interfaces**: human = GUI / AI = raw JSON + the AI-readable `AGENTS.md`. **Both are first-class.** Every feature works via both the GUI path and the AI/JSON path (custom keys preserved, round-trip).
+- **`AGENTS.md` is not "documentation" but "the AI's API spec"**: because AI depends on the format, **the schema is kept almost frozen**. When it must change, keep readers backward compatible and update `AGENTS.md` / `AGENTS.en.md` together.
 - **One entry point, complete**: an AI cannot read another repo's manual. **Both the plan and the issues are documented in this one file**, and cross-references stay inside the document.
-- **Source-of-truth rule: declare it per repository, one per repository.** Pick exactly one home for issues in each repo and declare it. Never mix GitHub Issues and this table (you lose track of which one is real). The declaration goes in that repo's `CLAUDE.md` (this repo's is the final section below).
+- **Source-of-truth rule: declare it per repository, one per repository.** Pick exactly one home for issues in each repo and declare it. Never mix GitHub Issues and this table (you lose track of which one is real). The declaration goes in that repo's `AGENTS.md` (this repo's is the final section below).
 - **Build**: data that holds only facts (state is derived) / fields that support the filing discipline (the two questions, the close condition) / a "waiting" and a "frozen" mark that always carry their reason / AI-native (progress assessment, dependency inference) / load by assignee (human vs AI) / cost (`_ai` tokens, `_money`) / honest views (true state, not vanity).
 - **Don't build**: enterprise ticketing / enterprise PM (portfolios, complex permissions) / workflow and approval engines / large-scale real-time collaboration / notifications and outbound requests / automated reporting.
 - Source of the semantics → [課題管理とはなにか？ / What is issue management?](https://knowledge.piguo.org/notes/what-is-issue-management/) (Japanese)
@@ -481,7 +481,7 @@ The article's **three reasons for pending** split like this in this tool (**the 
 
 - **Never change the meaning of an existing key.** Add keys, but do not delete, rename, or change types.
 - **New keys are always optional.** An old `wbs.json` must keep reading correctly.
-- When the schema changes, update `CLAUDE.md` and `CLAUDE.en.md` **in the same commit**.
+- When the schema changes, update `AGENTS.md` and `AGENTS.en.md` **in the same commit**.
 - Keep your own information in a `_` key **first**. Promote it to an official key only once it turns out to be needed in other repos too.
 
 **How older files are read (the reader's responsibility)**
@@ -1424,7 +1424,7 @@ Pick the mode **from the context of the conversation** (no need to type `/pm` ex
 
 **The source of truth is the JSON this merged viewer reads** (`projects[].issues` and `projects[].tasks`).
 Issues and the development plan live in the same file, and are **never duplicated into GitHub Issues** (you would lose track of which one is real).
-Which file is the source of truth is decided **once per repository** and declared in that repo's `CLAUDE.md`.
+Which file is the source of truth is decided **once per repository** and declared in that repo's `AGENTS.md`.
 
 ### Split of truth
 - **An issue (`issues[]`) = what, why, and when it is done**; **a plan leaf (a `tasks` leaf) = when, who, how much**. The connecting key is the issue's **`links[].wbs`** (the authoritative statement is at the end of "The four moves of issue management ⇄ JSON operations").
@@ -1487,7 +1487,7 @@ Machine-checkable close conditions are **run** (never report or close on "should
 - **GitHub Issues are not used for new work** (never keep the source of truth in two places). On 2026-09-11 the 26 open issues were moved into `issues[]`.
 - **A Claude Code hook that makes GitHub Issues read-only ships with the repo** (`.claude/settings.json` + `.claude/hooks/block-gh-issue-write.sh`). Only `gh issue list/view/status` pass; every other `gh issue` subcommand and any write via `gh api` is blocked before it runs. A human who really needs to write types `! gh issue …` in the prompt (bypassing Claude).
 - **GitHub Issues remain as an inbox from outside** (this is a public repo, so anyone can file one). When one arrives, **copy its content into `issues[]`** and add `{ "title": "GitHub #N", "url": "…" }` to `links`. From then on it is tracked in the JSON.
-- The rule is: **declare it per repository, one per repository.** Other repos may well use GitHub Issues as their source of truth — follow the declaration in each repo's `CLAUDE.md` (→ the compatibility path in "Dev workflow: the `/pm` skill").
+- The rule is: **declare it per repository, one per repository.** Other repos may well use GitHub Issues as their source of truth — follow the declaration in each repo's `AGENTS.md` (→ the compatibility path in "Dev workflow: the `/pm` skill").
 - Your own real data in `wbs.json` is gitignored (it is not the source of truth — it is your local scratch file).
 
 **This repo's auto-verification (the concrete commands behind `/pm`'s "Done is auto-verified")**
@@ -1500,7 +1500,7 @@ uv run python scripts/check.py wbs_roadmap.json wbs_sample_issues.json
 
 ## Where the merge stands (v2.0.0 — done)
 
-**The plan (WBS) and the issues are merged into one HTML page, one JSON and one `CLAUDE.md`** (2026-09-11, `v2.0.0`).
+**The plan (WBS) and the issues are merged into one HTML page, one JSON and one `AGENTS.md`** (2026-09-11, `v2.0.0`).
 Adding issue management **changes what the product is**, so the MAJOR version was raised (`v1.4` → `v2.0.0`; author's decision).
 
 - The data shape and the issue renderer were settled first in the sister repo single-file-issue (a private repo) as v0.1–v0.2 and then **moved here**. That repo is **frozen as the design record** (the primary records are [`docs/design/brief-v0.1.md`](docs/design/brief-v0.1.md), [`docs/design/brief-v0.2-unified.md`](docs/design/brief-v0.2-unified.md) and [`docs/design/unified-touchpoints.md`](docs/design/unified-touchpoints.md), all Japanese; the decisions are ADR 0008–0011 in [`docs/adr/`](docs/adr/)).

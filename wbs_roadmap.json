@@ -1455,7 +1455,7 @@
                 },
                 {
                   "id": "5.1.5",
-                  "name": "仕様書：CLAUDE.md ja/en・AI依頼例3・demo に依存サンプル",
+                  "name": "仕様書：AGENTS.md ja/en・AI依頼例3・demo に依存サンプル",
                   "qty": 1,
                   "hours": 4,
                   "assignee": "Claude",

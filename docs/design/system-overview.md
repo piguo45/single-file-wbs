@@ -4,20 +4,20 @@
 
 最終更新：2026-09-11（v2.0.0 ＝ 課題管理の同居を反映）
 
-**仕様の単一ソースは [`CLAUDE.md`](../../CLAUDE.md)**（計算式・データ形式・異常系）。本書は重複させず、構成と依存の地図に絞ります。
+**仕様の単一ソースは [`AGENTS.md`](../../AGENTS.md)**（計算式・データ形式・異常系）。本書は重複させず、構成と依存の地図に絞ります。
 設計判断の「なぜ」は [ADR（`docs/adr/`）](../adr/) を参照。
 
 ---
 
 ## コンセプト
 
-> **AIを含む少数精鋭チームを率いる管理者（PL／テックリード）のためのローカルな計画表＋課題表。人間はGUIで、AIは素のJSONと `CLAUDE.md` で、同じ1枚を編集する。**
+> **AIを含む少数精鋭チームを率いる管理者（PL／テックリード）のためのローカルな計画表＋課題表。人間はGUIで、AIは素のJSONと `AGENTS.md` で、同じ1枚を編集する。**
 
 **v2.0.0 から、計画（WBS）と課題（Issue）が 1枚の HTML・1つの JSON に同居する。**
 操作バーの **「計画｜課題」スイッチ**で切り替え、つながりは**課題側の `links[]` にだけ**書く（計画側のデータには何も書かない）。
 移植の差し込み口と細部は [`unified-touchpoints.md`](unified-touchpoints.md)、判断は [ADR-0011](../adr/0011-plan-and-issues-in-one-json.md)。
 
-詳細は [`CLAUDE.md` の「製品ビジョン・設計指針（#67）」](../../CLAUDE.md) と [ADR-0004（AIを第一級ユーザーにする）](../adr/0004-ai-first-json-as-api.md)。
+詳細は [`AGENTS.md` の「製品ビジョン・設計指針（#67）」](../../AGENTS.md) と [ADR-0004（AIを第一級ユーザーにする）](../adr/0004-ai-first-json-as-api.md)。
 
 ---
 
@@ -29,7 +29,7 @@
 | `wbs_sample.json` | 架空データの最小サンプル（**計画だけ**・データ形式の参照用） | データ |
 | `wbs_sample_issues.json` | 架空データのサンプル（**計画＋課題**・2案件。3状態と6つの印を網羅） | データ |
 | `wbs_roadmap.json` | 本ツール自身の**正本**（実データ。`projects[0]` に開発計画 `tasks` と課題 `issues` が同居） | データ |
-| `CLAUDE.md` / `CLAUDE.en.md` | 仕様の単一ソース（AI向けAPI仕様も兼ねる） | ドキュメント |
+| `AGENTS.md` / `AGENTS.en.md` | 仕様の単一ソース（AI向けAPI仕様も兼ねる） | ドキュメント |
 | `README.md` / `README.en.md` | 目的・使い方の入口 | ドキュメント |
 | `docs/` | 本書・ADR・スクリーンショット | ドキュメント |
 | `tests/` | 正常/異常サンプルJSON（計画＝`tests/`・課題＝`tests/issue/`）＋**2系統の e2e**（計画＝`tests/e2e/`・課題＝`tests/e2e_issue/`、いずれも headless Chromium）。[ADR-0006](../adr/0006-e2e-headless-chromium.md) | テスト |
@@ -116,7 +116,7 @@ graph TD
     LANG --> RENDER
 ```
 
-- **計算ロジック**（工数・進捗率・EVM・親の加重平均）の正は [`CLAUDE.md` 計算ロジック節](../../CLAUDE.md)。
+- **計算ロジック**（工数・進捗率・EVM・親の加重平均）の正は [`AGENTS.md` 計算ロジック節](../../AGENTS.md)。
 - **編集モードは構造編集も担う**：入れ子（リーフの集計化と、最後の子削除での降格・案Y）とマイルストーンの追加／編集／削除。工数はリーフにのみ宿り、昇格／降格で総量は保存される。→ [ADR-0003](../adr/0003-no-derived-values-in-data.md)
 - **左表は列折りたたみ（8グループ）と列幅調整を持つ**：列幅はヘッダー境界のドラッグで変更し、`localStorage` の `wbsColWidths` に保存する。折りたたみ状態は `wbsColCollapsed` に保存し、両者は独立に扱う。
 - **保存パスは聖域**（データ消失歴あり）：書込は単一キュー直列化・mtime検知・パース成功後にハンドル差替。→ [ADR-0002](../adr/0002-file-system-access-editing.md)

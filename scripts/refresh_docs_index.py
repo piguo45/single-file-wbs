@@ -60,7 +60,7 @@ def main() -> None:
         "# ドキュメント一覧",
         "",
         "single-file-wbs (WBS Viewer) の設計ドキュメント。",
-        "仕様の単一ソースは [`CLAUDE.md`](../CLAUDE.md)、使い方は [`README.md`](../README.md)。",
+        "仕様の単一ソースは [`AGENTS.md`](../AGENTS.md)、使い方は [`README.md`](../README.md)。",
         "",
         f"*自動生成（`scripts/refresh_docs_index.py`）: {total_files}ファイル*",
         "",
