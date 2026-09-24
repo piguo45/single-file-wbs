@@ -1897,7 +1897,7 @@
     refreshTimer=setTimeout(function tick(){
       const a=document.activeElement;
       if(a&&a.tagName==="INPUT"&&a.closest&&a.closest("#leftRows")){refreshTimer=setTimeout(tick,FOCUS_POLL_MS);return;}
-      if($("rsForm")||$("rsPop")){refreshTimer=setTimeout(tick,FOCUS_POLL_MS);return;}  // リスケフォーム/吹き出しは#leftRows外のbody直下＝上のフォーカス判定に映らないため別途待つ（開いた直後に消える事故の防止・#205）
+      if($("rsForm")||$("rsPop")||$("depsPop")){refreshTimer=setTimeout(tick,FOCUS_POLL_MS);return;}  // リスケフォーム/吹き出しは#leftRows外のbody直下＝上のフォーカス判定に映らないため別途待つ（開いた直後に消える事故の防止・#205）
       if(lastData)render(lastData);
     },RENDER_DEFER_MS);
   }
