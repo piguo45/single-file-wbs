@@ -399,6 +399,115 @@ def _check_task_dates(rep: Report, proj_name: str, tasks: Any) -> None:
         _check_task_dates(rep, proj_name, task.get("children"))
 
 
+def _split_tasks(tasks: Any, leaves: dict[str, dict[str, Any]],
+                 aggs: dict[str, dict[str, Any]]) -> None:
+    """`tasks` をたどり、葉（`children` なし）と集計ノードを id で分ける。"""
+    if not isinstance(tasks, list):
+        return
+    for task in tasks:
+        if not isinstance(task, dict):
+            continue
+        kids = task.get("children")
+        target = aggs if isinstance(kids, list) and kids else leaves
+        target.setdefault(str(task.get("id")), task)
+        _split_tasks(kids, leaves, aggs)
+
+
+def _deps_cycles(edges: dict[str, list[str]]) -> list[list[str]]:
+    """前工程の有向グラフから輪（循環）を探し、見つかった順に返す。"""
+    color: dict[str, int] = {}          # 0=未訪問 1=たどっている最中 2=済み
+    stack: list[str] = []
+    found: list[list[str]] = []
+
+    def walk(node: str) -> None:
+        color[node] = 1
+        stack.append(node)
+        for nxt in edges.get(node, ()):
+            if color.get(nxt, 0) == 0:
+                walk(nxt)
+            elif color.get(nxt) == 1:            # たどっている最中に戻った＝輪
+                found.append(stack[stack.index(nxt):] + [nxt])
+        stack.pop()
+        color[node] = 2
+
+    for key in edges:
+        if color.get(key, 0) == 0:
+            walk(key)
+    return found
+
+
+def _check_deps(rep: Report, proj_name: str, proj: dict[str, Any]) -> None:
+    """依存（`_deps`／`_pos`・#66）を検査する。
+
+    仕様は `docs/design/brief-deps.md` v0.2 §2。○にするのは葉だけ・同一案件
+    内・FS（終了→開始）のみ。参照切れ・循環・自己参照はエラー、図に載って
+    いない前工程を指している場合は警告にする（描けるが線が出ないため）。
+    """
+    leaves: dict[str, dict[str, Any]] = {}
+    aggs: dict[str, dict[str, Any]] = {}
+    _split_tasks(proj.get("tasks"), leaves, aggs)
+
+    for tid, node in aggs.items():
+        if "_deps" in node:
+            rep.error(f"{proj_name} / WBS {tid} / _deps",
+                      "集計ノードは図に載せない（_deps を書くのは葉だけ）")
+        if "_pos" in node:
+            rep.error(f"{proj_name} / WBS {tid} / _pos",
+                      "集計ノードは図に載せない（_pos を書くのは葉だけ）")
+
+    edges: dict[str, list[str]] = {}
+    for tid, node in leaves.items():
+        where = f"{proj_name} / WBS {tid}"
+        pos = node.get("_pos")
+        if "_pos" in node and not (
+                isinstance(pos, list) and len(pos) == 2
+                and all(isinstance(v, int) and v >= 0 and v % 2 == 0
+                        for v in pos)):
+            rep.warn(f"{where} / _pos",
+                     f"[列, 行] の 0 以上の偶数で書く（1 マスおき）: {pos!r}")
+        if "_deps" not in node:
+            continue
+        deps = node.get("_deps")
+        if not isinstance(deps, list):
+            rep.error(f"{where} / _deps",
+                      f"前工程の id の配列で書く（[] ＝前工程なし）: {deps!r}")
+            continue
+        plan = node.get("plan")
+        if not (isinstance(plan, dict) and _is_date(plan.get("start"))
+                and _is_date(plan.get("end"))):
+            rep.warn(f"{where} / plan",
+                     "予定の開始・終了が無いので依存の図に出せない"
+                     "（日数＝予定の期間）")
+        ok: list[str] = []
+        for dep in deps:
+            if not isinstance(dep, str):
+                rep.error(f"{where} / _deps",
+                          f"前工程は id の文字列で書く: {dep!r}")
+                continue
+            if dep == tid:
+                rep.error(f"{where} / _deps", "自分を前工程にしている")
+                continue
+            if dep in aggs:
+                rep.error(f"{where} / _deps",
+                          f"前工程 {dep!r} は集計ノード（前工程にできるのは葉だけ）")
+                continue
+            if dep not in leaves:
+                rep.error(f"{where} / _deps",
+                          f"前工程 {dep!r} が同じ案件に無い"
+                          "（v1 は案件をまたげない）")
+                continue
+            if "_deps" not in leaves[dep]:
+                rep.warn(f"{where} / _deps",
+                         f"前工程 {dep!r} は図に載っていない"
+                         "（その葉にも _deps を書く）")
+            ok.append(dep)
+        edges[tid] = ok
+
+    for cycle in _deps_cycles(edges):
+        rep.error(f"{proj_name} / WBS {cycle[0]} / _deps",
+                  "依存が輪になっている: " + " → ".join(reversed(cycle)))
+
+
 def check_document(rep: Report, doc: Any) -> None:
     """JSON 1 ファイル分（ブック全体）を検査する。"""
     if not isinstance(doc, dict):
@@ -448,6 +557,7 @@ def check_document(rep: Report, doc: Any) -> None:
         names.add(name)
 
         _check_task_dates(rep, name, proj.get("tasks"))
+        _check_deps(rep, name, proj)
 
         issues = proj.get("issues", [])
         if not isinstance(issues, list):

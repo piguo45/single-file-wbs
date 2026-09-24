@@ -1,0 +1,39 @@
+{
+  "name": "壊れた依存",
+  "projects": [
+    {
+      "name": "壊れの確認",
+      "milestones": [{ "date": "2026-07-01", "label": "<script>alert(1)</script>", "color": "red' onload='x" }],
+      "tasks": [
+        { "id": "1", "name": "集計ノードに _deps", "_deps": ["1.1"], "_pos": [2, 2],
+          "children": [
+            { "id": "1.1", "name": "予定日なし", "qty": 1, "hours": 8, "assignee": "",
+              "plan": { "start": null, "end": null },
+              "actual": { "start": null, "end": null }, "note": "",
+              "_deps": ["1.2"] },
+            { "id": "1.2", "name": "参照先が無い", "qty": 1, "hours": 8, "assignee": "",
+              "plan": { "start": "2026-06-01", "end": "2026-06-03" },
+              "actual": { "start": null, "end": null }, "note": "",
+              "_deps": ["9.9", "1", null, 7, { "id": "1.3" }] },
+            { "id": "1.3", "name": "_pos が壊れている", "qty": 1, "hours": 8, "assignee": "",
+              "plan": { "start": "2026-06-04", "end": "2026-06-06" },
+              "actual": { "start": null, "end": null }, "note": "",
+              "_pos": [3, "x"],
+              "_deps": ["1.2"] },
+            { "id": "1.4", "name": "_deps が配列でない", "qty": 1, "hours": 8, "assignee": "",
+              "plan": { "start": "2026-06-08", "end": "2026-06-10" },
+              "actual": { "start": null, "end": null }, "note": "",
+              "_deps": "1.3" },
+            { "id": "1.5", "name": "図に載っていない前工程を指す", "qty": 1, "hours": 8, "assignee": "",
+              "plan": { "start": "2026-06-11", "end": "2026-06-12" },
+              "actual": { "start": null, "end": null }, "note": "",
+              "_deps": ["1.6"] },
+            { "id": "1.6", "name": "_deps を持たない葉", "qty": 1, "hours": 8, "assignee": "",
+              "plan": { "start": "2026-06-08", "end": "2026-06-09" },
+              "actual": { "start": null, "end": null }, "note": "" }
+          ]
+        }
+      ]
+    }
+  ]
+}
