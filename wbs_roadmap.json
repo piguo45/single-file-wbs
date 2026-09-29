@@ -1468,7 +1468,7 @@
                   },
                   "actual": {
                     "start": "2026-09-29",
-                    "end": null
+                    "end": "2026-09-29"
                   },
                   "note": "編集モードの門番・既存の自動保存キューに載せる（保存パスは触らない）。Opus ／ 入口: depsBodyHtml→depsGraph→depsLayout→depsFigure、○=g.dnode[data-id]・矢印=g.dedge、書く先は葉の _deps/_pos だけ、id変更等の追従は retargetDeps(proj,map) が既にある、変異後は queueSave(); render(lastData)。#220 の裁定（A 推奨）を先に",
                   "_planLog": [
@@ -1498,7 +1498,7 @@
                     "end": "2026-10-04"
                   },
                   "actual": {
-                    "start": null,
+                    "start": "2026-09-29",
                     "end": null
                   },
                   "note": "決定性・最長経路（独立計算と一致）・違反・結ぶ/外す/置く・round-trip・時間タブ復帰。赤の使い分けを形で冗長化して監査に登録。Sonnet",
@@ -1529,7 +1529,7 @@
                     "end": "2026-10-05"
                   },
                   "actual": {
-                    "start": null,
+                    "start": "2026-09-29",
                     "end": null
                   },
                   "note": "データ形式・画面・操作・AI の決まり・異常系（切れた参照・循環）。wbs_demo.json に _deps を足して demo.html 再生成。Sonnet",
@@ -2797,6 +2797,12 @@
             {
               "date": "2026-09-25",
               "text": "5.1.1 データ層＋5.1.2 描画（読む専用の依存タブ）を本体にマージ。副産物: 依存タブ表示中に課題側リンクや #wbs= で飛ぶと無言で失敗する不具合を gotoWbs で修正",
+              "assignee": "Claude",
+              "done": true
+            },
+            {
+              "date": "2026-09-29",
+              "text": "5.1.3 操作を本体にマージ（整列は案件ごとの「全部」1つ・編集ONのクリック＝結ぶ・吹き出し固定とジャンプは編集OFF限定）。サイズ警報線（JS 800行/65KB）は着手前から超過・描画パス追加なし",
               "assignee": "Claude",
               "done": true
             }
