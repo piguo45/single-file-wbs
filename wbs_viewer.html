@@ -1661,7 +1661,7 @@
     const memo=okNode(d.node._ai)?d.node._ai.memo:null;
     if(typeof memo==="string"&&memo.trim())L.push(t("dpAi")+dcut(memo,120));
     g.issues.filter(o=>o.wbs===d.id).forEach(o=>L.push(t("dpIssue")(o.id,o.marks.join(t("dpJoin")))));
-    L.push(t("dpJump"));
+    if(!editMode)L.push(t("dpJump"));                                        // 編集 ON ではクリックもダブルクリックも「結ぶ」側＝案内を出さない（できないことを書かない）
     return L.join("\n");}
 
   // 1案件ぶんの図（方眼・◇・矢印・○・右下の最長経路）。座標は素の px で作り、ズームは外側の <g> の scale 1つで効かせる
@@ -1799,6 +1799,7 @@
     rsPlace(el,nd); depsPopKey=key;
   });
   $("rightBody").addEventListener("dblclick",e=>{                            // 時間タブのその行へ（既存の gotoWbs・brief §3 の導線）
+    if(activeView!=="deps"||editMode)return;                                 // 編集 ON ではクリックが「結ぶ」なので、続けて飛ぶと1操作に意味が2つ乗る（brief B4）
     const nd=e.target.closest&&e.target.closest("g.dnode"); if(!nd)return;
     closeRsUI();
     PM.gotoWbs(nd.getAttribute("data-proj"),nd.getAttribute("data-id"));      // タブを時間へ戻すのは gotoWbs 側（課題からのリンク・#wbs= の深いリンクと同じ入口）
@@ -1828,6 +1829,7 @@
   // --- 図に載せる／外す（`_deps` キーの有無）---
   function depsPickSet(pi,id,want){
     const proj=curProjects&&curProjects[pi]; if(!okNode(proj))return false;
+    // id は案件の中で一意（AGENTS.md）。万一重複していたら先頭の葉を指す＝図で○になる葉（depsGraph の byId も先勝ち）と同じ選び方
     const leaves=dLeaves(proj.tasks,[]), leaf=leaves.find(n=>String(n.id)===String(id)); if(!leaf)return false;
     if(want){if(dHasDeps(leaf))return false; depsSnap(); leaf._deps=[]; return true;}
     const refs=leaves.filter(n=>dHasDeps(n)&&n._deps.map(String).indexOf(String(id))>=0);

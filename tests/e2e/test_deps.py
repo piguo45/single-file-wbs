@@ -422,6 +422,14 @@ with sync_playwright() as p:
     check(pg.locator(EDGES).count() == n0 and "1.1" not in (leaves_of()["1.1"].get("_deps") or []),
           "⑩ 同じ○を2回クリックしても自己参照にはならない（取消になる）")
     check(pg.locator(".dsvg .dring").count() == 0, "⑩ 取消で選択の輪が消える")
+    pg.dblclick('.dsvg g.dnode[data-id="1.3"] .dcore'); pg.wait_for_timeout(400)
+    check(pg.locator('#rtabs .rtab[data-view="deps"].on').count() == 1,
+          "⑩ 編集 ON のダブルクリックでは時間タブへ飛ばない（クリックは「結ぶ」の意味）")
+    check("ダブルクリック" not in pg.eval_on_selector('.dsvg g.dnode[data-id="1.3"] title',
+                                                "el => el.textContent"),
+          "⑩ 編集 ON のホバーにダブルクリックの案内を出さない（できないことを書かない）")
+    if pg.locator(".dsvg .dring").count():                      # ダブルクリックの1回目で選択が残っていたら戻す
+        pg.click('.dsvg g.dnode[data-id="1.3"] .dcore'); pg.wait_for_timeout(250)
 
     # ⑩-5 矢印の ✕ で外す → Ctrl+Z で戻る
     e1 = pg.locator(EDGES + '[data-dp="0"]').count()
