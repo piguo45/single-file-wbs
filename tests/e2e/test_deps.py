@@ -10,9 +10,13 @@
   ⑦ 時間タブへ戻すと左の情報表とフィルタバーが復帰（display:none を残さない）
   ⑧ ズーム 50/75/100%・EN 切替・ダブルクリックで時間タブのその行へ
   ⑨ `_deps`／`_pos` の round-trip（編集して保存しても消えない）と参照の追従（id 変更・削除・集計化）
+  ⑩ 操作（§4・編集モードだけ）：図に載せる/外す・結ぶ（循環・重複・案件またぎは拒否）・
+     矢印の ✕ で外す・ドラッグで `_pos`（偶数マス・埋まったマスは拒否）・整列で `_pos` が消える・
+     Ctrl+Z・編集 OFF では何も起きない・保存する JSON に `_calc` が残らない
 
 本日は CLOCK_PIN（2026-06-15）固定。fixture は tests/正常_依存.json。
 """
+import copy
 import json
 from playwright.sync_api import sync_playwright
 from common import (ROOT, VIEWER, check, finish, granted_handle_init,
@@ -280,6 +284,194 @@ with sync_playwright() as p:
           f"集計ノード化で `_deps` は子1へ移る -> {s.get('1.3.1', {}).get('_deps')}")
     check(s["1.5"]["_deps"] == ["1.3.1"] and s["1.6"]["_deps"] == ["1.3.1"],
           f"集計ノードを指していた矢印は子1へ付け替わる -> {s['1.5']['_deps']}")
+    b.close()
+
+# ⑩ 操作（brief-deps §4）。編集モード ON の時だけ効き、OFF では読む専用版のまま
+CELL, PAD = 44, 44          # 方眼の1辺と外側の余白（ビューアの DCELL/DPAD と同値。マスの中心 = PAD + n*CELL + CELL/2）
+OPS = copy.deepcopy(DATA)   # 予定日の無い葉（チェック不可の確認用）を1件だけ足した写し。読む側の fixture は汚さない
+OPS["projects"][0]["tasks"][0]["children"].append(
+    {"id": "1.10", "name": "日付未定の作業", "qty": 1, "hours": 8, "assignee": "",
+     "plan": {"start": None, "end": None}, "actual": {"start": None, "end": None}, "note": ""})
+
+with sync_playwright() as p:
+    b = p.chromium.launch()
+    pg = new_page(b, viewport={"width": 1600, "height": 950})
+    pg.on("pageerror", lambda e: errors.append(str(e)))
+    pg.on("console", lambda m: errors.append("console:" + m.text) if m.type == "error" else None)
+    dialogs = []
+    pg.on("dialog", lambda d: (dialogs.append((d.type, d.message)), d.accept()))
+    pg.add_init_script(granted_handle_init(OPS))
+    pg.goto(VIEWER)
+    pg.click("#openBtn"); pg.wait_for_timeout(200)
+
+    def leaves_of(pi=0):
+        """保存済み JSON（window.__file）の葉を id で引く."""
+        d = json.loads(pg.evaluate("()=>window.__file"))
+        out = {}
+        def walk(ns):
+            for n in ns:
+                walk(n["children"]) if n.get("children") else out.__setitem__(str(n["id"]), n)
+        walk(d["projects"][pi].get("tasks", []))
+        return out
+
+    def cells(pi=0):
+        return pg.evaluate("""(pi) => Object.fromEntries(
+            [...document.querySelectorAll('.dsvg[data-dp="'+pi+'"] g.dnode')]
+              .map(g => [g.dataset.id, [+g.dataset.c, +g.dataset.r]]))""", pi)
+
+    def at(pi, c, r):
+        """図の (列,行) の中心の画面座標（ズーム 100% 前提）."""
+        box = pg.eval_on_selector(f'.dsvg[data-dp="{pi}"]',
+                                  "el => {const b = el.getBoundingClientRect(); return {x:b.x, y:b.y};}")
+        return box["x"] + PAD + c * CELL + CELL / 2, box["y"] + PAD + r * CELL + CELL / 2
+
+    def drag(pi, ident, to_c, to_r):
+        box = pg.locator(f'.dsvg[data-dp="{pi}"] g.dnode[data-id="{ident}"] .dcore').bounding_box()
+        pg.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
+        pg.mouse.down()
+        x, y = at(pi, to_c, to_r)
+        pg.mouse.move(x, y, steps=8)
+        pg.mouse.up()
+        pg.wait_for_timeout(600)                    # 自動保存のデバウンス（400ms）を待ってから window.__file を読む
+
+    pg.click('#rtabs .rtab[data-view="deps"]')
+    pg.wait_for_selector(".dsvg")
+    pg.wait_for_timeout(150)
+
+    # 編集 OFF：操作の部品を1つも描かない／クリックは吹き出しのまま／ドラッグでは何も書かない
+    check(pg.locator("#rightHead .dpkb").count() == 0, "⑩ 編集 OFF では「図に載せる」ボタンを出さない")
+    check(pg.locator(".dfig .dalign").count() == 0, "⑩ 編集 OFF では「整列」ボタンを出さない")
+    check(pg.locator(".dsvg g.dx").count() == 0 and pg.locator(".dsvg .dhit").count() == 0,
+          "⑩ 編集 OFF では矢印の ✕ と当たり判定の線を描かない（読む専用版のまま）")
+    check(pg.locator(".dsvg .drub").count() == 0 and pg.locator(".dsvg .dsnap").count() == 0,
+          "⑩ 編集 OFF ではゴム線・吸着枠を描かない")
+    pos_off = cells()
+    drag(0, "1.1", pos_off["1.1"][0], pos_off["1.1"][1] + 6)
+    check("_pos" not in leaves_of()["1.1"], "⑩ 編集 OFF ではドラッグしても `_pos` を書かない")
+    pg.click('.dsvg g.dnode[data-id="1.1"] .dcore'); pg.wait_for_timeout(150)
+    check(pg.locator("#depsPop").count() == 1 and pg.locator(".dsvg .dring").count() == 0,
+          "⑩ 編集 OFF の○のクリックは吹き出しの固定（ゴム線は始まらない）")
+    pg.keyboard.press("Escape"); pg.wait_for_timeout(100)
+
+    pg.click("#editBtn"); pg.wait_for_timeout(300)
+    check(pg.locator(".dsvg g.dx").count() == N_EDGES, "⑩ 編集 ON で矢印ごとに ✕ が出る（矢印と同数）")
+    check(pg.locator(".dfig .dalign").count() == 1, "⑩ 編集 ON で案件の見出しに「整列」が1つ出る")
+
+    # ⑩-1 図に載せる：`_deps` がまだ無い案件（図も出ていない）に最初の○を載せられる
+    check(pg.locator(".dfig").count() == 1, "⑩ はじめは図が1つ（2件目の案件は `_deps` が無い）")
+    pg.click("#rightHead .dpkb"); pg.wait_for_timeout(250)
+    check(pg.locator(".dpick").count() == 1, "⑩ 「図に載せる」でチェックリストが開く")
+    check(pg.locator(".dpick input.dpc").count() == 11, "⑩ チェックリストは全案件の葉ぶん（10+1件）")
+    dateless = 'input.dpc[data-dp="0"][data-id="1.10"]'
+    check(pg.locator(".dpick " + dateless + "[disabled]").count() == 1, "⑩ 予定日の無い葉はチェックできない")
+    check("予定日" in (pg.get_attribute(f'.dpick label:has({dateless})', "title") or ""),
+          "⑩ チェックできない理由をツールチップで出す")
+    check(pg.locator(".dpick input.dpc:checked").count() == N_NODES,
+          f"⑩ いま図に載っている葉にチェックが付く（{N_NODES}件）")
+    pg.locator('.dpick input.dpc[data-dp="1"][data-id="1"]').check()
+    pg.wait_for_timeout(500)
+    check(leaves_of(1)["1"].get("_deps") == [], "⑩ チェックで `_deps: []` が付く（図に載る）")
+    check(pg.locator(".dfig").count() == 2, "⑩ 図が2つになる（`_deps` を持つ案件だけ描く）")
+
+    # ⑩-2 図から外す：依存が付いていれば確認し、後続の参照も外す
+    before = len(dialogs)
+    pg.locator('.dpick input.dpc[data-dp="0"][data-id="1.4"]').uncheck()
+    pg.wait_for_timeout(500)
+    s = leaves_of()
+    check(len(dialogs) > before and "1.4" in dialogs[-1][1], f"⑩ 依存が付いた葉を外す時は確認する -> {dialogs[-1:]}")
+    check("_deps" not in s["1.4"], "⑩ 外すと `_deps` キーそのものが消える")
+    check(s["1.5"]["_deps"] == ["1.3"] and s["1.8"]["_deps"] == [],
+          f"⑩ 後続（1.5・1.8）の参照も外れる -> {s['1.5']['_deps']} / {s['1.8']['_deps']}")
+    pg.keyboard.press("Control+z"); pg.wait_for_timeout(500)
+    s = leaves_of()
+    check(s["1.4"].get("_deps") == ["1.1"] and s["1.8"]["_deps"] == ["1.4"],
+          f"⑩ Ctrl+Z で図から外した1段が戻る -> {s['1.4'].get('_deps')} / {s['1.8']['_deps']}")
+    check(pg.locator(".dpick input.dpc[data-dp=\"0\"][data-id=\"1.9\"][disabled]").count() == 0,
+          "⑩ 予定日のある葉はチェックできる（1.9）")
+    pg.click("#rightHead .dpkb"); pg.wait_for_timeout(250)
+    check(pg.locator(".dpick").count() == 0, "⑩ もう一度押すとパネルが閉じる")
+
+    # ⑩-3 結ぶ（ゴム線）。1回目＝選択の輪、2回目＝前→後
+    e0 = pg.locator(EDGES + '[data-dp="0"]').count()
+    pg.click('.dsvg g.dnode[data-id="1.1"] .dcore'); pg.wait_for_timeout(200)
+    check(pg.locator('.dsvg g.dnode[data-id="1.1"] .dring').count() == 1,
+          "⑩ ○のクリックで選択の輪が出る（ゴム線の始点）")
+    check(pg.locator('.dsvg[data-dp="0"].dlink').count() == 1, "⑩ ゴム線中は図に dlink が付く（相手が光る）")
+    check(pg.locator("#depsPop").count() == 0, "⑩ 編集 ON では吹き出しを固定しない（クリック＝結ぶ）")
+    pg.click('.dsvg g.dnode[data-id="1.8"] .dcore'); pg.wait_for_timeout(450)
+    check(pg.locator(EDGES + '[data-dp="0"]').count() == e0 + 1, "⑩ ○A→○B のクリックで矢印が1本増える")
+    check("1.1" in leaves_of()["1.8"]["_deps"], "⑩ 後の葉の `_deps` に前の id が入る")
+
+    # ⑩-4 重複・循環・案件またぎ・自己参照は拒否
+    for a, bb, word, why in [("1.1", "1.2", "既に", "重複"), ("1.5", "1.1", "循環", "循環")]:
+        n0 = pg.locator(EDGES + '[data-dp="0"]').count()
+        before = len(dialogs)
+        pg.click(f'.dsvg g.dnode[data-id="{a}"] .dcore')
+        pg.click(f'.dsvg g.dnode[data-id="{bb}"] .dcore'); pg.wait_for_timeout(350)
+        check(pg.locator(EDGES + '[data-dp="0"]').count() == n0,
+              f"⑩ {why}になる結び（{a} → {bb}）は拒否される（矢印は増えない）")
+        check(len(dialogs) > before and word in dialogs[-1][1], f"⑩ {why}は断りを出す -> {dialogs[-1:]}")
+    n0 = pg.locator(EDGES).count()
+    before = len(dialogs)
+    pg.click('.dsvg[data-dp="0"] g.dnode[data-id="1.1"] .dcore')
+    pg.click('.dsvg[data-dp="1"] g.dnode[data-id="1"] .dcore'); pg.wait_for_timeout(350)
+    check(pg.locator(EDGES).count() == n0 and len(dialogs) > before,
+          "⑩ 案件をまたぐ結びは拒否される（v1 は同一案件のみ）")
+    pg.click('.dsvg g.dnode[data-id="1.1"] .dcore')
+    pg.click('.dsvg g.dnode[data-id="1.1"] .dcore'); pg.wait_for_timeout(300)
+    check(pg.locator(EDGES).count() == n0 and "1.1" not in (leaves_of()["1.1"].get("_deps") or []),
+          "⑩ 同じ○を2回クリックしても自己参照にはならない（取消になる）")
+    check(pg.locator(".dsvg .dring").count() == 0, "⑩ 取消で選択の輪が消える")
+
+    # ⑩-5 矢印の ✕ で外す → Ctrl+Z で戻る
+    e1 = pg.locator(EDGES + '[data-dp="0"]').count()
+    pg.locator('.dsvg g.dedge[data-from="1.1"][data-to="1.8"] .dxc').click(force=True)   # ✕ は hover まで opacity:0
+    pg.wait_for_timeout(400)
+    check(pg.locator(EDGES + '[data-dp="0"]').count() == e1 - 1, "⑩ 矢印の ✕ で依存が1本外れる")
+    check("1.1" not in leaves_of()["1.8"]["_deps"], "⑩ `_deps` からその id が消える")
+    pg.keyboard.press("Control+z"); pg.wait_for_timeout(600)
+    check(pg.locator(EDGES + '[data-dp="0"]').count() == e1 and "1.1" in leaves_of()["1.8"]["_deps"],
+          "⑩ Ctrl+Z で外した依存が戻る")
+    pg.locator('.dsvg g.dedge[data-from="1.1"][data-to="1.8"] .dxc').click(force=True)
+    pg.wait_for_timeout(400)                                     # 以降の検査のため元の依存に戻す
+
+    # ⑩-6 置く（ドラッグ）＝1マスおきの吸着・埋まったマスは拒否
+    pos = cells()
+    free_r = max(r for _, r in pos.values()) + 4
+    drag(0, "1.2", pos["1.2"][0], free_r)
+    got = leaves_of()["1.2"].get("_pos")
+    check(isinstance(got, list) and len(got) == 2, f"⑩ ドラッグした○に `_pos` が付く -> {got}")
+    check(bool(got) and got[0] % 2 == 0 and got[1] % 2 == 0, f"⑩ 吸着先は偶数マス（1マスおき）-> {got}")
+    check(got == [pos["1.2"][0], free_r], f"⑩ 離したマスにそのまま置かれる -> {got}")
+    pg.keyboard.press("Control+z"); pg.wait_for_timeout(600)
+    check("_pos" not in leaves_of()["1.2"], "⑩ Ctrl+Z で置き直しも戻る")
+    pos = cells()
+    drag(0, "1.2", pos["1.1"][0], pos["1.1"][1])                 # 他の○が居るマスへ落とす
+    check("_pos" not in leaves_of()["1.2"], "⑩ 他の○が居るマスには置けない（周りを1マス空ける規則）")
+    check(cells()["1.2"] == pos["1.2"], "⑩ 置けなかった○は元の位置に戻る")
+
+    # ⑩-7 整列＝この案件の手置きを全部消して自動配置へ（#220 裁定 A・「新規だけ」は無い）
+    drag(0, "1.2", pos["1.2"][0], free_r)
+    s = leaves_of()
+    check("_pos" in s["1.2"] and s["1.6"]["_pos"] == [12, 8], "⑩ 整列の前：手置きが2件ある（1.2・1.6）")
+    check(pg.locator(".dfig .dalign").count() == 2, "⑩ 整列のボタンは案件ごと（図と同数）")
+    pg.click('.dfig .dalign[data-dp="0"]'); pg.wait_for_timeout(600)
+    check(all("_pos" not in n for n in leaves_of().values()),
+          "⑩ 「整列」でその案件の `_pos` が全部消える（自動配置に戻る）")
+    pg.keyboard.press("Control+z"); pg.wait_for_timeout(600)
+    s = leaves_of()
+    check(s["1.6"].get("_pos") == [12, 8] and "_pos" in s["1.2"], "⑩ Ctrl+Z で整列も1段戻る")
+
+    # 保存する JSON に内部の派生値を混ぜない
+    raw = pg.evaluate("()=>window.__file")
+    check("_calc" not in raw and "_leaf" not in raw, "⑩ 保存する JSON に `_calc`／`_leaf` が入らない")
+    check(pg.evaluate("()=>window.__writes") > 0, "⑩ 操作が自動保存に乗っている（書込回数 > 0）")
+
+    # 編集 OFF に戻すと操作の部品が消える（読む専用版に戻る）
+    pg.click("#editBtn"); pg.wait_for_timeout(350)
+    check(pg.locator(".dsvg g.dx").count() == 0 and pg.locator("#rightHead .dpkb").count() == 0
+          and pg.locator(".dfig .dalign").count() == 0, "⑩ 編集 OFF に戻すと操作の部品が消える")
+    check(not errors, f"⑩ 操作で JS エラー 0 -> {errors[:2]}")
     b.close()
 
 finish(errors)

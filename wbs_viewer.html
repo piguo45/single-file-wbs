@@ -1737,7 +1737,7 @@
             +`<input type="checkbox" class="dpc" data-dp="${pi}" data-id="${esc(id)}"${chk?" checked":""}${dis?" disabled":""}>`
             +`<span>${esc(id+" "+dcut(nmOf(n.name),12))}</span></label>`;
         });
-        if(rows)body+=`<div class="dpkg">${esc(String(top.id??"")+" "+dcut(nmOf(top.name),12))}</div>`+rows;
+        if(rows)body+=`<div class="dpkg">${esc(dcut(nmOf(top.name)||String(top.id??""),14))}</div>`+rows;   // 見出しは名前だけ（番号は下の葉の id に出る＝「1 1 開発」の二重を避ける）
       });
       if(body)h+=`<div class="dpkp">${esc(nmOf(proj.name))}</div>`+body;
     });
@@ -1978,6 +1978,7 @@
   const dSubtreeIds=node=>{const out=[];(function w(x){if(!okNode(x))return;out.push(String(x.id));kidsOf(x).forEach(w);})(node);return out;};
   function applyData(data,isNew){
     lastData=data;
+    depsUndo=null; depsSelect(null);                                         // 読み直した JSON は別の葉＝依存タブの控えと選択は捨てる（#66）
     if(isNew){collapsed.clear();collapseSnapshot=null;pendingCenter=true;exitEditMode();}   // 新規ファイルは折りたたみリセット＆センタリング＆編集OFF（#10）
     render(data);
     PM.emit("data",data,isNew);                                              // [統合] 課題側へ通知（課題描画器が無ければ何もしない）
