@@ -48,6 +48,7 @@ Plan (WBS)
 - **Progress-axis view (EVM-style)** — a tab whose x-axis is completion; actual (EV), planned (PV) and behind are shown as bars
 - **Inazuma (slip) line** — rows breaking left of the today line are behind
 - **Reschedule history** — `↷` records a plan change with its reason. You type only actual dates; effort, progress and the lines are derived
+- **Dependency tab** — a fourth axis showing task order as circles and arrows; the longest path is red, and a task fills red if it's scheduled to start before its predecessor finishes (details in `AGENTS.en.md`)
 
 Issues
 

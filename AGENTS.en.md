@@ -43,10 +43,11 @@ Connections are written **only in the issue's `links[]`**; the view builds the r
 - **Changes mean editing `wbs.json` (data) only.** When asking an AI to do work, it should edit the JSON.
   - Touch the HTML only when the display spec itself must change (and only on explicit request).
 - **Never write derived values into the data.** State, overdue, ★ (which rows get one), effort and progress are computed by the viewer. Do not add keys like `status` or `overdue`.
-  - **There are exactly three exceptions** (none of them derived — each is either a **setting** or **a fact recorded at a moment in time**):
+  - **There are exactly four exceptions** (none of them derived — each is either a **setting** or **a fact recorded at a moment in time**):
     1. **`star`** (the reporting period that ★ marks) = a **setting**. It lives in the JSON so the person reporting, the people reading, and the AI all see the same ★.
     2. **`_progress` / `_progressAt` / `_progressBy`** (the plan's earned-value assessment) = **a person/AI judgment at that moment, recorded as fact**. It is never recomputed, hence a `_` key (→ "Plan (`tasks`) field definitions").
     3. **`_planLog`** (the history of schedule changes) = **the fact of when and why something slipped**. Append-only (→ same section).
+    4. **`_deps`** (a leaf's predecessor ids) = **a fact** (the connection). **`_pos`** (a manually placed position on the Deps tab) = **a setting** (a record of a deliberate exception to the layout — an AI never writes it). The longest path, float, conflicts and rank are computed, never stored (→ "Plan (`tasks`) field definitions").
 - **Write on the issue side and the plan side separately.** Day to day, an issue request rewrites only `issues` and the `links` inside them. **The plan side may be rewritten in exactly three cases**:
   - **"Folding in"**: when no matching leaf exists yet, you may add **exactly one leaf**. Number the `id` so it **does not collide within the project**, set `name` to the issue title, and **ask the user** for `qty` / `hours` / `plan` (never invent them). If the project has no `tasks`, create `tasks: []` and add the leaf there. Whenever you add a leaf, **always add `{ "wbs": "<the new id>" }` to the issue's `links`** — never leave the leaf unreferenced. → example ⑦-4
   - **Recording that a plan task finished or started**: write `actual.end` (and `actual.start` if it is empty). → example ⑯ and "Plan (`tasks`) — adding and updating ①"
@@ -72,7 +73,7 @@ Connections are written **only in the issue's `links[]`**; the view builds the r
 | Naming the state | The states are **Not started / In progress / Closed** — those three only. **"Undecided", "waiting" and "frozen" are marks, not states** (they can sit on the same issue) |
 | Why it is stuck | **Waiting on a person or a thing = waiting** (`kind: "waiting"`; who / what / by when). **Deliberately parked = frozen** (`kind: "frozen"`; a resume condition). **Waiting on someone to decide is neither — it is an open question in `decisions`** |
 
-**Check after editing**: `uv run python scripts/check.py wbs.json` — or `python3 scripts/check.py wbs.json` where uv is not installed (dependency-free; it looks at duplicate numbers, dates, enums, whether link targets exist, and leftover legacy keys).
+**Check after editing**: `uv run python scripts/check.py wbs.json` — or `python3 scripts/check.py wbs.json` where uv is not installed (dependency-free; it looks at duplicate numbers, dates, enums, whether link targets exist, cycles/broken references in `_deps` (the Deps tab's predecessors), and leftover legacy keys).
 
 ---
 
@@ -209,6 +210,21 @@ How to read the screen (columns, tabs, collapsing, filters, links) is collected 
   (4) **dedicated colors and thinner bars** = actual `--actual-soft` `#6872b1` / shortfall `--short-soft` `#b15a5d`. **Same hue and same lightness (L\*) as the Time tab's `#2f6fed` / `#e11d48`, with only chroma (C\*) lowered by 50%**.
   Every row in the Progress tab is a full-width 0-100% bar, so the colored area is several times that of the Time tab and pure hues make the screen heavy. The pressure comes from **both chroma and area**, so the bars are also slimmed from 14/8px to **10/6px** (the `.ptrack` backing and the minor ticks follow). **Lightness is never raised** (washing the colors out would also weaken the sense of delay) — the semantic colors stay identical, only the visual pressure drops.
 
+#### The Deps tab
+The right pane's third tab, **"Deps"** (`Dependencies (structure)`) — a fourth axis after Time and Progress: order, chains, the longest path. **The one view+edit surface in the right pane** (editing needs edit mode → "In-browser editing › Plan"). This tab never moves a plan date (fix those in the left table or the `↷` reschedule form).
+
+- **A grid fills the whole right pane** (the left info table and filter bar are hidden; switching back to Time/Progress restores them — no lingering `display:none`). The filter bar has no effect on this tab.
+- **A circle = a leaf** (only leaves carrying a `_deps` key — aggregate nodes are never drawn). Diameter = 1 cell; **one empty cell always surrounds it**. The id sits inside, the name below (cut to 8–10 full-width characters with "…"; hover for the full text).
+- **Automatic layout is the default**: rank = topological order (a predecessor's rank + 1); within a rank, a barycenter pass reduces crossings (a few passes toward predecessors/successors' average row). **Deterministic** — the same input always draws the same picture. Ranks are 4 cells apart. Only a manually dragged circle carries `_pos` (the exception; "Auto-arrange" clears it).
+- **Arrows mean dependency only** (nothing is drawn between tasks that can run in parallel). A straight line from one circle's edge to the next, **labeled above with the predecessor's calendar days** (`plan.end − plan.start + 1`). Default = faint (50% opacity); hover or selection darkens it.
+- **The longest path = a red ring and a thick arrow** (one per project, running to its latest milestone). Bottom right shows "**Longest path N d**" and the id chain (never called "the critical path", so it isn't confused with the planned duration).
+- **◇ = the project's latest milestone** (rightmost column), labeled "M d left as planned, difference M−N d" beside it. **M is the calendar days (both ends included) from the longest path's start date to the milestone's date — not from today.** The line into ◇ is drawn only from the longest path's tail.
+- **Red fill = a conflict**, with exactly one meaning: **"as scheduled, this starts before its predecessor finishes."** The same fill covers both a plan-only overlap (the successor's planned start ≤ the predecessor's planned end) and an actual-driven one (the predecessor slipped and got overtaken); hover to read which. It is a different device from the red ring (longest path) — fill vs. ring.
+- **Hover** (`title`) shows: id, name, calendar days and person-days; start → end; the conflict reason if any; the longest path running through this node; the difference vs. ◇; predecessors and successors; **the first two lines of `note`**; **the AI's reasoning (`_ai.memo`)**; and **marks from linked issues** (number, undecided/waiting). **Click to pin the bubble** (outside click or Esc closes it — same pattern as an issue's note). With edit mode off, **double-click jumps to that row on the Time tab** (the existing `gotoWbs`). An arrow's hover shows only its day count.
+- **A project with no leaf carrying `_deps` runs no computation and draws nothing** (just guidance text). A leaf that has `_deps` but **no planned start/end can't be drawn** (the header states the count).
+- **Zoom 50/75/100%** (default 100%, remembered).
+- **Broken references never crash the view**: an id that doesn't exist, an aggregate node, a self-reference, or a cycle — that one dependency's arrow is simply **not drawn, with a console warning** (no dashed stand-in; the data is left untouched). The same happens when the predecessor exists but has no `_deps` key of its own (i.e., isn't on the chart). `scripts/check.py` catches these (→ "Plan (`tasks`) field definitions").
+
 ### The issues (`issues`) screen
 - Projects (tabs): with two or more `projects`, a **tab bar** sits above the table (a leading **Summary** tab plus one per project; each tab name carries `★N ⚠N`).
   **Summary** is a per-project roll-up (project name / **Not started** / **In progress** / **Closed** / `Waiting` / `Frozen` / `Undecided` / **★ Updated** / **⚠ Overdue** / next due, plus a totals row). Clicking a row jumps to that project.
@@ -252,7 +268,15 @@ Toggle the **Edit** button (green when on). Changes are auto-saved to `wbs.json`
 - **Reordering among siblings**: `▲▼`.
 - **Milestone editing**: `＋MS` on the project row / an edit row below it with **date (📅) · name · color · ✕ delete**. Color is **chosen from 5 CUD-safe Okabe-Ito presets** — the GUI uses a picker, not free hex; JSON/AI can still set any `#hex`.
 - **Reschedule**: the leaf row's `↷` records the plan change into `_planLog` and auto-updates the plan (form = new start / new end / optional reason → **Confirm reschedule** appends to `_planLog`, updates `plan` and autosaves in one click). **Editing a date cell directly is a "correction" and is not logged** (reschedule and correction are kept apart). See `_planLog` under "Plan (`tasks`) field definitions".
-- **Out of scope (by design)**: drag-and-drop reordering / moving across parents / automatic renumbering. Use JSON or AI editing for those.
+- **The Deps tab** (edit mode only — the only things written here are a leaf's `_deps` / `_pos`):
+  - **On chart**: the "On chart" button at the left of the header opens a checklist of leaves (grouped by phase, collapsed by default). Checking a box adds `_deps: []` (on the chart, no predecessor yet). Unchecking removes the `_deps` key and every reference to it from other leaves (confirmed first if any dependency exists). A leaf with no planned start/end can't be checked.
+  - **Connect**: click a circle → a rubber-band line follows the cursor → click another circle to connect predecessor → successor (adds the predecessor's id to the successor's `_deps`). Esc or a click on empty space cancels. **Cycles, duplicates, self-references, and cross-project links are all rejected** (v1 stays inside one project).
+  - **Disconnect**: hover an arrow for the `✕` at its midpoint (no confirmation).
+  - **Place**: drag a circle (a threshold guards against accidental drags) — it snaps to every other cell. It can't land within one cell of another circle. The dropped circle gets a `_pos`.
+  - **Auto-arrange**: the project heading's "Auto-arrange" button **drops every manual position (`_pos`) in that project and returns to the automatic layout** (there is no "new nodes only" variant — retired 2026-09-29).
+  - **Ctrl+Z**: undoes the last step (connect, disconnect, place, auto-arrange, on/off chart).
+  - **Plan dates never move here**: fix a conflict (red fill) — a successor starting before its predecessor ends — in the left table or the `↷` reschedule form, or by removing the dependency instead.
+- **Out of scope (by design)**: drag-and-drop row reordering in the left table / moving across parents / automatic renumbering (dragging a circle to place it on the Deps tab is a separate feature and *is* supported). Use JSON or AI editing for those.
 - Effort / progress / inazuma line recompute automatically as before (re-rendering is deferred while an input has focus).
 
 ### What you can do on the issues (`issues`)
@@ -465,16 +489,31 @@ The article's **three reasons for pending** split like this in this tool (**the 
   - **GUI path (edit mode)**: the leaf row's **↷ button → form (new start / new end / optional reason) → "Confirm"** = appending to `_planLog` + **auto-updating `plan`** + autosave, all in one click (structurally prevents half-done updates). **Editing a date cell directly is a "correction" = not recorded** (intent is separated from rescheduling). No-change confirms are not recorded. There is no GUI deletion of history (fix via JSON if needed).
   - **Display**: only the **latest change** gets a **trail** (dotted gray; bottom lane = start moved, top lane = end moved — the lane tells the change type). The task name gets **↷N** (count of valid entries). **Click ↷N or a rescheduled plan bar** to open a balloon = full history (when, from → to, ±N days, reason) plus vs-baseline. Click outside / Esc closes. No extra rows; gantt ink stays constant no matter how many reschedules. Trail origins are automatically included in the time-axis range. Broken entries are ignored (graceful; `tests/異常_リスケ履歴.json`).
   - Scope: recording is **limited to changes of `plan`** (no full-field audit log).
+- **`_deps` (a leaf's predecessors) / `_pos` (a manual position on the Deps tab)**: two `_` keys the Deps tab reads and writes (→ "Display › The plan screen › The Deps tab"). They apply **to leaves only** (never on a summary node).
+  ```json
+  { "id": "2.5", "name": "Swap in the new report", "qty": 1, "hours": 32, "assignee": "Tanaka",
+    "plan":   { "start": "2026-06-17", "end": "2026-06-20" },
+    "actual": { "start": null, "end": null }, "note": "",
+    "_deps": ["2.3"],
+    "_pos": [12, 8] }
+  ```
+  - **`_deps` = an array of predecessor ids (strings)**. **Carrying the key means it's on the Deps tab's chart.** `[]` = on the chart with no predecessor. **No key = not on the chart** (backward compatible — existing files are unaffected). It is a fact (a connection), stored the same way as `_planLog`/`_ai` (never recomputed).
+  - v1 stays **inside one project, leaf-to-leaf, FS (finish-to-start) only** (no cross-project dependency, no summary node as a predecessor, no issue as a predecessor).
+  - **`_pos` = `[column, row]`** (non-negative even integers on the grid). It's a **setting**, added only to a circle someone dragged by hand (a recorded exception to the layout). Without it, the layout is automatic (deterministic, barycenter method). **An AI never writes or reads it** (position is a human's call).
+  - **The longest path, float, conflicts, and rank are all derived — never write them to the JSON** (the viewer recomputes them every time → "Computation").
+  - **Reference tracking**: renaming a leaf's `id`, deleting it, or turning it into a summary node makes the **viewer automatically repoint or drop** other leaves' `_deps` referencing it (via the GUI — rename repoints to the new id, delete drops the reference, delete-that-demotes-a-parent-to-a-leaf repoints to the parent's new id, and turning a leaf into a summary repoints to the child that inherited its values). When an AI edits the JSON directly, this tracking does not run — it must update `_deps` itself.
+  - **A broken reference never crashes the render**: an id that doesn't exist, a summary node, a self-reference, or a cycle — that dependency's arrow is simply skipped (console warning; the data stays untouched). `scripts/check.py` catches it (table below).
 
 ### `_` keys (custom keys)
 
 - **Keys starting with `_` may be added freely.** The viewer ignores them as a rule and in-browser editing preserves them (round-trip).
 - Use them for metadata (e.g. `_ai` for AI token records, `_money` for cost). The structure is up to you; they work on issues and on plan leaves alike.
 - **As a rule they are not a place for derived values.** State, overdue, ★ (which rows get one), effort and progress must not be written even under a `_` key (the ★ **period** lives in the top-level `star`).
-- **The viewer reads exactly three `_` keys** (none of them derived — each is **a fact recorded at a moment in time**, so it is fine to store):
+- **The viewer reads exactly five `_` keys** (all but `_pos` are non-derived — each is **a fact recorded at a moment in time**, so it is fine to store; `_pos` alone is a **setting**):
   - **`_progress`** (0/10/…/100) = the earned-value assessment, alongside **`_progressAt`** (assessment time, ISO) and **`_progressBy`** (`"manual"` or a model name).
   - **`_planLog`** = the history of schedule changes (append-only).
-  - Both shapes are specified under "Plan (`tasks`) field definitions".
+  - **`_deps`** = the Deps tab's predecessors (an array of leaf ids). An AI may estimate and write it (→ the AI examples under "Plan (`tasks`) — adding and updating"). **`_pos`** = the Deps tab's manual position (`[column, row]`) — an AI never writes or reads this one (a human's call).
+  - Every shape is specified under "Plan (`tasks`) field definitions".
 - **`_calc` and `_leaf` are reserved internal names.** The viewer rebuilds them on every render, and they are **stripped on save at any depth** (project, task or issue). **Never use them as your own keys** — whatever you write there is discarded.
 
 ### Backward-compatibility promise
@@ -491,7 +530,8 @@ The article's **three reasons for pending** split like this in this tool (**the 
 | The v2.0.0 shape `{ name?, holidays?, star?, projects: [{ name, milestones?, tasks?, issues? }] }` | As is |
 | A plan-only file `{ projects: [{ name, milestones, tasks }] }` (existing single-file-wbs data) | Opens as is; the issue view is empty |
 | The plan-side legacy shape `{ project, milestones, tasks }` (single project) | Converted to the `projects[]` shape on load (a confirmation is shown when turning Edit ON) |
-| An existing file carrying `_progress` / `_progressAt` / `_progressBy` / `_planLog` | **Read as is** (the three `_` keys the viewer reads → "`_` keys (custom keys)") |
+| An existing file carrying `_progress` / `_progressAt` / `_progressBy` / `_planLog` | **Read as is** (the five `_` keys the viewer reads → "`_` keys (custom keys)") |
+| An existing file carrying `_deps` / `_pos` (the Deps tab, added in v2.5.0) | **Read as is** (leaves only). **A file without them behaves exactly as before** — the Deps tab just shows "No task is on the chart" |
 | A file carrying `_` keys the viewer does not know | **Ignored but preserved** (never stripped on save = round-trip) |
 
 **There is no legacy shape on the issue side.** Issues first shipped in v2.0.0, so `sheets`, a bare top-level `issues`, `actions[].wbs`, an issue-level `assignee`, `decision`, `decisionLog` and `pending.reason` are **not read or mapped** — they were removed before release, so no mixed file exists.
@@ -521,6 +561,13 @@ The article's **three reasons for pending** split like this in this tool (**the 
   "a person's/AI's judgment at a point in time", so it is stored as a `_` key (never recomputed) — consistent with the "no derived values in data" rule.
 - **Status column = behind / actual / planned** (slip / EV / PV, %). Behind=red, actual=blue, planned=black. **On-track rows show actual only** (quiet). No mental math (the delay is pre-computed).
 - **Planned-end turns red** when today > plan end and not done (deadline overrun; done rows are not reddened). Same "red = behind" as the time tab's Gantt/inazuma.
+- **The Deps tab's computation (CPM — only leaves carrying `_deps`)**:
+  - **Days = the planned span in calendar days** = `plan.end − plan.start + 1`. That's the arrow's number (no business-day or person-day conversion in v1).
+  - **Longest path** = the route through the `_deps` graph (to the latest milestone) with the largest sum of days. Ties break toward the smaller id (deterministic).
+  - **Longest path through this node** = the longest run before it + the longest run after it − its own days (shown on hover; comparing it against the overall "Longest path N d" reveals float).
+  - **Difference vs. ◇** = ◇'s date − the longest path's **start date** (not today) − the longest path's days (+1 to keep both ends included, matching the arrow's counting). Positive = slack; negative = won't make it.
+  - **Conflict** = a successor's planned start ≤ its predecessor's **effective end** (the later of planned end and actual end; if active and today > planned end, today). The hover distinguishes a plan-only overlap from an actual-driven overtake (the fill color is the same either way — see "Display › The plan screen › The Deps tab").
+  - Cost scales with the number of leaves and arrows (nothing runs on a JSON with no `_deps`).
 
 ---
 
@@ -568,6 +615,7 @@ Append to the project's `milestones`:
 - "**Archive** everything completed before May" → → "Archiving" (backup + delete)
 - "**Assess** the progress of task X" → see ⑥ "AI progress-assessment workflow" below (deliverable + requirements → nearest 10% into `_progress`)
 - "Push **B** back by a week, reason = delay in #504" → update `plan` and append one line to `_planLog` (→ "Plan (`tasks`) field definitions")
+- "**Estimate the dependencies** from task names/notes and **put them on the chart**," "why is `2.4` on the **longest path**," "if `#3`'s answer is a week late, **how many days does it shift**" → see ⑦ "AI requests for the Deps tab" below
 
 ### ⑥ AI progress-assessment workflow (this tool's core = AI-native)
 Hand the fuzzy "roughly what %" to an AI. The steps are deterministic:
@@ -577,6 +625,25 @@ Hand the fuzzy "roughly what %" to an AI. The steps are deterministic:
 4. **Done is separate**: when actually finished, set `actual.end` (= 100%) rather than `_progress`. `_progress` is only an in-progress earned-value estimate.
 - Example: "Assess `2.3`'s progress from the deliverable (impl/tests/docs) and the close condition, to the nearest 10%."
 - Note: an assessment is a **recorded fact** (a person/AI judgment at that moment); it is not recomputed, hence a `_`-key — consistent with "no derived values in data."
+
+### ⑦ AI requests for the Deps tab (estimate structure, explain it, run a what-if)
+**The longest path doesn't need an AI to compute it** (the viewer derives it deterministically → "Computation"). An AI earns its keep at three things: **finding dependencies from context, explaining the chart, and running a what-if**. Plan and issues live in the same JSON, so any of these is a single read.
+
+- "**Estimate the order from task names/notes and linked issues (waiting, open questions), and put them on the dependency chart**" → the AI writes `_deps` on the relevant leaves (never `_pos` — that's a human's call).
+  - **Skeleton chains only** (don't wire every leaf together). **At most two predecessors per task.** **Never create a cycle** (don't let a chain of predecessors loop back to the task itself). **Never move a plan date.**
+  - **Leave a one-line reason in that leaf's `_ai.memo`**: the form "Dep AI estimate: …", **at most 120 full-width characters** (it shows up on the circle's hover — → "Plan (`tasks`) field definitions").
+  - **Leave any leaf that already has `_deps` alone** (only add to leaves that have none). Once a human corrects the chart by hand, the next estimate treats that as the new baseline (round-trips without clobbering).
+  - After writing, run `uv run python scripts/check.py wbs.json` (or `python3 scripts/check.py wbs.json`) to confirm there's no cycle or broken reference.
+  - Before/after (fragment — only `_deps`/`_ai` shown; the id matches the example under "Plan (`tasks`) field definitions"):
+    ```json
+    { "id": "2.5", "name": "Swap in the new report", "_deps": [] }
+    ```
+    ```json
+    { "id": "2.5", "name": "Swap in the new report", "_deps": ["2.3"],
+      "_ai": { "memo": "Dep AI estimate: placed after implementation (2.3), whose output it replaces" } }
+    ```
+- "**Explain why `2.4` is on the longest path**" → **read-only** (the JSON is unchanged). Cite the chart and the wording (`closeWhen`, `note`) of the issues linked to the nodes it passes through.
+- "**If `#3`'s answer is a week late, how many days does the release shift**" → **read-only**. Find the leaf from `#3`'s `links[].wbs`, follow its successors through `_deps`, and use "Computation"'s formulas to count how much the longest path grows (state the shrinking — or negative — difference vs. ◇).
 
 ---
 
@@ -1097,7 +1164,7 @@ uv run python scripts/check.py wbs.json
 python3 scripts/check.py wbs.json
 ```
 
-- What it looks at: whether link targets exist (project name, issue number, task id) / the shape of `links` / duplicate numbers / dates and enums / waits with nobody recorded and freezes with no resume condition / leftover legacy keys (`sheets`, issue-level `assignee`, `actions[].wbs`).
+- What it looks at: whether link targets exist (project name, issue number, task id) / the shape of `links` / duplicate numbers / dates and enums / waits with nobody recorded and freezes with no resume condition / **cycles, broken references, and miswired summary-node targets in dependencies (`_deps`/`_pos`)** / leftover legacy keys (`sheets`, issue-level `assignee`, `actions[].wbs`).
 - **Exit code 1 when there are errors.** `--quiet` prints only the counts.
 - Findings are reported as **`<project> / #<number> / <field>`** rather than line numbers, so you can go straight to the fix.
 
@@ -1367,6 +1434,12 @@ Avoid the following when entering data (nothing crashes, but display degrades).
 | Nesting beyond 4 levels | Colors stop at **L3** (no breakage) |
 | `_progress` not a number | **Ignored** (falls back to time-based progress). A number is rounded to the nearest 10% and **clamped to 0–100** |
 | A broken element inside `_planLog` | That element alone is **ignored** (the rest of the history still renders) |
+| `_deps` not an array (a string, a number, etc.) | That leaf **doesn't appear on the Deps tab** (same as having no `_deps` key at all). `scripts/check.py` reports it as an **error** |
+| `_deps` pointing at a nonexistent id, a summary node, a self-reference, or a cycle | **That one dependency's arrow is simply not drawn**, with a console warning (the data stays untouched). `scripts/check.py` reports it as an **error** |
+| `_deps` pointing at a leaf that has no `_deps` key of its own (the predecessor isn't on the chart) | Same — **that arrow alone is skipped**. `scripts/check.py` reports it as a **warning** (the leaf exists; it's just not charted) |
+| A leaf carrying `_deps` with no planned start/end | **Can't be drawn** (the heading states "N task(s) are not drawn"). `scripts/check.py` reports it as a **warning** |
+| `_pos` malformed (not an array, not length 2, negative, or odd) | **Ignored — falls back to automatic placement**. `scripts/check.py` reports it as a **warning** |
+| `_deps` / `_pos` written on a summary node | **Ignored** (summary nodes are never drawn as circles). `scripts/check.py` reports it as an **error** |
 
 **The issues (`issues`)**
 
@@ -1398,7 +1471,8 @@ Avoid the following when entering data (nothing crashes, but display degrades).
 - **Duplicate `id`s share collapse state** (they open and close together). Keep `id` unique within a project. **Identically-named projects** collide the same way, so keep project names unique too.
 - **`null` elements inside arrays** (null tasks/projects) are unsupported (a non-object top level degrades to an empty view).
 - **No history of waits or freezes.** `pending` holds only the current one; how often or how long it was stuck is not kept (write it in a `_` key if you need it). **The schedule-change history (`_planLog`) exists on the plan side only.**
-- **No dependencies between issues** ("#1 can't move until #3 finishes" goes in `note`). The plan side has no predecessor/successor links either.
+- **No dependencies between issues** ("#1 can't move until #3 finishes" goes in `note`).
+- **The Deps tab has v1 limits**: same project only, leaf-to-leaf, **FS (finish-to-start) only** (no SS, FF or lag). **No cross-project dependency.** **A dependency can't target an issue** (`_deps` only takes leaf ids). **Calendar days only** (no business-day or person-day conversion).
 - **Issue → plan and issue → issue are both in-page moves** (writing `#wbs=` / `#issue=` into the URL). **Only external URLs (`{ title, url }`) open a new tab.**
 - **Links are one-way.** Writing `{ "issue": 2 }` does not make this issue appear on the other one; add it on both sides if you want to walk it both ways. **Plan → issue is the exception**: the view derives the chip from `links` (the data stays one-way).
 - **Renaming a project breaks the links that point at that name** (there is no immutable key). Run `scripts/check.py` after a rename. **Renaming a project or editing an id in edit mode also resets collapse state** (collapse keys derive from name/id).
@@ -1410,7 +1484,7 @@ Avoid the following when entering data (nothing crashes, but display degrades).
 - Chromium-based browsers (Chrome recommended), `file://` assumed (it uses the File System Access API).
 - Your own real data `wbs.json` is **gitignored by default** (to prevent accidental commits), as is `wbs-archive-*.json`.
 - Two samples: **`wbs_sample.json`** = the plan (`tasks`) only, the classic sample; **`wbs_sample_issues.json`** = plan and issues (fictional, **a two-project book**; the first project shows **a plan (`tasks`) and issues living together**, and the set covers all three states and all six marks). This repository's own source of truth is in the final section, "The source of truth for this repo".
-- **`wbs_demo.json`** is the demo-only data (fictional, one project, 33 plan leaves and 11 issues). `scripts/build_demo.py` embeds it into `demo.html` for GitHub Pages. The top-level **`_demoToday`** is "today" as far as this data is concerned, and `demo.html` shifts every date by the gap between that and the day it is opened, **rounded to whole weeks** (so weekdays are preserved; **holidays are calendar facts and are never shifted**). `_demoToday` is a custom key the viewer ignores, so the file still opens as a plain `wbs.json`.
+- **`wbs_demo.json`** is the demo-only data (fictional, one project, 33 plan leaves and 11 issues). `scripts/build_demo.py` embeds it into `demo.html` for GitHub Pages. The top-level **`_demoToday`** is "today" as far as this data is concerned, and `demo.html` shifts every date by the gap between that and the day it is opened, **rounded to whole weeks** (so weekdays are preserved; **holidays are calendar facts and are never shifted**). `_demoToday` is a custom key the viewer ignores, so the file still opens as a plain `wbs.json`. Its plan leaves also carry **a Deps-tab example** (a skeleton chain of `_deps`, 1–2 conflicts, one manually placed `_pos`, and leaves with `_ai.memo`).
 - This is a public repo: samples and screenshots use **fictional names only**. No real company names, project names, personal data, or rates.
 
 ---
