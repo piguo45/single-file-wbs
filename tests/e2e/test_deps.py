@@ -2,22 +2,31 @@
 
 見るもの（docs/design/brief-deps.md v0.2 §3 画面・§5 計算）:
   ① `_deps` を持つ葉が○・依存が矢印・◇は案件の最遅マイルストーン
-  ② 自動配置が決定的（タブを往復しても同じ座標）・1マスおきの格子・隣り合わない
+  ② 自動配置が決定的（タブを往復・3回読み直しても同じ座標）・1マスおきの格子・隣り合わない・
+     `_deps` の配列順を入れ替えても配置は変わらない（順序非依存）
   ③ 最長経路の日数と経路が独立計算と一致し、赤い○／太い赤矢印がその経路
+     （正常_依存.json 1本に加え、種固定のランダムDAG3本〈葉6〜12・辺5〜15・循環なし〉でも検算＝③-2）
   ④ 違反（予定で割れ／前工程の実遅れで割れ）の判定
   ⑤ ○のホバー（数字・備考の先頭2行・AI 推定の根拠・課題の印）とクリックの吹き出し
   ⑥ C1: `_deps` を持つ葉が無い JSON では図も計算も走らせない（案内だけ）
   ⑦ 時間タブへ戻すと左の情報表とフィルタバーが復帰（display:none を残さない）
   ⑧ ズーム 50/75/100%・EN 切替・ダブルクリックで時間タブのその行へ
-  ⑨ `_deps`／`_pos` の round-trip（編集して保存しても消えない）と参照の追従（id 変更・削除・集計化）
+  ⑨ `_deps`／`_pos`／未知の `_` キー（`_ai.memo`）の round-trip（編集して保存しても消えない・
+     `_calc`／`_leaf` は混じらない）と参照の追従（id 変更・削除・集計化）
   ⑩ 操作（§4・編集モードだけ）：図に載せる/外す・結ぶ（循環・重複・案件またぎは拒否）・
      矢印の ✕ で外す・ドラッグで `_pos`（偶数マス・埋まったマスは拒否）・整列で `_pos` が消える・
      Ctrl+Z・編集 OFF では何も起きない・保存する JSON に `_calc` が残らない
 
+異常系（graceful・JS エラー0・NaN0）は tests/異常_依存_循環.json（循環・自己参照）と
+tests/異常_依存_壊れ.json（集計ノードの `_deps`／参照切れ／非文字列の要素／`_deps` が配列でない／
+`_pos` が壊れている〈奇数・負・非配列〉／予定日の無い葉）でカバーする。
+
 本日は CLOCK_PIN（2026-06-15）固定。fixture は tests/正常_依存.json。
 """
 import copy
+import datetime as dt
 import json
+import random
 from playwright.sync_api import sync_playwright
 from common import (ROOT, VIEWER, check, finish, granted_handle_init,
                     load_test_json, new_page)
@@ -59,6 +68,65 @@ def longest_path():
 
 
 EXP_DAYS, EXP_PATH = longest_path()
+
+# ③-2 最長経路の独立計算（ランダムDAG・5.1.4 ①）。既存の 正常_依存.json 1本だけでは
+# たまたま式が合っていても見逃す組合せがあるので、種固定のランダムDAGを3本追加で検算する。
+RANDOM_DAGS = [(1101, 6, 5), (1202, 9, 10), (1303, 12, 15)]   # (種, 葉の数, 辺の数)
+
+
+def gen_random_dag(seed, n_leaves, n_edges):
+    """種固定・循環なしのランダムDAGを1案件のJSONとして返す（i<jの組だけを辺候補にして循環を作らない）。
+    戻り値: (JSON, {葉id: [前工程id,...]}, {葉id: 葉ノード})"""
+    rng = random.Random(seed)
+    ids = [str(i + 1) for i in range(n_leaves)]
+    candidates = [(i, j) for i in range(n_leaves) for j in range(i + 1, n_leaves)]
+    rng.shuffle(candidates)
+    edges = candidates[:min(n_edges, len(candidates))]
+    deps = {cid: [] for cid in ids}
+    for i, j in edges:
+        deps[ids[j]].append(ids[i])                       # 後の番号の葉が前の番号を前工程に持つ＝i<jのみ＝循環なし
+    base = dt.date(2026, 6, 1)
+    children = []
+    leaves = {}
+    for k, cid in enumerate(ids):
+        durn = rng.randint(1, 5)                           # 暦日の長さ（1〜5日）をランダムに振って経路長の同点も作る
+        start = base + dt.timedelta(days=k)
+        end = start + dt.timedelta(days=durn - 1)
+        node = {"id": cid, "name": f"作業{cid}", "qty": 1, "hours": 8, "assignee": "",
+                "plan": {"start": start.isoformat(), "end": end.isoformat()},
+                "actual": {"start": None, "end": None}, "note": "", "_deps": deps[cid]}
+        children.append(node)
+        leaves[cid] = node
+    data = {"projects": [{"name": "ランダムDAG", "milestones": [], "tasks": [
+        {"id": "R", "name": "ランダム", "children": children}]}]}
+    return data, deps, leaves
+
+
+def cpm_longest_path(deps, leaves):
+    """CPM（前工程の暦日数の和が最大の経路）。tie-breakはビューアの式（depsGraph）と同じ規則にそろえる：
+    同点の前工程は _deps の並び順で最初に見つかった方を採用、終点（全体の最長）は同点なら id の文字列比較で小さい方。"""
+    days = {cid: (dt.date.fromisoformat(n["plan"]["end"]) - dt.date.fromisoformat(n["plan"]["start"])).days + 1
+            for cid, n in leaves.items()}
+    order = sorted(deps, key=int)                          # 生成規則上 i<j のみが辺なので番号順がそのままトポロジカル順
+    up, frm = {}, {}
+    for cid in order:
+        best, best_from = 0, None
+        for pre in deps[cid]:
+            if up[pre] > best or (up[pre] == best and best_from is None):
+                best, best_from = up[pre], pre
+        up[cid] = best + days[cid]
+        frm[cid] = best_from
+    tail = None
+    for cid in order:
+        if tail is None or up[cid] > up[tail] or (up[cid] == up[tail] and cid < tail):
+            tail = cid
+    path = []
+    v = tail
+    while v:
+        path.insert(0, v)
+        v = frm[v]
+    return up[tail], path
+
 
 errors = []
 with sync_playwright() as p:
@@ -105,6 +173,30 @@ with sync_playwright() as p:
     check(not near, f"隣り合う（周りの1マスに入る）○の組が無い -> {near[:3]}")
     check(["1.6", 12, 8] in pos1, f"`_pos` を書いた葉はその位置に置かれる（1.6 → [12,8]） -> {pos1}")
 
+    # ②-2 決定性を強化：同じJSONを3回目まで読み直しても同じ座標・`_deps` の配列順を入れ替えても配置は変わらない（順序非依存）
+    for i in range(2):
+        pg.evaluate("d => window.renderData(d)", DATA)
+        pg.wait_for_timeout(120)
+        pg.click('#rtabs .rtab[data-view="deps"]')
+        pg.wait_for_selector(".dsvg")
+        pg.wait_for_timeout(120)
+        check(pg.evaluate(cells) == pos1, f"同じ JSON を{i + 2}回目に読み直しても座標が同じ（決定性）")
+    shuffled = copy.deepcopy(DATA)
+    for n in shuffled["projects"][0]["tasks"][0]["children"]:
+        if isinstance(n.get("_deps"), list):
+            n["_deps"] = list(reversed(n["_deps"]))                 # 各葉の前工程の並び順だけ逆転（つながり自体は同じ）
+    pg.evaluate("d => window.renderData(d)", shuffled)
+    pg.wait_for_timeout(120)
+    pg.click('#rtabs .rtab[data-view="deps"]')
+    pg.wait_for_selector(".dsvg")
+    pg.wait_for_timeout(120)
+    check(pg.evaluate(cells) == pos1, "`_deps` の配列順を入れ替えても配置は変わらない（順序非依存）")
+    pg.evaluate("d => window.renderData(d)", DATA)                  # 元のデータに戻す（以降の検査のため）
+    pg.wait_for_timeout(120)
+    pg.click('#rtabs .rtab[data-view="deps"]')
+    pg.wait_for_selector(".dsvg")
+    pg.wait_for_timeout(120)
+
     # ③ 最長経路
     txt = pg.eval_on_selector(".dsvg", "el => el.textContent")   # SVG は inner_text が使えない
     check(f"最長経路 {EXP_DAYS} 日" in txt, f"右下に「最長経路 {EXP_DAYS} 日」が出る")
@@ -113,6 +205,29 @@ with sync_playwright() as p:
     check(sorted(red) == sorted(EXP_PATH), f"赤い輪の○がその経路 -> {sorted(red)}")
     crit_edges = pg.locator(EDGES + ".dcrit").count()
     check(crit_edges == len(EXP_PATH) - 1, f"太い赤矢印が経路の本数（{crit_edges}）")
+
+    # ③-2 最長経路の独立計算との一致：ランダム生成のDAG3本（葉6〜12・辺5〜15・循環なし・種固定）
+    for seed, n_leaves, n_edges in RANDOM_DAGS:
+        rdata, rdeps, rleaves = gen_random_dag(seed, n_leaves, n_edges)
+        exp_n, exp_p = cpm_longest_path(rdeps, rleaves)
+        pg.evaluate("d => window.renderData(d)", rdata)
+        pg.wait_for_timeout(150)
+        pg.click('#rtabs .rtab[data-view="deps"]')
+        pg.wait_for_selector(".dsvg")
+        pg.wait_for_timeout(120)
+        rtxt = pg.eval_on_selector(".dsvg", "el => el.textContent")
+        check(f"最長経路 {exp_n} 日" in rtxt,
+              f"seed={seed}（葉{n_leaves}・辺{n_edges}）: 独立計算と画面の「最長経路 {exp_n} 日」が一致")
+        check(" → ".join(exp_p) in rtxt,
+              f"seed={seed}: 独立計算の経路と画面の経路 id 列が一致 -> 期待 {' → '.join(exp_p)}")
+        rred = pg.eval_on_selector_all(NODES + "[data-crit]", "els => els.map(e => e.dataset.id)")
+        check(sorted(rred) == sorted(exp_p), f"seed={seed}: 赤い輪の○も独立計算の経路と一致 -> {sorted(rred)}")
+    pg.evaluate("d => window.renderData(d)", DATA)                  # 元のデータへ戻す
+    pg.wait_for_timeout(120)
+    pg.click('#rtabs .rtab[data-view="deps"]')
+    pg.wait_for_selector(".dsvg")
+    pg.wait_for_timeout(120)
+    check(not errors, f"ランダムDAG3本の検算まで JS エラー 0 -> {errors[:2]}")
 
     # ④ 違反（予定で割れ＝1.6／前工程の実遅れで割れ＝1.8）
     viol = pg.eval_on_selector_all(NODES + "[data-viol]", "els => els.map(e => e.dataset.id)")
@@ -209,6 +324,10 @@ with sync_playwright() as p:
         pg.wait_for_timeout(200)
         body = pg.inner_text("#rightBody")
         check(len(errors) == before and "NaN" not in body, f"{name}: 落ちない・NaN 無し")
+        if name == "異常_依存_循環.json":
+            cyc_ids = pg.eval_on_selector_all(NODES, "els => els.map(e => e.dataset.id)")
+            check(sorted(cyc_ids) == ["1", "2", "3", "4"],
+                  f"循環（1→3→2→1）は1本落として描き、自己参照（4）も含め全4件が○として出る -> {cyc_ids}")
         pg.click('#rtabs .rtab[data-view="time"]')
         pg.wait_for_timeout(120)
     pg.evaluate("d => window.renderData(d)", load_test_json("異常_依存_壊れ.json"))
@@ -216,6 +335,19 @@ with sync_playwright() as p:
     pg.wait_for_timeout(200)
     check("図に出せない作業が 1 件" in pg.inner_text(".dfig .dcap"),
           "予定日が無くて図に出せなかった葉の件数を見出しで断る（黙って落とさない）")
+    # 壊れた要素はその要素だけ無視される（他は普通に描く）ことを個別に確認
+    ids_shown = pg.eval_on_selector_all(NODES, "els => els.map(e => e.dataset.id)")
+    check("1" not in ids_shown, "集計ノードの `_deps`／`_pos` は無視される（集計ノードは○にならない）")
+    check("1.4" not in ids_shown, "`_deps` が配列でない葉（1.4）は図に載らない（＝載っている印が無いと判定）")
+    tip12 = pg.eval_on_selector('.dsvg g.dnode[data-id="1.2"] title', "el => el.textContent")
+    check("前工程：なし" in tip12,
+          f"存在しない id／非文字列の要素／集計ノードの id を指す参照は、その要素だけ無視されて前工程が空になる（1.2） -> {tip12[:60]}")
+    pos_broken = {row[0]: (row[1], row[2]) for row in pg.evaluate(cells)}
+    for bid in ("1.7", "1.8"):
+        check(bid in pos_broken, f"壊れた `_pos`（{bid}）でも葉は図から落ちない")
+        c, r = pos_broken.get(bid, (None, None))
+        check(c is not None and c >= 0 and r >= 0 and c % 2 == 0 and r % 2 == 0,
+              f"壊れた `_pos`（負・非配列＝{bid}）は無視され、自動配置の偶数マスに置かれる -> ({c},{r})")
     b.close()
 
 # ⑨ round-trip と参照の追従（編集モード＝別セッション。保存は既存の自動保存パスに任せる）
@@ -258,6 +390,11 @@ with sync_playwright() as p:
     check(s["1.6"]["_deps"] == ["1.3"] and s["1.6"]["_pos"] == [12, 8],
           f"編集して保存しても `_deps`／`_pos` が残る（round-trip） -> {s['1.6'].get('_deps')}")
     check(s["1.1"]["_deps"] == [], "`_deps: []`（前工程なし）も空配列のまま残る")
+    check(s["1.6"].get("_ai", {}).get("memo")
+          == "依存 AI 推定: 実装の完了物を差し替えるため実装の後に置いた",
+          f"依存タブが知らない `_` キー（`_ai.memo`）も編集後に保持される（round-trip） -> {s['1.6'].get('_ai')}")
+    raw0 = json.loads(pg.evaluate("()=>window.__file"))
+    check("_calc" not in raw0 and "_leaf" not in raw0, "保存する JSON のトップに `_calc`／`_leaf` が混じらない")
 
     # id 変更 → 指していた矢印が付け替わる
     sel = field("1.1", "id")

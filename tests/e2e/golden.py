@@ -75,6 +75,25 @@ PROG_CAPTURE = r"""()=>{
   return {rows};
 }"""
 
+# 依存タブ（#66・5.1.4）：図の中身（○の座標・crit/bad・矢印・最長経路の文字）を凍結。
+# `_deps` の無いfixtureでも呼んで問題ない（.dsvgが無ければ null を返すだけ＝異常系の回帰も一緒に守れる）。
+DEPS_CAPTURE = r"""()=>{
+  const svgs = [...document.querySelectorAll('.dsvg')];
+  if (!svgs.length) return null;
+  return svgs.map(svg => ({
+    dp: svg.getAttribute('data-dp'),
+    nodes: [...svg.querySelectorAll('g.dnode')].map(g => ({
+      id: g.dataset.id, c: g.dataset.c, r: g.dataset.r,
+      cls: [...g.classList].filter(c => c !== 'dnode').sort().join(' '),   // crit/bad（赤の2役）
+    })),
+    edges: [...svg.querySelectorAll('g.dedge')].map(g => ({
+      from: g.dataset.from, to: g.dataset.to, crit: g.classList.contains('dcrit'),
+    })),
+    tot: (svg.querySelector('.dtot') || {}).textContent ?? null,     // 「最長経路 N 日」
+    path: (svg.querySelector('.dpath') || {}).textContent ?? null,   // 経路の id 列
+  }));
+}"""
+
 
 def capture_all():
     out = {}
@@ -98,6 +117,14 @@ def capture_all():
             pg.evaluate("d => window.renderData(d)", data)
             pg.wait_for_timeout(120)
             out[fx.name + "::prog"] = pg.evaluate(PROG_CAPTURE)
+        # 依存タブに切替えて、各fixtureの図（○/矢印/最長経路）を凍結（5.1.4）
+        pg.click('#rtabs .rtab[data-view="deps"]'); pg.wait_for_timeout(120)
+        for fx in FIXTURES:
+            data = json.loads(fx.read_text(encoding="utf-8"))
+            pg.evaluate("d => window.renderData(d)", data)
+            pg.wait_for_timeout(120)
+            pg.click('#rtabs .rtab[data-view="deps"]'); pg.wait_for_timeout(120)  # 新規fixtureは既定タブに戻ることがあるので都度確認
+            out[fx.name + "::deps"] = pg.evaluate(DEPS_CAPTURE)
         pg.close()
         # edit モード：fixtureごとに新ページ（granted handle の中身が init で決まるため）
         for name in EDIT_FIXTURES:

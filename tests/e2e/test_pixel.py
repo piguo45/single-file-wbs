@@ -17,7 +17,7 @@ from playwright.sync_api import sync_playwright
 BASE_DIR = pathlib.Path(__file__).resolve().parent / "baseline"
 FIXTURES = ["正常_終了遅延.json", "正常_4階層ネスト.json",
             "正常_複数4プロジェクト.json", "正常_カスタムキー.json",
-            "正常_全機能.json"]   # 全機能の総覧（_progress/ネスト/MS/各状態/カスタムキー）
+            "正常_全機能.json", "正常_依存.json"]   # 全機能の総覧（_progress/ネスト/MS/各状態/カスタムキー）＋依存タブ用fixture（時間タブの見た目）
 VIEWPORT = {"width": 1500, "height": 900}
 THRESH = 16          # per-channel 差の許容（サブピクセルのにじみ）
 TOL_RATIO = 0.001    # 不一致画素が全体の 0.1% を超えたら回帰とみなす
@@ -84,6 +84,9 @@ def main():
         pg.click('.rtab[data-view="progress"]'); pg.wait_for_timeout(120)  # 進捗タブ（_progress 含む2枚）
         one("正常_終了遅延.json", "_progress")
         one("正常_全機能.json", "_progress")
+
+        pg.click('.rtab[data-view="deps"]'); pg.wait_for_timeout(150)      # 依存タブ（#66・5.1.4）：方眼・○・矢印・最長経路
+        one("正常_依存.json", "_deps")
 
         # 編集モードの画素（新アイコン/＋子葉/編集領域の視覚ロック）。renderDataは閲覧専用なので
         # 書込可ハンドルを与えて編集ONにし、全機能fixtureの編集画面を撮る。

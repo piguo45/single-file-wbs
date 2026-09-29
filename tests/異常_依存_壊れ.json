@@ -30,7 +30,17 @@
               "_deps": ["1.6"] },
             { "id": "1.6", "name": "_deps を持たない葉", "qty": 1, "hours": 8, "assignee": "",
               "plan": { "start": "2026-06-08", "end": "2026-06-09" },
-              "actual": { "start": null, "end": null }, "note": "" }
+              "actual": { "start": null, "end": null }, "note": "" },
+            { "id": "1.7", "name": "_pos が負", "qty": 1, "hours": 8, "assignee": "",
+              "plan": { "start": "2026-06-13", "end": "2026-06-14" },
+              "actual": { "start": null, "end": null }, "note": "",
+              "_pos": [-2, 4],
+              "_deps": [] },
+            { "id": "1.8", "name": "_pos が配列でない", "qty": 1, "hours": 8, "assignee": "",
+              "plan": { "start": "2026-06-15", "end": "2026-06-16" },
+              "actual": { "start": null, "end": null }, "note": "",
+              "_pos": "bad",
+              "_deps": [] }
           ]
         }
       ]
